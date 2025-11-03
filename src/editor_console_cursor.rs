@@ -17,8 +17,6 @@ impl EditorConsoleCursor {
     }
 }
 
-pub static CURSOR_LINE_TO_WIDTH: bool = true;
-
 /// Standard console cursor navigation
 #[allow(dead_code)] // Compiler won't shut the fuck up
 pub fn console_text_navigation(cursor_x: &mut usize, directive: &mut String, audio: &EditorAudio) {

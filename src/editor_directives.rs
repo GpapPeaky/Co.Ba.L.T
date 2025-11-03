@@ -38,8 +38,9 @@
 //              :efl        : Editor fullscreen switch
 //              :ehi        : Editor highlighting toggle
 //              :ewt        : Editor cursor width toggle
+//
 //      Other:
-//              :e          : Exit, close editor
+//              :e          : Exit, close editor (C)
 //              :egman      : Editor general manual (All manuals are displayed)
 //              :efman      : Editor file manual    (Display file directives info)
 //              :edman      : Editor directory manual  (Display directory directives info)
@@ -55,4 +56,39 @@
 // The console, as long as you are typing, will display files with names close to it.
 // Pressing TAB will select the first seen file closest to the name given and autocomplete it
 // in the console.
-//
+
+use std::process::exit;
+
+/// Check if there is a ':', trim it, match it to a directive and execute it
+/// else we will see it as switch-to-file operation
+pub fn execute_directive(directive: &mut String) {
+    // Check if there is a ':'
+    // Trim it, match it to a directive
+    // and execute it
+
+    if directive.starts_with(':') {
+        let directive_command = directive.trim_matches(':');
+
+        match directive_command {
+            "e" => {
+                exit(0);
+            }
+
+            "ewt" => {
+                // TODO: Add an options object
+                // CURSOR_LINE_TO_WIDTH = !CURSOR_LINE_TO_WIDTH;
+            }
+
+            _ => {
+                // TODO: Needs a timer
+                // draw_text("INVALID DIRECTIVE", x, y, font_size, color)
+            }
+
+        }
+    } else {
+        // File switch
+    }
+
+    // Remove dat shii
+    *directive = "".to_string();
+}

@@ -17,7 +17,7 @@ impl EditorCursor {
     }
 }
 
-pub static CURSOR_LINE_TO_WIDTH: bool = true;
+// pub const CURSOR_LINE_TO_WIDTH: bool = true;
 
 /// Standard cursor navigation
 #[allow(dead_code)] // Compiler won't shut the fuck up

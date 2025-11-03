@@ -417,7 +417,7 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
             let cursor_y_pos = start_y + cursor_y as f32 * line_spacing;
 
             // Cursor width, either of the current char size, or static 2.0px
-            let cursor_width = if CURSOR_LINE_TO_WIDTH && cursor_x < line.len() {
+            let cursor_width = if true && cursor_x < line.len() { // Here CURSOR_LINE_TO_WIDTH was used here
                 measure_text(
                     &line.chars().nth(cursor_x).unwrap().to_string(),
                     Some(&gts.font),
@@ -475,6 +475,7 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
             // FIXME Strings broken by newlines are not colored properly.
             // FIXME Macros when brocken by white space, not colored properly.
             // FIXME Numbers inside identifiers, get coloured as numbers
+            // FIXME Some control characters still show
 
             // Draw token at once using the general text stylizer
             gts.color = color;

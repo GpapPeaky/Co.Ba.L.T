@@ -3,6 +3,10 @@
 
 use macroquad::prelude::*;
 
+#[path ="editor_directives.rs"]
+mod editor_directives;
+use editor_directives::*;
+
 #[path = "editor_console_cursor.rs"]
 mod editor_console_cursor;
 use editor_console_cursor::*;
@@ -87,6 +91,7 @@ impl EditorConsole {
         if is_key_pressed(KeyCode::Enter) {
             // execute whatever is inside the directive string
             // check the directives' source
+            execute_directive(&mut self.directive);
         }
     }
 
