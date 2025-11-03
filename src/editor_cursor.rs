@@ -1,6 +1,8 @@
-// Cursor navigation module
+// Cursor navigation and
+// kickback module
 
 use macroquad::prelude::*;
+use macroquad_particles::{self as particles, AtlasConfig, BlendMode, Emitter, EmitterConfig};
 
 use crate::editor_audio::EditorAudio;
 
@@ -13,6 +15,22 @@ impl EditorCursor {
     #[allow(dead_code)]
     pub fn new() -> EditorCursor {
         EditorCursor { xy: (0, 0) }
+    }
+
+    /// Cursor move/insret kickback
+    pub fn kickback(&self) -> particles::EmitterConfig {
+        particles::EmitterConfig {
+            one_shot: true,
+            emitting: false,
+            lifetime: 0.1,
+            lifetime_randomness: 0.5,
+            explosiveness: 0.1,
+            amount: 7,
+            initial_direction_spread: 2.0 * std::f32::consts::PI,
+            initial_velocity: 350.0,
+            size: 1.0,
+            ..Default::default()
+        }
     }
 }
 
