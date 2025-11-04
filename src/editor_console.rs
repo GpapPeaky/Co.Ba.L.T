@@ -67,7 +67,7 @@ impl EditorConsole {
 
     /// Special input, backspace and enter
     fn record_special_console_keys(&mut self, audio: &EditorAudio) {
-        if is_key_pressed(KeyCode::Backspace) {
+        if is_key_pressed(KeyCode::Backspace) { // FIXME Sometimes crashes due to removing the last char from a string.
             if self.cursor.x > 0 {
                 let byte_idx = char_to_byte(&self.directive, self.cursor.x - 1);
                 self.directive.remove(byte_idx);

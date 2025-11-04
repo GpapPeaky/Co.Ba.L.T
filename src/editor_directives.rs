@@ -79,6 +79,10 @@ pub fn execute_directive(directive: &mut String) {
                 // CURSOR_LINE_TO_WIDTH = !CURSOR_LINE_TO_WIDTH;
             }
 
+            "efl" => {
+
+            }
+
             _ => {
                 // TODO: Needs a timer
                 // draw_text("INVALID DIRECTIVE", x, y, font_size, color)
