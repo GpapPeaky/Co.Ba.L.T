@@ -3,6 +3,7 @@ use miniquad::{conf::Icon};
 
 mod editor_console;
 use editor_console::*;
+use crate::editor_console::editor_file::*;
 
 mod editor_audio;
 use editor_audio::*;
@@ -32,6 +33,8 @@ fn window_conf() -> Conf {
 async fn main() {
     set_fullscreen(true);
     
+    // File system
+    let mut efs = EditorFileSystem::new();
     // Editor audio
     let audio = EditorAudio::new().await;
     // Editor general text stylizer
@@ -50,7 +53,7 @@ async fn main() {
             record_keyboard_to_file_text(&mut file_cursor, &mut file_text, &audio, &mut console,  &mut gts);
             draw_text("INSERT MODE", 15.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, COMPOSITE_TYPE_COLOR);
         } else {
-            console.record_keyboard_to_console_text(&audio);
+            console.record_keyboard_to_console_text(&audio, &mut efs);
             draw_text("CONSOLE MODE", 15.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, COMPOSITE_TYPE_COLOR);
         }
 

@@ -3,7 +3,11 @@
 
 use macroquad::prelude::*;
 
-#[path ="editor_directives.rs"]
+#[path = "editor_file.rs"]
+pub mod editor_file;
+use editor_file::*;
+
+#[path = "editor_directives.rs"]
 mod editor_directives;
 use editor_directives::*;
 
@@ -66,7 +70,7 @@ impl EditorConsole {
     }
 
     /// Special input, backspace and enter
-    fn record_special_console_keys(&mut self, audio: &EditorAudio) {
+    fn record_special_console_keys(&mut self, audio: &EditorAudio, efs: &mut EditorFileSystem) {
         if is_key_pressed(KeyCode::Backspace) { // FIXME Sometimes crashes due to removing the last char from a string.
             if self.cursor.x > 0 {
                 let byte_idx = char_to_byte(&self.directive, self.cursor.x - 1);
@@ -91,13 +95,13 @@ impl EditorConsole {
         if is_key_pressed(KeyCode::Enter) {
             // execute whatever is inside the directive string
             // check the directives' source
-            execute_directive(&mut self.directive);
+            execute_directive(&mut self.directive, efs);
         }
     }
 
     /// Record  heyboard input
-    pub fn record_keyboard_to_console_text(&mut self, audio: &EditorAudio) {
-        self.record_special_console_keys(audio);
+    pub fn record_keyboard_to_console_text(&mut self, audio: &EditorAudio, efs: &mut EditorFileSystem) {
+        self.record_special_console_keys(audio, efs);
 
         if let Some(c) = get_char_pressed() {
             match c {

@@ -57,11 +57,13 @@
 // Pressing TAB will select the first seen file closest to the name given and autocomplete it
 // in the console.
 
+use crate::editor_console::editor_file::*;
+
 use std::process::exit;
 
 /// Check if there is a ':', trim it, match it to a directive and execute it
 /// else we will see it as switch-to-file operation
-pub fn execute_directive(directive: &mut String) {
+pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem) {
     // Check if there is a ':'
     // Trim it, match it to a directive
     // and execute it
@@ -70,6 +72,17 @@ pub fn execute_directive(directive: &mut String) {
         let directive_command = directive.trim_matches(':');
 
         match directive_command {
+            "cd" => {
+                // Get the parameter
+                let tokens: Vec<&str> = directive_command.split_whitespace().collect();
+
+                if let Some(parameter) = tokens.get(1) {
+                    efs.change_current_directory(parameter.to_string());
+                } else {
+                    // TODO Throw error message
+                }
+            }
+
             "e" => {
                 exit(0);
             }
