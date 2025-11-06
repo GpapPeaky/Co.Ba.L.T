@@ -68,17 +68,21 @@ impl EditorFileSystem {
     
         match std::fs::canonicalize(&new_path) {
             Ok(valid_path) if valid_path.is_dir() => {
-                println!("Changed to: {}", valid_path.display());
+                // println!("Changed to: {}", valid_path.display());
                 std::env::set_current_dir(&valid_path).ok();
                 self.current_dir = Some(valid_path);
                 true
             }
+
+            #[allow(unused_variables)]
             Ok(valid_path) => {
-                eprintln!("Not a dir: {}", valid_path.display());
+                // eprintln!("Not a dir: {}", valid_path.display());
                 false
             }
+
+            #[allow(unused_variables)]
             Err(e) => {
-                eprintln!("Invalid path {:?}: {}", new_path, e);
+                // eprintln!("Invalid path {:?}: {}", new_path, e);
                 false
             }
         }
