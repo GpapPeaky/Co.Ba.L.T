@@ -59,61 +59,46 @@
 
 use crate::editor_console::editor_file::*;
 
-use std::process::exit;
-
 /// Check if there is a ':', trim it, match it to a directive and execute it
 /// else we will see it as switch-to-file operation
-pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem) {
-    // Check if there is a ':'
-    // Trim it, match it to a directive
-    // and execute it
-
+pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, text: &mut Vec<String>) {
     if directive.starts_with(':') {
-        let directive_command = directive.trim_matches(':');
-
+        let directive_command = directive.trim_start_matches(':').trim();
         let mut tokens = directive_command.split_whitespace();
         let command = tokens.next().unwrap_or("");
-        let parameter = tokens.next(); // Option<&str>
+        let parameter = tokens.next();
 
         match command {
-            "od" => {
-                efs.open_file_explorer();
-            }
+            "od" | "o" => efs.open_file_explorer(),
 
             "cd" => {
-                if let Some(parameter) = parameter {
-                    efs.change_current_directory(parameter.to_string());
+                if let Some(param) = parameter {
+                    efs.change_current_directory(param.to_string());
+
+                    if let Some(_) = &efs.current_file {
+                        *text = efs.load_current_file().unwrap_or_default();
+                    }
                 } else {
-                    println!("No directory provided for :cd");
+                    // println!("No directory provided for :cd");
                 }
             }
 
-            "e" => exit(0),
-
-            "ewt" => {
-                // TODO: Add an options object
-                // CURSOR_LINE_TO_WIDTH = !CURSOR_LINE_TO_WIDTH;
+            "w" => {
+                let _ = efs.write_current_file(text);
             }
 
-            "efl" => {
+            "e" => std::process::exit(0),
 
-            }
-
-            _ => {
-                // TODO: Needs a timer
-                // draw_text("INVALID DIRECTIVE", x, y, font_size, color)
-                println!("Invalid directive {}", command);
-            }
-
+            _ => println!("Invalid directive: {}", command),
         }
     } else {
-        // Simple file switch
-        if !efs.change_current_file(directive.to_string()) {
-            // TODO: Needs a timer
-            // draw_text("FILE {diretive.to_string()} NOT FOUND", x, y, font_size, color)
+        // File switch
+        if efs.change_current_file(directive.to_string()) {
+            *text = efs.load_current_file().unwrap_or_default();
+        } else {
+            // println!("File not found: {}", directive);
         }
     }
 
-    // Remove dat shii
-    *directive = "".to_string();
+    *directive = String::new();
 }

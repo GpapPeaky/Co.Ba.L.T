@@ -1,6 +1,7 @@
 use rfd::*;
 
-use std::path::{Path, PathBuf};
+use std::{fs, io, path::{Path, PathBuf}};
+use std::io::Write;
 
 pub struct EditorFileSystem {
     pub current_dir: Option<PathBuf>,
@@ -13,6 +14,32 @@ impl EditorFileSystem {
             current_dir: None,
             current_file: None
         }
+    }
+
+    /// Load the contents of the currently open file
+    pub fn load_current_file(&self) -> io::Result<Vec<String>> {
+        if let Some(ref file) = self.current_file {
+            let path = self.current_dir.as_ref().unwrap_or(&std::env::current_dir().unwrap()).join(file);
+            let content = fs::read_to_string(path)?;
+            
+            Ok(content.lines().map(|s| s.to_string()).collect())
+        } else {
+            Ok(vec![])  // no file selected
+        }
+    }
+
+    /// Write a Vec<String> back to the current file
+    pub fn write_current_file(&self, text: &[String]) -> io::Result<()> {
+        if let Some(ref file) = self.current_file {
+            let path = self.current_dir.as_ref().unwrap_or(&std::env::current_dir().unwrap()).join(file);
+            let mut f = fs::File::create(path)?;
+
+            for line in text {
+                writeln!(f, "{}", line)?;
+            }
+        }
+
+        Ok(())
     }
 
     /// Open native file explorer, via the Rust File Dialog

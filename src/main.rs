@@ -58,7 +58,7 @@ async fn main() {
             draw_text(&path_buffer_to_string(&efs.current_dir), insert_word_w + 25.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, BLUE);
             draw_text(&path_buffer_file_to_string(&efs.current_file), insert_word_w + 25.0, MODE_FONT_SIZE + MODE_Y_MARGIN + 15.0, MODE_FONT_SIZE, YELLOW);
         } else {
-            console.record_keyboard_to_console_text(&audio, &mut efs);
+            console.record_keyboard_to_console_text(&audio, &mut efs, &mut file_text);
             draw_text("CONSOLE MODE", 15.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, COMPOSITE_TYPE_COLOR,);
             draw_text(&path_buffer_to_string(&efs.current_dir), console_word_w + 25.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, BLUE);
             draw_text(&path_buffer_file_to_string(&efs.current_file), console_word_w + 25.0, MODE_FONT_SIZE + MODE_Y_MARGIN + 15.0, MODE_FONT_SIZE, YELLOW);

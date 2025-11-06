@@ -79,7 +79,7 @@ impl EditorConsole {
     }
 
     /// Special input, backspace and enter
-    fn record_special_console_keys(&mut self, audio: &EditorAudio, efs: &mut EditorFileSystem) {
+    fn record_special_console_keys(&mut self, audio: &EditorAudio, efs: &mut EditorFileSystem, text: &mut Vec<String>) {
         if is_key_pressed(KeyCode::Backspace) {
             if self.cursor.x > 0 && !self.directive.is_empty() {
                 let mut byte_idx = char_to_byte(&self.directive, self.cursor.x - 1);
@@ -114,13 +114,13 @@ impl EditorConsole {
         if is_key_pressed(KeyCode::Enter) {
             // execute whatever is inside the directive string
             // check the directives' source
-            execute_directive(&mut self.directive, efs);
+            execute_directive(&mut self.directive, efs, text);
         }
     }
 
     /// Record  heyboard input
-    pub fn record_keyboard_to_console_text(&mut self, audio: &EditorAudio, efs: &mut EditorFileSystem) {
-        self.record_special_console_keys(audio, efs);
+    pub fn record_keyboard_to_console_text(&mut self, audio: &EditorAudio, efs: &mut EditorFileSystem, text: &mut Vec<String>) {
+        self.record_special_console_keys(audio, efs, text);
 
         if let Some(c) = get_char_pressed() {
             match c {
