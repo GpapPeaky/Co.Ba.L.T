@@ -20,8 +20,8 @@
 //              :c <f>      : Create a new file with name 'f'   
 //
 //      Directory specific:
-//              :cd         : Change directory
-//              :od         : Open a directory, create process -> native file explorer
+//              :cd         : Change directory                                         (C)
+//              :od         : Open a directory, create process -> native file explorer (C)
 //              :md <f>     : Create a new directory with name 'f'
 //              :rd <f>     : Remove a directory with name 'f' with all its contents
 //              :bd <f>     : Change the name of the current open directory to 'f'
@@ -40,7 +40,7 @@
 //              :ewt        : Editor cursor width toggle
 //
 //      Other:
-//              :e          : Exit, close editor (C)
+//              :e          : Exit, close editor                                            (C)
 //              :egman      : Editor general manual (All manuals are displayed)
 //              :efman      : Editor file manual    (Display file directives info)
 //              :edman      : Editor directory manual  (Display directory directives info)

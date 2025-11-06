@@ -62,3 +62,14 @@ impl EditorFileSystem {
         false
     }
 }
+
+/// Get a path buffer as a string
+pub fn path_buffer_to_string(pb: &Option<PathBuf>) -> String {
+    if *pb != None {
+        let path: &Path = &pb.as_ref().unwrap();
+
+        path.display().to_string()
+    } else {
+        return "".to_string();
+    }
+}

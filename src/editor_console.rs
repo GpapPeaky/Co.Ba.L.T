@@ -71,9 +71,19 @@ impl EditorConsole {
 
     /// Special input, backspace and enter
     fn record_special_console_keys(&mut self, audio: &EditorAudio, efs: &mut EditorFileSystem) {
-        if is_key_pressed(KeyCode::Backspace) { // FIXME Sometimes crashes due to removing the last char from a string.
-            if self.cursor.x > 0 {
-                let byte_idx = char_to_byte(&self.directive, self.cursor.x - 1);
+        if is_key_pressed(KeyCode::Backspace) {
+            if self.cursor.x > 0 && !self.directive.is_empty() {
+                let mut byte_idx = char_to_byte(&self.directive, self.cursor.x - 1);
+            
+                // Clamp if it's at the end
+                if byte_idx >= self.directive.len() {
+                    byte_idx = self.directive
+                        .char_indices()
+                        .last()
+                        .map(|(i, _)| i)
+                        .unwrap_or(0);
+                }
+            
                 self.directive.remove(byte_idx);
                 self.cursor.x -= 1;
                 audio.play_delete();
