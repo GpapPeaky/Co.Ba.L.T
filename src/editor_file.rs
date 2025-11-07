@@ -104,6 +104,7 @@ impl EditorFileSystem {
         false
     }
 
+    // TODO: problem when switching to a new file, the contents of the other stay in sight.
     /// Create a file of name <fname>
     /// returns true if it was successful
     /// false if not, or if the file with that name already exists
