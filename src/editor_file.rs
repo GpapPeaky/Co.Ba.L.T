@@ -145,3 +145,11 @@ pub fn path_buffer_file_to_string(pb: &Option<PathBuf>) -> String {
         String::new()
     }
 }
+
+/// Display files and folders in the cwd, highlight the open one.
+/// Can switch to another when clicked.
+/// When typing in the console to switch only the ones matching
+/// whatever is in the console will be shown
+pub fn draw_dir_contents(pb: &Option<PathBuf>) {
+    // TODO
+}
