@@ -73,6 +73,20 @@ pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, tex
         match command {
             "od" | "o" => efs.open_file_explorer(),
 
+            "c" => {
+                if let Some(param) = parameter {
+                    let r = efs.create_file(param);
+
+                    if !r {
+                        // println!("File {param} already exists");
+                    }
+
+                    efs.change_current_file(param.to_string());
+                } else {
+                    // println!("No name provided for :c");
+                }
+            }
+
             "cd" => {
                 if let Some(param) = parameter {
                     efs.change_current_directory(param.to_string());
@@ -89,7 +103,7 @@ pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, tex
                 let _ = efs.write_current_file(text);
             }
 
-            "e" => std::process::exit(0),
+            "e" | "q" => std::process::exit(0),
 
             _ => println!("Invalid directive: {}", command),
         }

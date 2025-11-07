@@ -96,11 +96,33 @@ impl EditorFileSystem {
             let file_path = dir.join(&f);
             if file_path.is_file() {
                 self.current_file = Some(file_path);
+                
                 return true;
             }
         }
 
         false
+    }
+
+    /// Create a file of name <fname>
+    /// returns true if it was successful
+    /// false if not, or if the file with that name already exists
+    pub fn create_file(&mut self, fname: &str) -> bool {
+        let Some(dir) = &self.current_dir else {
+            return false;
+        };
+
+        let mut newfile = dir.clone();
+        newfile.push(fname);
+
+        match fs::OpenOptions::new()
+            .write(true)
+            .create_new(true) // fails if the file already exists
+            .open(&newfile)
+        {
+            Ok(_) => true,
+            Err(_) => false,
+        }
     }
 }
 
