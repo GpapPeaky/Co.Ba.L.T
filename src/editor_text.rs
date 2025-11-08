@@ -43,7 +43,7 @@ impl EditorGeneralTextStylizer {
 // Regex pattern order matters: comments, strings, numbers, words, punctuation, whitespace
 static TOKEN_PATTERN: Lazy<Regex> = Lazy::new(|| {
     Regex::new(
-        r#"//[^\n]*|/\*.*?\*/|"(?:\\.|[^"\\])*"|<[^>\n]+>|\b\d+(\.\d+)?([fF]\b)?\b|#[\w_]+|[\w\*]+|[^\w\s]+|\s+"#
+        r#"//[^\n]*|/\*[\s\S]*?\*/|"(?:\\.|[^"\\])*"?|<[^>\n]+>|\b-?\d+(?:\.\d+)?(?:[fF]\b)?\b|#[\w_]+|[\w_]+|[^\w\s]|[\s]+"#
     ).unwrap()
 });
 
@@ -279,6 +279,15 @@ pub fn record_keyboard_to_file_text(cursor: &mut EditorCursor, text: &mut Vec<St
     }
 
     if let Some(c) = get_char_pressed() {
+        // Skip control characters
+        if c.is_control() || c.is_ascii_control() {
+            return;
+        }
+    
+        if !c.is_ascii_graphic() {
+            return;
+        }
+
         efs.unsaved_changes = true;
 
         // We will also handle smart/smarter identation here.
@@ -286,11 +295,11 @@ pub fn record_keyboard_to_file_text(cursor: &mut EditorCursor, text: &mut Vec<St
             text.push(String::new());
         }
         match c {
-            '\u{8}' | '\r' | '\n' | '\t' => {
-                // We also have to pre-terminate with these special characters,
-                // since input is passed in a queue
-                return; // Special characters will be handled elsewhere
-            }
+            // '\u{8}' | '\r' | '\n' | '\t' => {
+            //     // We also have to pre-terminate with these special characters,
+            //     // since input is passed in a queue
+            //     return; // Special characters will be handled elsewhere
+            // }
 
             '<' => {
                 audio.play_insert();
@@ -455,6 +464,8 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
         x = start_x + line_start_relative_to_font_size_fix;
         y = start_y + line_index as f32 * line_spacing;
 
+        let mut in_string = false;
+
         for cap in TOKEN_PATTERN.find_iter(line) {
             let token = cap.as_str();
 
@@ -462,13 +473,18 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
                 COMMENT_COLOR
             } else if token.trim_start().starts_with("#") {
                 MACRO_COLOR
-            } else if (token.starts_with('"') && token.ends_with('"')) || (token.starts_with('<') && token.ends_with('>')) {
+            } else if token.starts_with('"') {
+                in_string = !in_string; // Toggle when we see a quote
+                STRING_LITERAL_COLOR
+            } else if in_string {
+                STRING_LITERAL_COLOR
+            } else if token.starts_with('<') && token.ends_with('>') {
                 STRING_LITERAL_COLOR
             } else if token.chars().all(|c| c.is_whitespace()) {
                 IDENTIFIER_COLOR
             } else if token.chars().all(|c| !c.is_alphanumeric() && !c.is_whitespace() && c != '_') {
                 PUNCTUATION_COLOR
-            } else if TOKEN_PATTERN.is_match(token) && token.chars().any(|c| c.is_ascii_digit()) {
+            } else if token.chars().all(|c| c.is_ascii_digit() || c == '.' || c == '-' || c == 'f' || c == 'F') {
                 NUMBER_LITERAL_COLOR
             } else if token == "main" {
                 MAIN_COLOR
@@ -478,12 +494,16 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
                 calibrate_string_color(clean)
             };
 
-            // FIXME Negative number colouring with a '-' is colored as a punctuation
             // FIXME Strings inside (str) are not coloured properly.
             // FIXME Strings broken by newlines are not colored properly.
             // FIXME Macros when brocken by white space, not colored properly.
-            // FIXME Numbers inside identifiers, get coloured as numbers
             // FIXME Some control characters still show
+
+            // Unicode control character removal filter.
+            // let clean_token: String = token.chars().filter(|c| !c.is_control()).collect();
+            // if clean_token.is_empty() {
+            //     continue;
+            // }
 
             // Draw token at once using the general text stylizer
             gts.color = color;
