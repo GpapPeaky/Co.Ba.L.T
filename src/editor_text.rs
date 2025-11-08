@@ -6,8 +6,6 @@
 // through the console.
 
 use macroquad::prelude::*;
-use once_cell::sync::Lazy;
-use regex::Regex;
 
 use crate::editor_audio::EditorAudio;
 
@@ -40,13 +38,6 @@ impl EditorGeneralTextStylizer {
     }
 }
 
-// Regex pattern order matters: comments, strings, numbers, words, punctuation, whitespace
-static TOKEN_PATTERN: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(
-        r#"//[^\n]*|/\*[\s\S]*?\*/|"(?:\\.|[^"\\])*"?|<[^>\n]+>|\b-?\d+(?:\.\d+)?(?:[fF]\b)?\b|#[\w_]+|[\w_]+|[^\w\s]|[\s]+"#
-    ).unwrap()
-});
-
 pub const MODE_FONT_SIZE: f32 = 30.0;
 pub const MODE_Y_MARGIN: f32 = 10.0;
 
@@ -72,7 +63,6 @@ const STRING_LITERAL_COLOR: Color     = Color::from_rgba(240, 5, 5, 255);
 const COMMENT_COLOR: Color            = Color::from_rgba(255, 100, 0, 255);
 const CURSOR_COLOR: Color             = Color::from_rgba(255, 200, 190, 255);
 const MACRO_COLOR: Color              = Color::from_rgba(255, 60, 100, 255);    // Candy red — invitation
-const MAIN_COLOR: Color               = Color::from_rgba(200, 120, 145, 255); 
 
 const C_CONTROL_FLOW_STATEMENTS: [&str ; 12] = [
     "if",
@@ -284,10 +274,6 @@ pub fn record_keyboard_to_file_text(cursor: &mut EditorCursor, text: &mut Vec<St
             return;
         }
     
-        if !c.is_ascii_graphic() {
-            return;
-        }
-
         efs.unsaved_changes = true;
 
         // We will also handle smart/smarter identation here.
@@ -422,114 +408,197 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
     let line_spacing = gts.font_size as f32;
     let line_start_relative_to_font_size_fix = gts.font_size as f32 * 1.5;
 
-    draw_line(0.0, MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0, screen_width(), MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0, 1.0, COMPOSITE_TYPE_COLOR);
-    
-    if !console.mode {
-        // Draw text cursor
-        if cursor_y < text.len() {
-            let line = &text[cursor_y];
-            let cursor_text = &line[..cursor_x.min(line.len())];
-            let text_before_cursor = measure_text(cursor_text, Some(&gts.font), gts.font_size, 1.0);
-            let cursor_x_pos = start_x + line_start_relative_to_font_size_fix + text_before_cursor.width;
-            let cursor_y_pos = start_y + cursor_y as f32 * line_spacing;
+    // Draw top line
+    draw_line(
+        0.0,
+        MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0,
+        screen_width(),
+        MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0,
+        1.0,
+        COMPOSITE_TYPE_COLOR,
+    );
 
-            // Cursor width, either of the current char size, or static 2.0px
-            let cursor_width = if true && cursor_x < line.len() { // Here CURSOR_LINE_TO_WIDTH was used here
-                measure_text(
-                    &line.chars().nth(cursor_x).unwrap().to_string(),
-                    Some(&gts.font),
-                    gts.font_size,
-                    1.0,
-                ).width
-            } else {
-                2.0
-            };
+    // Draw cursor
+    if !console.mode && cursor_y < text.len() {
+        let line = &text[cursor_y];
+        let cursor_text = &line[..cursor_x.min(line.len())];
+        let text_before_cursor = measure_text(cursor_text, Some(&gts.font), gts.font_size, 1.0);
+        let cursor_x_pos = start_x + line_start_relative_to_font_size_fix + text_before_cursor.width;
+        let cursor_y_pos = start_y + cursor_y as f32 * line_spacing;
 
-            draw_rectangle(
-                cursor_x_pos,
-                cursor_y_pos - gts.font_size as f32 * 0.8 + 25.0,
-                cursor_width,
-                gts.font_size as f32,
-                CURSOR_COLOR,
-            );
-        }
-    } else {
+        let cursor_width = if cursor_x < line.len() {
+            measure_text(
+                &line.chars().nth(cursor_x).unwrap().to_string(),
+                Some(&gts.font),
+                gts.font_size,
+                1.0,
+            )
+            .width
+        } else {
+            2.0
+        };
 
+        draw_rectangle(
+            cursor_x_pos,
+            cursor_y_pos - gts.font_size as f32 * 0.8 + 25.0,
+            cursor_width,
+            gts.font_size as f32,
+            CURSOR_COLOR,
+        );
     }
 
     let mut x;
-    let mut y;    
+    let mut y;
+
+    let mut in_string = false;
+    let mut in_block_comment = false;
 
     for (line_index, line) in text.iter().enumerate() {
         x = start_x + line_start_relative_to_font_size_fix;
         y = start_y + line_index as f32 * line_spacing;
 
-        let mut in_string = false;
+        let mut chars = line.chars().peekable();
+        while let Some(&c) = chars.peek() {
+            #[allow(unused_assignments)]
+            let mut color = IDENTIFIER_COLOR;
+            let mut token = String::new();
 
-        for cap in TOKEN_PATTERN.find_iter(line) {
-            let token = cap.as_str();
-
-            let color = if token.starts_with("//") || token.starts_with("/*") {
-                COMMENT_COLOR
-            } else if token.trim_start().starts_with("#") {
-                MACRO_COLOR
-            } else if token.starts_with('"') {
-                in_string = !in_string; // Toggle when we see a quote
-                STRING_LITERAL_COLOR
+            if in_block_comment {
+                // Inside multiline comment
+                while let Some(ch) = chars.next() {
+                    token.push(ch);
+                    if ch == '*' && chars.peek() == Some(&'/') {
+                        token.push(chars.next().unwrap());
+                        in_block_comment = false;
+                        break;
+                    }
+                }
+                color = COMMENT_COLOR;
             } else if in_string {
-                STRING_LITERAL_COLOR
-            } else if token.starts_with('<') && token.ends_with('>') {
-                STRING_LITERAL_COLOR
-            } else if token.chars().all(|c| c.is_whitespace()) {
-                IDENTIFIER_COLOR
-            } else if token.chars().all(|c| !c.is_alphanumeric() && !c.is_whitespace() && c != '_') {
-                PUNCTUATION_COLOR
-            } else if token.chars().all(|c| c.is_ascii_digit() || c == '.' || c == '-' || c == 'f' || c == 'F') {
-                NUMBER_LITERAL_COLOR
-            } else if token == "main" {
-                MAIN_COLOR
+                // Inside string
+                while let Some(ch) = chars.next() {
+                    token.push(ch);
+                    if ch == '"' && !token.ends_with("\\\"") {
+                        in_string = false;
+                        break;
+                    }
+                }
+                color = STRING_LITERAL_COLOR;
             } else {
-                // Normal identifiers like variable names and functions
-                let clean = token.trim_matches(|c: char| !c.is_alphanumeric() && c != '_');
-                calibrate_string_color(clean)
-            };
+                // Not in comment or string
+                match c {
+                    '/' => {
+                        chars.next();
+                        if chars.peek() == Some(&'/') {
+                            chars.next();
+                            token.push_str("//");
+                            token.extend(chars.by_ref());
+                            color = COMMENT_COLOR;
+                        } else if chars.peek() == Some(&'*') {
+                            chars.next();
+                            token.push_str("/*");
+                            in_block_comment = true;
+                            color = COMMENT_COLOR;
+                        } else {
+                            token.push('/');
+                            color = PUNCTUATION_COLOR;
+                        }
+                    }
+                    '"' => {
+                        chars.next();
+                        token.push('"');
+                        in_string = true;
+                        color = STRING_LITERAL_COLOR;
+                    }
+                    '#' => {
+                        // Macro: consume until whitespace ends token
+                        while let Some(&ch) = chars.peek() {
+                            if ch.is_whitespace() {
+                                break;
+                            }
+                            token.push(chars.next().unwrap());
+                        }
+                        color = MACRO_COLOR;
 
-            // FIXME Strings inside (str) are not coloured properly.
-            // FIXME Strings broken by newlines are not colored properly.
-            // FIXME Macros when brocken by white space, not colored properly.
-            // FIXME Some control characters still show
+                        // Also consume subsequent tokens for spaced macros
+                        while let Some(&ch) = chars.peek() {
+                            if !ch.is_whitespace() {
+                                break;
+                            }
+                            token.push(chars.next().unwrap());
+                            while let Some(&ch2) = chars.peek() {
+                                if ch2.is_whitespace() {
+                                    break;
+                                }
+                                token.push(chars.next().unwrap());
+                            }
+                        }
+                    }
+                    '<' => {
+                        // Only color as string in #include lines
+                        if line.trim_start().starts_with("#include") {
+                            chars.next();
+                            token.push('<');
+                            while let Some(ch) = chars.next() {
+                                token.push(ch);
+                                if ch == '>' {
+                                    break;
+                                }
+                            }
+                            color = STRING_LITERAL_COLOR;
+                        } else {
+                            token.push(chars.next().unwrap());
+                            color = PUNCTUATION_COLOR;
+                        }
+                    }
+                    c if c.is_whitespace() => {
+                        while let Some(&ch) = chars.peek() {
+                            if !ch.is_whitespace() {
+                                break;
+                            }
+                            token.push(chars.next().unwrap());
+                        }
+                        color = IDENTIFIER_COLOR;
+                    }
+                    c if c.is_ascii_digit() => {
+                        while let Some(&ch) = chars.peek() {
+                            if !(ch.is_ascii_digit() || ch == '.' || ch == 'f' || ch == 'F' || ch == '-') {
+                                break;
+                            }
+                            token.push(chars.next().unwrap());
+                        }
+                        color = NUMBER_LITERAL_COLOR;
+                    }
+                    c if !c.is_alphanumeric() && c != '_' => {
+                        token.push(chars.next().unwrap());
+                        color = PUNCTUATION_COLOR;
+                    }
+                    _ => {
+                        while let Some(&ch) = chars.peek() {
+                            if !ch.is_alphanumeric() && ch != '_' {
+                                break;
+                            }
+                            token.push(chars.next().unwrap());
+                        }
+                        let clean = token.trim_matches(|c: char| !c.is_alphanumeric() && c != '_');
+                        color = calibrate_string_color(clean);
+                    }
+                }
+            }
 
-            // Unicode control character removal filter.
-            // let clean_token: String = token.chars().filter(|c| !c.is_control()).collect();
-            // if clean_token.is_empty() {
-            //     continue;
-            // }
-
-            // Draw token at once using the general text stylizer
             gts.color = color;
-            gts.draw(token, x, y + 25.0);
-            // draw_text(token, x, y, gts.font_size, color);
-
-            // More effective cursor movement
-            // Avoid cursor x/y calibration per character
-            let token_width = measure_text(token, Some(&gts.font), gts.font_size, 1.0).width;
-            x += token_width;
+            gts.draw(&token, x, y + 25.0);
+            x += measure_text(&token, Some(&gts.font), gts.font_size, 1.0).width;
         }
     }
 
     // Draw line numbers
     gts.color = CURSOR_COLOR;
-
-    let text_len;
-    if text.is_empty() {
-        text_len = 0;
-    } else {
-        text_len = text.len();
-    }
-
-    for i in 0..text_len {
-        gts.draw(&i.to_string(), FILE_LINE_NUMBER_X_MARGIN,
-            1.1 * FILE_TEXT_X_MARGIN + FILE_LINE_NUMBER_Y_MARGIN + gts.font_size as f32 * i as f32 + 25.0
+    for (i, _) in text.iter().enumerate() {
+        gts.draw(
+            &i.to_string(),
+            FILE_LINE_NUMBER_X_MARGIN,
+            1.1 * FILE_TEXT_X_MARGIN + FILE_LINE_NUMBER_Y_MARGIN + gts.font_size as f32 * i as f32 + 25.0,
         );
     }
 
