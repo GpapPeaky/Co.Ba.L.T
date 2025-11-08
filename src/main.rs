@@ -1,6 +1,9 @@
 use macroquad::prelude::*;
 use miniquad::{conf::Icon};
 
+mod editor_camera;
+use editor_camera::*;
+
 mod editor_console;
 use editor_console::*;
 use crate::editor_console::editor_file::*;
@@ -36,6 +39,8 @@ fn window_conf() -> Conf {
 async fn main() {
     set_fullscreen(true);
     
+    // Editor camera
+    let mut ec = EditorCamera::new();
     // File system
     let mut efs = EditorFileSystem::new();
     // Editor audio
