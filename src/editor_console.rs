@@ -27,7 +27,7 @@ pub struct EditorConsole {
     pub cursor: EditorConsoleCursor
 }
 
-const CONSOLE_WIDTH: f32 = 255.0;
+const CONSOLE_WIDTH: f32 = 400.0;
 pub const CONSOLE_MARGINS: f32 = 15.0;
 
 impl EditorConsole {
