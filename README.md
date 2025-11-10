@@ -1,0 +1,116 @@
+# Console-Based Editor
+
+A lightweight console-based editor that allows users to manage files, directories, and editor configurations directly from a command-line interface. The editor supports switching between console mode and insert mode seamlessly, along with a wide range of file, directory, and editor management directives.
+
+## Table of Contents
+
+- [Modes](#modes)
+- [Console Directives](#console-directives)
+  - [File Directives](#file-directives)
+  - [Directory Directives](#directory-directives)
+  - [Configuration Directives](#configuration-directives)
+  - [Other Directives](#other-directives)
+- [Usage](#usage)
+- [Autocomplete](#autocomplete)
+- [License](#license)
+
+---
+
+## Modes
+
+The editor has two main modes:
+
+- **Console Mode** – Execute directives, switch files/directories, manage configurations.
+- **Insert Mode** – Edit file content.
+
+Switch between modes by pressing: *LCtrl + `*
+
+---
+
+## Console Directives
+
+All console commands are prefixed with a `:`. Commands without `:` are treated as **switch-to-file or directory commands**.
+
+---
+
+### File Directives
+
+| Directive | Description |
+|-----------|-------------|
+| `:l <N>` | Go to line `N` in the current file. Throws an error if invalid. |
+| `:w` | Write/save the current file. |
+| `:i` | Display information about the current file. |
+| `:r <f>` | Remove the file named `<f>`. |
+| `:b <f>` | Rename the current file to `<f>`. |
+| `:f <f>` | Jump to the line where the first occurrence of text `<f>` exists. |
+| `:c <f>` | Create a new file named `<f>`. |
+
+---
+
+### Directory Directives
+
+| Directive | Description |
+|-----------|-------------|
+| `:cd` | Change the current directory. |
+| `:od` / `:o` | Open the directory in the native file explorer. |
+| `:md <f>` | Create a new directory named `<f>`. |
+| `:rd <f>` | Remove a directory named `<f>` and all its contents. |
+| `:bd <f>` | Rename the current open directory to `<f>`. |
+
+---
+
+### Configuration Directives
+
+All configuration changes are saved in `cal.conf`.
+
+| Directive | Description |
+|-----------|-------------|
+| `:epa <p>` | Change the editor palette to `<p>`. |
+| `:efn <p>` | Change the editor font to `<p>`. |
+| `:efs <N>` | Change the font size to `N`. |
+| `:eau` | Toggle editor audio on/off. |
+| `:eav <N>` | Set editor audio volume to `N`. |
+| `:esi` | Toggle smart indentation on/off. |
+| `:efl` | Toggle editor fullscreen mode. |
+| `:ehi` | Toggle syntax highlighting. |
+| `:ewt` | Toggle cursor width. |
+
+---
+
+### Other Directives
+
+| Directive | Description |
+|-----------|-------------|
+| `:e/q` | Exit/close the editor. |
+| `:egman` | Display the general editor manual. |
+| `:efman` | Display file directive manual. |
+| `:edman` | Display directory directive manual. |
+| `:ecman` | Display editor configuration manual. |
+| `:eoman` | Display other editor directives manual. |
+| `:ever` | Display editor version. |
+| `:eck` | Display editor clock (current time and session time). |
+| `:egam <N>` | Display a random number between 0 and `N`. |
+
+---
+
+## Usage
+
+1. Start the editor and open the console.
+2. Use directives to navigate files, directories, or configure the editor.
+3. Switch to insert mode for editing text using: *LCtrl + `*
+4. Save and manage files using the `:w`, `:c`, `:r`, or `:b` directives.
+
+---
+
+## Autocomplete
+
+- While typing a file or directory name, the console will display similar existing names.
+- Press `TAB` to autocomplete the first match.
+
+---
+
+## License
+
+Non-Commercial Free Software License (NC-FSL) v1.0, see LICENCE.md for more info.
+
+---

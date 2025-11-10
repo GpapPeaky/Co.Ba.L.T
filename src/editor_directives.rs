@@ -12,7 +12,7 @@
 // Directives include:
 //      File specific:
 //              :l <N>      : Go to line N inside the file, if possible, else throw an error
-//              :w          : Write the current open file
+//              :w          : Write the current open file                                    (C)
 //              :i          : Current file info display
 //              :r <f>      : Remove a file with name 'f'
 //              :b <f>      : Change the name of the current open file to 'f'
@@ -21,12 +21,10 @@
 //
 //      Directory specific:
 //              :cd         : Change directory                                         (C)
-//              :od         : Open a directory, create process -> native file explorer (C)
+//              :od/o       : Open a directory, create process -> native file explorer (C)
 //              :md <f>     : Create a new directory with name 'f'
 //              :rd <f>     : Remove a directory with name 'f' with all its contents
 //              :bd <f>     : Change the name of the current open directory to 'f'
-//              :ld         : List all files in the directory
-//              :td         : Show all contents of the directory recursively
 //
 //      Conf: <saved in cal.conf file>
 //              :epa  <p>   : Change to pallete of name 'p'
@@ -40,7 +38,7 @@
 //              :ewt        : Editor cursor width toggle
 //
 //      Other:
-//              :e          : Exit, close editor                                            (C)
+//              :e/q        : Exit, close editor                                            (C)
 //              :egman      : Editor general manual (All manuals are displayed)
 //              :efman      : Editor file manual    (Display file directives info)
 //              :edman      : Editor directory manual  (Display directory directives info)
