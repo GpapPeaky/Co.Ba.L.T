@@ -147,3 +147,27 @@ impl EditorConsole {
         }
     }
 }
+
+/// Show a message error produced by the console
+pub fn console_message(msg: String) {
+    let width = 200.0;
+    let height = 120.0;
+    let msg_font_size = 20;
+
+    draw_rectangle(
+            screen_width() / 2.0 - width / 2.0,
+            screen_height() / 2.0 - height / 2.0,
+            width,
+            height,
+            BLACK
+    );
+
+    let text_width = measure_text(&msg, None, msg_font_size, 1.0).width;      
+
+    // Draw the message
+    draw_text(&msg, screen_width() / 2.0 - text_width / 2.0,
+            screen_height() / 2.0 - msg_font_size as f32/ 2.0,
+            msg_font_size as f32,
+            WHITE
+    );
+}

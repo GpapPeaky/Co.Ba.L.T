@@ -55,7 +55,7 @@
 // Pressing TAB will select the first seen file closest to the name given and autocomplete it
 // in the console.
 
-use crate::editor_console::editor_file::*;
+use crate::editor_console::{console_message, editor_file::*};
 
 /// Check if there is a ':', trim it, match it to a directive and execute it
 /// else we will see it as switch-to-file operation
@@ -118,7 +118,7 @@ pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, tex
         } else {
             text.clear();
             efs.current_file = None;
-            println!("File not found: {}", directive);
+            console_message("FileNotFound".to_string());
         }
     }
 

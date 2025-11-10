@@ -607,7 +607,6 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
     // Top bar
     draw_rectangle(0.0, 0.0, screen_width(), MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0 + 1.0, COMPOSITE_TYPE_COLOR);
     draw_rectangle(0.0, 0.0, screen_width(), MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0, BACKGROUND_COLOR);
-        
 
     if console.mode {
         console.draw();
