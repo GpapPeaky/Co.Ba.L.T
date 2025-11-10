@@ -45,11 +45,11 @@ impl EditorGeneralTextStylizer {
 pub const MODE_FONT_SIZE: f32 = 30.0;
 pub const MODE_Y_MARGIN: f32 = 10.0;
 
-const FILE_LINE_NUMBER_X_MARGIN: f32 = 5.0;
-const FILE_LINE_NUMBER_Y_MARGIN: f32 = 26.0;
+pub const FILE_LINE_NUMBER_X_MARGIN: f32 = 5.0;
+pub const FILE_LINE_NUMBER_Y_MARGIN: f32 = 26.0;
 
-const FILE_TEXT_X_MARGIN: f32 = 50.0;
-const FILE_TEXT_Y_MARGIN: f32 = 80.0;
+pub const FILE_TEXT_X_MARGIN: f32 = 50.0;
+pub const FILE_TEXT_Y_MARGIN: f32 = 80.0;
 const TAB_SIZE: usize = 6;
 const TAB_PATTERN: &str = "      ";
 
@@ -391,21 +391,11 @@ pub fn record_keyboard_to_file_text(cursor: &mut EditorCursor, text: &mut Vec<St
 }
 
 /// Text drawing function
-pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut EditorGeneralTextStylizer, console: &EditorConsole) {
+pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut EditorGeneralTextStylizer, console: &EditorConsole, camera: &mut crate::editor_camera::EditorCamera) {
     let start_x = FILE_TEXT_X_MARGIN;
     let start_y = FILE_TEXT_Y_MARGIN;
     let line_spacing = gts.font_size as f32;
     let line_start_relative_to_font_size_fix = gts.font_size as f32 * 1.5;
-
-    // Draw top line
-    draw_line(
-        0.0,
-        MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0,
-        screen_width(),
-        MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0,
-        1.0,
-        COMPOSITE_TYPE_COLOR,
-    );
 
     // Draw cursor
     if !console.mode && cursor_y < text.len() {
@@ -414,6 +404,8 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
         let text_before_cursor = measure_text(cursor_text, Some(&gts.font), gts.font_size, 1.0);
         let cursor_x_pos = start_x + line_start_relative_to_font_size_fix + text_before_cursor.width;
         let cursor_y_pos = start_y + cursor_y as f32 * line_spacing;
+
+        camera.follow_cursor(cursor_x_pos, cursor_y_pos);
 
         let cursor_width = if cursor_x < line.len() {
             measure_text(
@@ -427,9 +419,10 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
             2.0
         };
 
+        let (sx, sy) = camera.world_to_screen(cursor_x_pos, cursor_y_pos - gts.font_size as f32 * 0.8 + 25.0);
         draw_rectangle(
-            cursor_x_pos,
-            cursor_y_pos - gts.font_size as f32 * 0.8 + 25.0,
+            sx,
+            sy,
             cursor_width,
             gts.font_size as f32,
             CURSOR_COLOR,
@@ -576,20 +569,36 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
             }
 
             gts.color = color;
-            gts.draw(&token, x, y + 25.0);
+            let (sx, sy) = camera.world_to_screen(x, y + 25.0);
+            gts.draw(&token, sx, sy);
+
             x += measure_text(&token, Some(&gts.font), gts.font_size, 1.0).width;
         }
     }
 
+    // Line side bar
+    let x_offset = 5.0;
+    draw_rectangle(0.0, 0.0, start_x + line_start_relative_to_font_size_fix - x_offset, screen_height(), COMPOSITE_TYPE_COLOR);
+    draw_rectangle(0.0, 0.0, start_x + line_start_relative_to_font_size_fix - x_offset - 1.0, screen_height(), BACKGROUND_COLOR);
+
     // Draw line numbers
     gts.color = CURSOR_COLOR;
     for (i, _) in text.iter().enumerate() {
+        let line_y_world = 1.1 * FILE_TEXT_X_MARGIN + FILE_LINE_NUMBER_Y_MARGIN + gts.font_size as f32 * i as f32 + 25.0;
+        
+        let screen_y = line_y_world - camera.offset_y;
+        
         gts.draw(
             &i.to_string(),
             FILE_LINE_NUMBER_X_MARGIN,
-            1.1 * FILE_TEXT_X_MARGIN + FILE_LINE_NUMBER_Y_MARGIN + gts.font_size as f32 * i as f32 + 25.0,
+            screen_y,
         );
     }
+
+    // Top bar
+    draw_rectangle(0.0, 0.0, screen_width(), MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0 + 1.0, COMPOSITE_TYPE_COLOR);
+    draw_rectangle(0.0, 0.0, screen_width(), MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0, BACKGROUND_COLOR);
+        
 
     if console.mode {
         console.draw();

@@ -60,6 +60,11 @@ async fn main() {
     loop {
         clear_background(BACKGROUND_COLOR);
 
+        draw(&mut file_text, file_cursor.xy.0, file_cursor.xy.1, &mut gts, &console, &mut ec);
+        if console.mode {
+            draw_dir_contents(&efs.current_file, &efs.current_dir, console.directive.to_string());
+        }
+
         if !console.mode {
             record_keyboard_to_file_text(&mut file_cursor, &mut file_text, &audio, &mut console,  &mut gts, &mut efs);
 
@@ -82,11 +87,6 @@ async fn main() {
             draw_text("CONSOLE MODE", 15.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, COMPOSITE_TYPE_COLOR,);
             draw_text(&path_buffer_to_string(&efs.current_dir), console_word_w + 25.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, FOLDER_COLOR);
             draw_text(&fname, console_word_w + 25.0, MODE_FONT_SIZE + MODE_Y_MARGIN + 15.0, MODE_FONT_SIZE, FILE_COLOR);
-        }
-        
-        draw(&mut file_text, file_cursor.xy.0, file_cursor.xy.1, &mut gts, &console);
-        if console.mode {
-            draw_dir_contents(&efs.current_file, &efs.current_dir, console.directive.to_string());
         }
         
         next_frame().await;
