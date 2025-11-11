@@ -262,7 +262,7 @@ pub fn console_manual(man_id: u8) -> String {
                   "
                 File specific directives:
                 :l <N>      : Go to line N inside the file, if possible, else throw an error
-                :w          : Write the current open file                                    (C)
+                :w          : Write the current open file                                   
                 :i          : Current file info display
                 :r <f>      : Remove a file with name 'f'
                 :b <f>      : Change the name of the current open file to 'f'
@@ -270,8 +270,8 @@ pub fn console_manual(man_id: u8) -> String {
                 :c <f>      : Create a new file with name 'f'   
                     
                 Directory specific directives:
-                :cd         : Change directory                                         (C)
-                :od/o       : Open a directory, create process -> native file explorer (C)
+                :cd         : Change directory                                        
+                :od/o       : Open a directory, create process -> native file explorer
                 :md <f>     : Create a new directory with name 'f'
                 :rd <f>     : Remove a directory with name 'f' with all its contents
                 :bd <f>     : Change the name of the current open directory to 'f'
@@ -288,7 +288,7 @@ pub fn console_manual(man_id: u8) -> String {
                 :ewt        : Editor cursor width toggle
                     
                 Other directives:
-                :e/q        : Exit, close editor                                            (C)
+                :e/q        : Exit, close editor                                           
                 :egman      : Editor general manual (All manuals are displayed)
                 :efman      : Editor file manual    (Display file directives info)
                 :edman      : Editor directory manual  (Display directory directives info)
@@ -305,7 +305,7 @@ pub fn console_manual(man_id: u8) -> String {
                 text = "
                     File specific directives:
                         :l <N>      : Go to line N inside the file, if possible, else throw an error
-                        :w          : Write the current open file                                    (C)
+                        :w          : Write the current open file                                   
                         :i          : Current file info display
                         :r <f>      : Remove a file with name 'f'
                         :b <f>      : Change the name of the current open file to 'f'
@@ -318,8 +318,8 @@ pub fn console_manual(man_id: u8) -> String {
             2 => {
                 text = "
                     Directory specific directives:
-                        :cd         : Change directory                                         (C)
-                        :od/o       : Open a directory, create process -> native file explorer (C)
+                        :cd         : Change directory                                        
+                        :od/o       : Open a directory, create process -> native file explorer
                         :md <f>     : Create a new directory with name 'f'
                         :rd <f>     : Remove a directory with name 'f' with all its contents
                         :bd <f>     : Change the name of the current open directory to 'f'
@@ -346,13 +346,13 @@ pub fn console_manual(man_id: u8) -> String {
             4 => {
                 text = "
                     Other directives:
-                        :e/q        : Exit, close editor                                            (C)
-                        :egman/man  : Editor general manual (All manuals are displayed)             (C)
-                        :efman      : Editor file manual    (Display file directives info)          (C)
-                        :edman      : Editor directory manual  (Display directory directives info)  (C)
-                        :ecman      : Editor config manual  (Display editor config directives info) (C)
-                        :eoman      : Editor others manual  (Display editor other directives info)  (C)
-                        :ever       : Editor version                                                (C)
+                        :e/q        : Exit, close editor                                           
+                        :egman/man  : Editor general manual (All manuals are displayed)            
+                        :efman      : Editor file manual    (Display file directives info)         
+                        :edman      : Editor directory manual  (Display directory directives info) 
+                        :ecman      : Editor config manual  (Display editor config directives info)
+                        :eoman      : Editor others manual  (Display editor other directives info) 
+                        :ever       : Editor version                                               
                         :eck        : Editor clock (current time and time opened)
                         :egam <N>   : Editor gamble, display a number from 0 to N
                 ".to_string();

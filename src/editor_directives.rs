@@ -14,7 +14,7 @@
 //              :l <N>      : Go to line N inside the file, if possible, else throw an error
 //              :w          : Write the current open file                                    (C)
 //              :i          : Current file info display
-//              :r <f>      : Remove a file with name 'f'
+//              :r <f>      : Remove a file with name 'f'                                    (C)
 //              :b <f>      : Change the name of the current open file to 'f'
 //              :f <f>      : Go to the line where the first iteration of text 'f' exists
 //              :c <f>      : Create a new file with name 'f'   
