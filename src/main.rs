@@ -30,7 +30,7 @@ fn window_conf() -> Conf {
     };
 
     Conf {
-        window_title: "Muse".to_string(),
+        window_title: "Muse-v1.2.0".to_string(),
         icon: Some(icon),
         ..Default::default()
     }
@@ -40,7 +40,7 @@ fn window_conf() -> Conf {
 async fn main() {
     set_fullscreen(true);
     show_mouse(false);
-    
+
     // Editor camera
     let mut ec = EditorCamera::new();
     // File system
