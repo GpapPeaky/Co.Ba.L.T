@@ -50,8 +50,8 @@ pub const FILE_LINE_NUMBER_Y_MARGIN: f32 = 26.0;
 
 pub const FILE_TEXT_X_MARGIN: f32 = 50.0;
 pub const FILE_TEXT_Y_MARGIN: f32 = 80.0;
-const TAB_SIZE: usize = 6;
-const TAB_PATTERN: &str = "      ";
+const TAB_SIZE: usize = 3;
+const TAB_PATTERN: &str = "   ";
 
 const CONTROL_FLOW_STATEMENTS: [&str; 46] = [
     "if", "else", "switch", "case", "default",
