@@ -1,4 +1,4 @@
-use macroquad::{text::draw_text, window::screen_width};
+use macroquad::prelude::*;
 use rfd::*;
 
 use std::{fs, io, path::{Path, PathBuf}};
@@ -63,7 +63,8 @@ impl EditorFileSystem {
         if let Some(folder) = dialog.pick_folder() {
             self.current_dir = Some(folder);
         } else {
-            // TODO: throw console message here
+            // User cancelled the dialog
+            // Do nothing
         }
     }
 
@@ -186,14 +187,15 @@ pub fn path_buffer_file_to_string(pb: &Option<PathBuf>) -> String {
 /// Display files and folders in the current working directory.
 /// Highlights the currently open file.
 /// When typing in the console, only the ones matching the text input will be shown.
-pub fn draw_dir_contents(current_file: &Option<PathBuf>, current_dir: &Option<PathBuf>, switch_to_file_directive: String) {
+/// Returns the closet matching filename for autocompletion when TAB is pressed.
+pub fn draw_dir_contents(current_file: &Option<PathBuf>, current_dir: &Option<PathBuf>, switch_to_file_directive: String) -> String {
     let Some(dir) = current_dir else {
-        return;
+        return "".to_string();
     };
 
     let entries = match fs::read_dir(dir) {
         Ok(entries) => entries,
-        Err(_) => return,
+        Err(_) => return "".to_string(),
     };
 
     let mut y = 50.0 + CONSOLE_MARGINS;
@@ -204,9 +206,16 @@ pub fn draw_dir_contents(current_file: &Option<PathBuf>, current_dir: &Option<Pa
         let file_name = entry.file_name();
         let file_name_str = file_name.to_string_lossy();
 
-        if !switch_to_file_directive.is_empty() && !switch_to_file_directive.starts_with(':') {
-            if !file_name_str.contains(&switch_to_file_directive) {
-                continue;
+        if !entry.path().is_dir() { // Autoselect files only
+            if !switch_to_file_directive.is_empty() && !switch_to_file_directive.starts_with(':') {
+                if !file_name_str.contains(&switch_to_file_directive) {
+                    continue;
+                }
+
+                if is_key_pressed(KeyCode::Tab) {
+                   // Autocomplete to the console, the first entry shown.                                             
+                   return file_name_str.to_string();
+                }
             }
         }
 
@@ -221,4 +230,6 @@ pub fn draw_dir_contents(current_file: &Option<PathBuf>, current_dir: &Option<Pa
         draw_text(&file_name_str, x, y, 24.0, color);
         y += 20.0;
     }
+
+    return "".to_string();
 }

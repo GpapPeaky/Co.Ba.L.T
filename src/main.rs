@@ -66,7 +66,12 @@ async fn main() {
 
         draw(&mut file_text, file_cursor.xy.0, file_cursor.xy.1, &mut gts, &console, &mut ec);
         if console.mode {
-            draw_dir_contents(&efs.current_file, &efs.current_dir, console.directive.to_string());
+            let autocomplete = draw_dir_contents(&efs.current_file, &efs.current_dir, console.directive.to_string());
+            
+            if autocomplete != "" {
+               console.directive = autocomplete; // Issues when a directory is found instead of a file.
+               console.cursor.x = console.directive.len(); 
+            }
         }
 
         if !console.mode {
