@@ -1,3 +1,5 @@
+// Hide the scary console.
+#![windows_subsystem = "windows"]
 
 use macroquad::prelude::*;
 use miniquad::{conf::Icon};
