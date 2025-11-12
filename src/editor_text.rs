@@ -399,70 +399,60 @@ pub fn record_keyboard_to_file_text(cursor: &mut EditorCursor, text: &mut Vec<St
     }
 }
 
-// FIXME: Optimize.
-/// Text drawing function
-pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut EditorGeneralTextStylizer, console: &EditorConsole, camera: &mut crate::editor_camera::EditorCamera) {
-    // Occlusion culling
+/// All around draw function for the editor text
+pub fn draw(text: &Vec<String>, cursor_x: usize,cursor_y: usize, gts: &mut EditorGeneralTextStylizer,console: &EditorConsole,camera: &mut crate::editor_camera::EditorCamera) {
+    if text.is_empty() {
+        return;
+    }
+
+    let start_x = FILE_TEXT_X_MARGIN;
+    let start_y = FILE_TEXT_Y_MARGIN;
+    let line_spacing = gts.font_size as f32;
+    let line_start_fix = gts.font_size as f32 * 1.5;
+
     let cam_left = camera.offset_x;
     let cam_right = camera.offset_x + screen_width();
     let cam_top = camera.offset_y;
     let cam_bottom = camera.offset_y + screen_height();
-    
-    let start_x = FILE_TEXT_X_MARGIN;
-    let start_y = FILE_TEXT_Y_MARGIN;
-    let line_spacing = gts.font_size as f32;
-    let line_start_relative_to_font_size_fix = gts.font_size as f32 * 1.5;
 
     // Draw cursor
     if !console.mode && cursor_y < text.len() {
         let line = &text[cursor_y];
-        let prefix = &line[..cursor_x];
+        let prefix = &line[..cursor_x.min(line.len())];
         let text_before_cursor = measure_text(prefix, Some(&gts.font), gts.font_size, 1.0);
+        let cursor_x_pos = start_x + line_start_fix + text_before_cursor.width;
         let cursor_y_pos = start_y + cursor_y as f32 * line_spacing;
-        let cursor_x_pos = start_x + line_start_relative_to_font_size_fix + text_before_cursor.width;
-        
+
         camera.follow_cursor(cursor_x_pos, cursor_y_pos);
-        
-        // For cursor width, just measure next char if exists
-        let cursor_width = if cursor_x < line.len() {
-            measure_text(&line[cursor_x..].chars().next().unwrap().to_string(), Some(&gts.font), gts.font_size, 1.0).width
+
+        let cursor_width = if let Some(ch) = line.chars().nth(cursor_x) {
+            measure_text(&ch.to_string(), Some(&gts.font), gts.font_size, 1.0).width
         } else {
             2.0
         };
 
         let (sx, sy) = camera.world_to_screen(cursor_x_pos, cursor_y_pos - gts.font_size as f32 * 0.8 + 25.0);
-        draw_rectangle(
-            sx,
-            sy,
-            cursor_width,
-            gts.font_size as f32,
-            CURSOR_COLOR,
-        );
+        draw_rectangle(sx, sy, cursor_width, gts.font_size as f32, CURSOR_COLOR);
     }
 
-    let mut x;
-    let mut y;
+    // Determine visible lines
+    let first_line = ((cam_top - start_y) / line_spacing).max(0.0) as usize;
+    let last_line = ((cam_bottom - start_y) / line_spacing).min(text.len() as f32 - 1.0) as usize;
 
     let mut in_string = false;
     let mut in_block_comment = false;
 
-    for (line_index, line) in text.iter().enumerate() {
-        y = start_y + line_index as f32 * line_spacing;
+    for line_index in first_line..=last_line {
+        let line = &text[line_index];
+        let y = start_y + line_index as f32 * line_spacing;
+        let mut x = start_x + line_start_fix;
 
-        // Skip lines not in camera
-        if y + line_spacing < cam_top || y > cam_bottom {
-            continue;
-        }
-        
-        x = start_x + line_start_relative_to_font_size_fix;
         let mut chars = line.chars().peekable();
         while let Some(&c) = chars.peek() {
-            #[allow(unused_assignments)]
-            let mut color = IDENTIFIER_COLOR;
             let mut token = String::new();
+            let color: Color;
 
             if in_block_comment {
-                // Inside multiline comment
                 while let Some(ch) = chars.next() {
                     token.push(ch);
                     if ch == '*' && chars.peek() == Some(&'/') {
@@ -473,7 +463,6 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
                 }
                 color = COMMENT_COLOR;
             } else if in_string {
-                // Inside string
                 while let Some(ch) = chars.next() {
                     token.push(ch);
                     if ch == '"' && !token.ends_with("\\\"") {
@@ -483,7 +472,6 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
                 }
                 color = STRING_LITERAL_COLOR;
             } else {
-                // Not in comment or string
                 match c {
                     '/' => {
                         chars.next();
@@ -509,60 +497,22 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
                         color = STRING_LITERAL_COLOR;
                     }
                     '#' => {
-                        // Macro: consume until whitespace ends token
                         while let Some(&ch) = chars.peek() {
-                            if ch.is_whitespace() {
-                                break;
-                            }
+                            if ch.is_whitespace() { break; }
                             token.push(chars.next().unwrap());
                         }
                         color = MACRO_COLOR;
-
-                        // Also consume subsequent tokens for spaced macros
-                        while let Some(&ch) = chars.peek() {
-                            if !ch.is_whitespace() {
-                                break;
-                            }
-                            token.push(chars.next().unwrap());
-                            while let Some(&ch2) = chars.peek() {
-                                if ch2.is_whitespace() {
-                                    break;
-                                }
-                                token.push(chars.next().unwrap());
-                            }
-                        }
-                    }
-                    '<' => {
-                        // Only color as string in #include lines
-                        if line.trim_start().starts_with("#include") {
-                            chars.next();
-                            token.push('<');
-                            while let Some(ch) = chars.next() {
-                                token.push(ch);
-                                if ch == '>' {
-                                    break;
-                                }
-                            }
-                            color = STRING_LITERAL_COLOR;
-                        } else {
-                            token.push(chars.next().unwrap());
-                            color = PUNCTUATION_COLOR;
-                        }
                     }
                     c if c.is_whitespace() => {
                         while let Some(&ch) = chars.peek() {
-                            if !ch.is_whitespace() {
-                                break;
-                            }
+                            if !ch.is_whitespace() { break; }
                             token.push(chars.next().unwrap());
                         }
                         color = IDENTIFIER_COLOR;
                     }
                     c if c.is_ascii_digit() => {
                         while let Some(&ch) = chars.peek() {
-                            if !(ch.is_ascii_digit() || ch == '.' || ch == 'f' || ch == 'F' || ch == '-') {
-                                break;
-                            }
+                            if !(ch.is_ascii_digit() || ch == '.' || ch == 'f' || ch == 'F' || ch == '-') { break; }
                             token.push(chars.next().unwrap());
                         }
                         color = NUMBER_LITERAL_COLOR;
@@ -573,9 +523,7 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
                     }
                     _ => {
                         while let Some(&ch) = chars.peek() {
-                            if !ch.is_alphanumeric() && ch != '_' {
-                                break;
-                            }
+                            if !ch.is_alphanumeric() && ch != '_' { break; }
                             token.push(chars.next().unwrap());
                         }
                         let clean = token.trim_matches(|c: char| !c.is_alphanumeric() && c != '_');
@@ -584,49 +532,38 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
                 }
             }
 
+            // Rough width for culling before expensive measure
             let rough_width = token.len() as f32 * gts.font_size as f32 * 0.5;
-
-            if x + rough_width < cam_left || x > cam_right { 
-                x += rough_width; 
-                continue; 
+            if x + rough_width < cam_left || x > cam_right {
+                x += rough_width;
+                continue;
             }
 
-            // Measure only if inside the camera
-            let token_width = measure_text(&token, Some(&gts.font), gts.font_size, 1.0).width;
-
-            gts.color = color;
+            let width = measure_text(&token, Some(&gts.font), gts.font_size, 1.0).width;
             let (sx, sy) = camera.world_to_screen(x, y + 25.0);
+            gts.color = color;
             gts.draw(&token, sx, sy);
-
-            x += token_width;
+            x += width;
         }
     }
 
-    // Line side bar
-    let x_offset = 5.0;
-    draw_rectangle(0.0, 0.0, start_x + line_start_relative_to_font_size_fix - x_offset, screen_height(), COMPOSITE_TYPE_COLOR);
-    draw_rectangle(0.0, 0.0, start_x + line_start_relative_to_font_size_fix - x_offset - 1.0, screen_height(), BACKGROUND_COLOR);
+    // Sidebar
+    let sidebar_width = start_x + line_start_fix - 5.0;
+    draw_rectangle(0.0, 0.0, sidebar_width, screen_height(), COMPOSITE_TYPE_COLOR);
+    draw_rectangle(0.0, 0.0, sidebar_width - 1.0, screen_height(), BACKGROUND_COLOR);
 
-    // Draw line numbers
+    // Line numbers
     gts.color = CURSOR_COLOR;
-
-    let first_visible_line = ((cam_top - start_y) / line_spacing).max(0.0) as usize;
-    let last_visible_line = ((cam_bottom - start_y) / line_spacing).min(text.len() as f32 - 1.0) as usize;
-    for i in first_visible_line..=last_visible_line {
+    for i in first_line..=last_line {
         let line_y_world = 1.1 * FILE_TEXT_X_MARGIN + FILE_LINE_NUMBER_Y_MARGIN + gts.font_size as f32 * i as f32 + 25.0;
-    
         let screen_y = line_y_world - camera.offset_y;
-        
-        gts.draw(
-            &i.to_string(),
-            FILE_LINE_NUMBER_X_MARGIN,
-            screen_y,
-        );
+        gts.draw(&i.to_string(), FILE_LINE_NUMBER_X_MARGIN, screen_y);
     }
 
     // Top bar
-    draw_rectangle(0.0, 0.0, screen_width(), MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0 + 1.0, COMPOSITE_TYPE_COLOR);
-    draw_rectangle(0.0, 0.0, screen_width(), MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0, BACKGROUND_COLOR);
+    let top_bar_height = MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0;
+    draw_rectangle(0.0, 0.0, screen_width(), top_bar_height + 1.0, COMPOSITE_TYPE_COLOR);
+    draw_rectangle(0.0, 0.0, screen_width(), top_bar_height, BACKGROUND_COLOR);
 
     if console.mode {
         console.draw();

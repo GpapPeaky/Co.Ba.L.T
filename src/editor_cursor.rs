@@ -80,7 +80,7 @@ pub fn file_text_special_navigation(cursor: &mut (usize, usize), text: &mut Vec<
         return;
     }
 
-    let cursor_special_vertical_movement = 5;
+    let cursor_special_vertical_movement = 4;
 
     if is_key_down(KeyCode::LeftShift) {
         // Even faster vertical movement
