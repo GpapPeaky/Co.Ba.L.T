@@ -128,7 +128,7 @@ pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, tex
             "ecman"         => return (console_manual(3), true),
             "eoman"         => return (console_manual(4), true),
 
-            "ever" => return ("Muse v1.2.0".to_string(), false),
+            "ever" => return ("Muse v1.2.1".to_string(), false),
 
             _ => return ("UnknownDirective".to_string(), false),
         }

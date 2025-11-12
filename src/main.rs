@@ -32,7 +32,7 @@ fn window_conf() -> Conf {
     };
 
     Conf {
-        window_title: "Muse-v1.2.0".to_string(),
+        window_title: "Muse-v1.2.1".to_string(),
         icon: Some(icon),
         ..Default::default()
     }
