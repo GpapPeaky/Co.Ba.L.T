@@ -285,7 +285,6 @@ pub fn console_manual(man_id: u8) -> String {
                 :esi        : Smart identation on/off switch
                 :efl        : Editor fullscreen switch
                 :ehi        : Editor highlighting toggle
-                :ewt        : Editor cursor width toggle
                     
                 Other directives:
                 :e/q        : Exit, close editor                                           
@@ -339,7 +338,6 @@ pub fn console_manual(man_id: u8) -> String {
                         :esi        : Smart identation on/off switch
                         :efl        : Editor fullscreen switch
                         :ehi        : Editor highlighting toggle
-                        :ewt        : Editor cursor width toggle
                 ".to_string();
             }
 
