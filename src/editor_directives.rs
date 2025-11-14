@@ -35,7 +35,6 @@
 //              :esi        : Smart identation on/off switch
 //              :efl        : Editor fullscreen switch
 //              :ehi        : Editor highlighting toggle
-//              :ewt        : Editor cursor width toggle
 //
 //      Other:
 //              :e/q        : Exit, close editor                                            (C)
@@ -149,7 +148,7 @@ pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, tex
             "ecman"         => return (console_manual(3), true),
             "eoman"         => return (console_manual(4), true),
             "ectrl"         => return (console_manual(5), true),
-            "ever" => return ("Muse v1.2.1".to_string(), false),
+            "ever" => return ("Muse v1.3.0".to_string(), false),
 
             _ => return ("UnknownDirective".to_string(), false),
         }

@@ -1,6 +1,11 @@
-# Muse Code Text Editor (v1.2.0)
+# Muse Code Text Editor (v1.3.0)
 
 A lightweight console-based editor that allows users to manage files, directories, and editor configurations directly from a command-line interface. The editor supports switching between console mode and insert mode seamlessly, along with a wide range of file, directory, and editor management directives.
+
+<p align="center">
+  <img src = "assets/icon/mdmuse.png"/>
+</p>
+
 
 ## Table of Contents
 
@@ -87,7 +92,6 @@ All configuration changes are saved in `cal.conf`.
 | `:esi` | Toggle smart indentation on/off. |
 | `:efl` | Toggle editor fullscreen mode. |
 | `:ehi` | Toggle syntax highlighting. |
-| `:ewt` | Toggle cursor width. |
 
 ---
 
