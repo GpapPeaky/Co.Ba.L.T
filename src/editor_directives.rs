@@ -84,6 +84,26 @@ pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, tex
                 }
             }
 
+            "md" | "Md" | "mD" | "MD" => {
+               if let Some(param) = parameter {
+                  if !efs.create_dir(param) {
+                     return ("DirectoryNameUsed <:md>".to_string(), false);
+                  }
+               } else {
+                  return ("NoDirectoryProvided <:md>".to_string(), false);
+               }
+            }
+
+            "rd" | "Rd" | "RD" | "rD" => {
+               if let Some(param) = parameter {
+                  if !efs.delete_dir(param) {
+                     return ("DirectoryNotFound <:rd>".to_string(), false);
+                  }
+               } else {
+                  return ("NoDirectoryProvided <:rd>".to_string(), false);
+               }
+            }
+            
             "c" | "C" => {
                 if let Some(param) = parameter {
                     let r = efs.create_file(param);

@@ -432,7 +432,7 @@ pub fn draw(text: &Vec<String>, cursor_x: usize, cursor_y: usize, gts: &mut Edit
         let text_before_cursor = measure_text(&visual_prefix, Some(&gts.font), gts.font_size, 1.0);
     
         let cursor_x_pos = start_x + line_start_fix + text_before_cursor.width;
-        let cursor_y_pos = start_y + cursor_y as f32 * line_spacing;
+        let cursor_y_pos = start_y + cursor_y as f32 * line_spacing + text_y_offset;
     
         camera.follow_cursor(cursor_x_pos, cursor_y_pos);
     

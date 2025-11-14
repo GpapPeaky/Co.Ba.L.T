@@ -147,8 +147,8 @@ impl EditorFileSystem {
         }
     }
 
-    // Delete a file of name <fname>
-    // returns true if it was successful
+    /// Delete a file of name <fname>
+    /// returns true if it was successful
     pub fn delete_file(&mut self, fname: &str) -> bool {
         let Some(dir) = &self.current_dir else {
             return false;
@@ -162,6 +162,46 @@ impl EditorFileSystem {
             Err(_) => false,
         }
     }
+
+   /// Create a new directory.
+   /// Returns true if the name is valid, false if not
+   pub fn create_dir(&mut self, dname: &str) -> bool {
+      let base = match &self.current_dir {
+         Some(p) => p.clone(),
+         
+         None => match std::env::current_dir() {
+            Ok(p) => p,
+            Err(_) => return false
+         },
+      };
+
+      let folder_path = base.join(dname);
+
+      fs::create_dir_all(folder_path).is_ok()
+   }
+   
+
+   /// Delete a directory
+   /// Returns true if possible, false if not
+   pub fn delete_dir(&mut self, dname: &str) -> bool {
+      let base = match &self.current_dir {
+         Some(p) => p.clone(),
+         
+         None => match std::env::current_dir() {
+            Ok(p) => p,
+            Err(_) => return false
+         },
+      };
+
+      let folder_name = base.join(dname);
+
+      if !folder_name.exists() {
+         return false;
+      }
+
+      fs::remove_dir_all(folder_name).is_ok()
+
+   }
 }
 
 /// Get a path buffer as a string
