@@ -71,7 +71,7 @@ All console commands are prefixed with a `:`. Commands without `:` are treated a
 | Directive | Description |
 |-----------|-------------|
 | `:cd` | Change the current directory. |
-| `:od` / `:o` | Open the directory in the native file explorer. |
+| `:od/:o` | Open the directory in the native file explorer. |
 | `:md <f>` | Create a new directory named `<f>`. |
 | `:rd <f>` | Remove a directory named `<f>` and all its contents. |
 | `:bd <f>` | Rename the current open directory to `<f>`. |
@@ -108,7 +108,7 @@ All configuration changes are saved in `cal.conf`.
 | `:ectrl` | Display the editor infile controls manual. |
 | `:ever` | Display editor version. |
 | `:eck` | Display editor clock (current time and session time). |
-| `:egam <N>` | Display a random number between 0 and `N`. |
+| `:egam/:rand/:roll <N>` | Display a random number between 0 and `N`. |
 
 ---
 

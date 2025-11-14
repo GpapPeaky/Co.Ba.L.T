@@ -91,7 +91,7 @@ async fn main() {
             draw_text(&path_buffer_to_string(&efs.current_dir), insert_word_w + 25.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, FOLDER_COLOR);
             draw_text(&fname, insert_word_w + CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + 15.0, MODE_FONT_SIZE, FILE_COLOR);
         } else {
-            console.record_keyboard_to_console_text(&audio, &mut efs, &mut file_text);
+            console.record_keyboard_to_console_text(&audio, &mut efs, &mut file_text, &mut file_cursor);
             
             let mut fname = path_buffer_file_to_string(&efs.current_file);
             if efs.unsaved_changes {

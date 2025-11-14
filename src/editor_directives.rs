@@ -11,19 +11,19 @@
 //
 // Directives include:
 //      File specific:
-//              :l <N>      : Go to line N inside the file, if possible, else throw an error
 //              :w          : Write the current open file                                    (C)
-//              :i          : Current file info display
 //              :r <f>      : Remove a file with name 'f'                                    (C)
-//              :b <f>      : Change the name of the current open file to 'f'
+//              :c <f>      : Create a new file with name 'f'                                (C)
+//              :l <N>      : Go to line N inside the file, if possible, else throw an error (C)
 //              :f <f>      : Go to the line where the first iteration of text 'f' exists
-//              :c <f>      : Create a new file with name 'f'   
+//              :b <f>      : Change the name of the current open file to 'f'
+//              :i          : Current file info display
 //
 //      Directory specific:
 //              :cd         : Change directory                                         (C)
 //              :od/o       : Open a directory, create process -> native file explorer (C)
-//              :md <f>     : Create a new directory with name 'f'
-//              :rd <f>     : Remove a directory with name 'f' with all its contents
+//              :md <f>     : Create a new directory with name 'f'                     (C)
+//              :rd <f>     : Remove a directory with name 'f' with all its contents   (C)
 //              :bd <f>     : Change the name of the current open directory to 'f'
 //
 //      Conf: <saved in cal.conf file>
@@ -37,16 +37,16 @@
 //              :ehi        : Editor highlighting toggle
 //
 //      Other:
-//              :e/q        : Exit, close editor                                            (C)
-//              :egman/man  : Editor general manual (All manuals are displayed)             (C)
-//              :efman      : Editor file manual    (Display file directives info)          (C)
-//              :edman      : Editor directory manual  (Display directory directives info)  (C)
-//              :ecman      : Editor config manual  (Display editor config directives info) (C)
-//              :eoman      : Editor others manual  (Display editor other directives info)  (C)
-//              :ectrl      : Editor controls manual (Display editor controls info)         (C)
-//              :ever       : Editor version                                                (C)
-//              :eck        : Editor clock (current time and time opened)
-//              :egam <N>   : Editor gamble, display a number from 0 to N
+//              :e/q                : Exit, close editor                                            (C)
+//              :egman/man          : Editor general manual (All manuals are displayed)             (C)
+//              :efman              : Editor file manual    (Display file directives info)          (C)
+//              :edman              : Editor directory manual  (Display directory directives info)  (C)
+//              :ecman              : Editor config manual  (Display editor config directives info) (C)
+//              :eoman              : Editor others manual  (Display editor other directives info)  (C)
+//              :ectrl              : Editor controls manual (Display editor controls info)         (C)
+//              :ever               : Editor version                                                (C)
+//              :eck                : Editor clock (current time and time opened)
+//              :egam/rand/roll <N> : Editor gamble, display a number from 0 to N                   (C)
 //
 // When the console is faced with a directive without a ':' prefix
 // it will view it as a switch-to-file command and will try to switch 
@@ -55,13 +55,17 @@
 // Pressing TAB will select the first seen file closest to the name given and autocomplete it
 // in the console.
 
-use crate::editor_console::{console_manual, editor_file::*};
+use std::str::FromStr;
+
+use macroquad::prelude::rand;
+
+use crate::{editor_console::{console_manual, editor_file::*}, editor_cursor::EditorCursor};
 
 /// Check if there is a ':', trim it, match it to a directive and execute it
 /// else we will see it as switch-to-file operation
 /// returns a message if there is an error OR a manual to show
 /// as well as boolean to delcare if it's a manual
-pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, text: &mut Vec<String>) -> (String, bool) {
+pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, text: &mut Vec<String>, cursor: &mut EditorCursor) -> (String, bool) {
     if directive.starts_with(':') {
         let directive_command = directive.trim_start_matches(':').trim();
         let mut tokens = directive_command.split_whitespace();
@@ -135,6 +139,22 @@ pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, tex
                 }
             }
 
+            "l" | "L" => {
+               if let Some(param) = parameter {
+                  if param.parse::<u64>().is_ok() == false {
+                    return ("InvalidLineArgument <:l>".to_string(), false);
+                  }
+
+                  let new_line_num: u32 = FromStr::from_str(param).unwrap();            
+                  let new_line: usize = new_line_num as usize;
+
+                  cursor.xy.1 = new_line;
+                  cursor.xy.0 = 0;
+               } else {
+                  return ("NoLineNumProvided <:l>".to_string(), false);
+               }               
+            }
+
             "w" | "W" => {
                 let _ = efs.write_current_file(text);
             }
@@ -149,6 +169,21 @@ pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, tex
             "eoman"         => return (console_manual(4), true),
             "ectrl"         => return (console_manual(5), true),
             "ever" => return ("Muse v1.3.0".to_string(), false),
+
+            "egam" | "rand" | "roll" => {
+                if let Some(param) = parameter {
+                    if param.parse::<u32>().is_ok() == false {
+                        return ("InvalidGambleArgument <:egam>".to_string(), false);
+                    }
+
+                    let max_num: u32 = FromStr::from_str(param).unwrap();
+                    let rand_num = rand::rand() as u32 % (max_num + 1);
+
+                    return (format!("Gamble result: {}", rand_num), false);
+                } else {
+                    return ("NoMaxNumProvided <:egam>".to_string(), false);
+                }
+            }
 
             _ => return ("UnknownDirective".to_string(), false),
         }

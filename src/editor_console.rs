@@ -19,7 +19,7 @@ use editor_console_cursor::*;
 mod editor_pallete;
 use editor_pallete::*;
 
-use crate::{editor_audio::EditorAudio, editor_text::*};
+use crate::{editor_audio::EditorAudio, editor_cursor::EditorCursor, editor_text::*};
 
 pub struct EditorConsole {
     pub mode: bool,
@@ -89,7 +89,7 @@ impl EditorConsole {
     }
 
     /// Special input, backspace and enter
-    fn record_special_console_keys(&mut self, audio: &EditorAudio, efs: &mut EditorFileSystem, text: &mut Vec<String>) {
+    fn record_special_console_keys(&mut self, audio: &EditorAudio, efs: &mut EditorFileSystem, text: &mut Vec<String>, cursor: &mut EditorCursor) {
         if is_key_pressed(KeyCode::Backspace) {
             if self.cursor.x > 0 && !self.directive.is_empty() {
                 let mut byte_idx = char_to_byte(&self.directive, self.cursor.x - 1);
@@ -124,7 +124,7 @@ impl EditorConsole {
         if is_key_pressed(KeyCode::Enter) {
             // execute whatever is inside the directive string
             // check the directives' source
-            let message_and_manual_toggle = execute_directive(&mut self.directive, efs, text).clone();
+            let message_and_manual_toggle = execute_directive(&mut self.directive, efs, text, cursor).clone();
 
             // Update for rendering.
             self.message = message_and_manual_toggle.0;
@@ -138,8 +138,8 @@ impl EditorConsole {
     }
 
     /// Record  heyboard input
-    pub fn record_keyboard_to_console_text(&mut self, audio: &EditorAudio, efs: &mut EditorFileSystem, text: &mut Vec<String>) {
-        self.record_special_console_keys(audio, efs, text);
+    pub fn record_keyboard_to_console_text(&mut self, audio: &EditorAudio, efs: &mut EditorFileSystem, text: &mut Vec<String>, cursor: &mut EditorCursor) {
+        self.record_special_console_keys(audio, efs, text, cursor);
 
         if let Some(c) = get_char_pressed() {
             if c.is_control() || c.is_ascii_control() {
@@ -287,16 +287,16 @@ pub fn console_manual(man_id: u8) -> String {
                 :ehi        : Editor highlighting toggle
                     
                 Other directives:
-                :e/q        : Exit, close editor                                           
-                :egman      : Editor general manual (All manuals are displayed)
-                :efman      : Editor file manual    (Display file directives info)
-                :edman      : Editor directory manual  (Display directory directives info)
-                :ecman      : Editor config manual  (Display editor config directives info)
-                :eoman      : Editor others manual  (Display editor other directives info)
-                :ectrl      : Editor controls manual (Display editor controls info)
-                :ever       : Editor version
-                :eck        : Editor clock (current time and time opened)
-                :egam <N>   : Editor gamble, display a number from 0 to N
+                :e/q                : Exit, close editor                                           
+                :egman              : Editor general manual (All manuals are displayed)
+                :efman              : Editor file manual    (Display file directives info)
+                :edman              : Editor directory manual  (Display directory directives info)
+                :ecman              : Editor config manual  (Display editor config directives info)
+                :eoman              : Editor others manual  (Display editor other directives info)
+                :ectrl              : Editor controls manual (Display editor controls info)
+                :ever               : Editor version
+                :eck                : Editor clock (current time and time opened)
+                :egam/rand/roll <N> : Editor gamble, display a number from 0 to N 
                 ".to_string();
             }
                     
@@ -345,16 +345,16 @@ pub fn console_manual(man_id: u8) -> String {
             4 => {
                 text = "
                     Other directives:
-                        :e/q        : Exit, close editor                                           
-                        :egman/man  : Editor general manual (All manuals are displayed)            
-                        :efman      : Editor file manual    (Display file directives info)         
-                        :edman      : Editor directory manual  (Display directory directives info) 
-                        :ecman      : Editor config manual  (Display editor config directives info)
-                        :eoman      : Editor others manual  (Display editor other directives info) 
-                        :ectrl      : Editor controls manual (Display editor controls info)
-                        :ever       : Editor version                                               
-                        :eck        : Editor clock (current time and time opened)
-                        :egam <N>   : Editor gamble, display a number from 0 to N
+                        :e/q                : Exit, close editor                                           
+                        :egman/man          : Editor general manual (All manuals are displayed)            
+                        :efman              : Editor file manual    (Display file directives info)         
+                        :edman              : Editor directory manual  (Display directory directives info) 
+                        :ecman              : Editor config manual  (Display editor config directives info)
+                        :eoman              : Editor others manual  (Display editor other directives info) 
+                        :ectrl              : Editor controls manual (Display editor controls info)
+                        :ever               : Editor version                                               
+                        :eck                : Editor clock (current time and time opened)
+                        :egam/rand/roll <N> : Editor gamble, display a number from 0 to N 
                 ".to_string();
             }
 
