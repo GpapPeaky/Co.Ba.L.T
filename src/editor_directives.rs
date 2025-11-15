@@ -168,7 +168,7 @@ pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, tex
             "ecman"         => return (console_manual(3), true),
             "eoman"         => return (console_manual(4), true),
             "ectrl"         => return (console_manual(5), true),
-            "ever" => return (VERSION.to_string(), false),
+            "ever"          => return (VERSION.to_string(), false),
 
             "egam" | "rand" | "roll" => {
                 if let Some(param) = parameter {
