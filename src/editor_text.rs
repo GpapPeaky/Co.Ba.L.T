@@ -54,8 +54,8 @@ pub const FILE_LINE_NUMBER_Y_MARGIN: f32 = 26.0;
 
 pub const FILE_TEXT_X_MARGIN: f32 = 50.0;
 pub const FILE_TEXT_Y_MARGIN: f32 = 80.0;
-const TAB_SIZE: usize = 3;
-const TAB_PATTERN: &str = "   ";
+const TAB_SIZE: usize = 4;
+const TAB_PATTERN: &str = "    ";
 
 
 const CONTROL_FLOW_STATEMENTS: [&str; 46] = [
@@ -148,7 +148,7 @@ fn calibrate_string_color(string: &str) -> Color {
 
 /// Record special key presses
 pub fn record_special_keys(cursor: &mut EditorCursor, text: &mut Vec<String>, audio: &EditorAudio, console: &mut EditorConsole, gts: &mut EditorGeneralTextStylizer, efs: &mut EditorFileSystem) -> bool {
-    if is_key_pressed(KeyCode::Backspace) {
+    if is_key_down(KeyCode::Backspace) {
         audio.play_delete();
         efs.unsaved_changes = true;
 
@@ -169,6 +169,7 @@ pub fn record_special_keys(cursor: &mut EditorCursor, text: &mut Vec<String>, au
                 cursor.xy.0 = text[cursor.xy.1].chars().count();
                 text[cursor.xy.1].push_str(&current_line);
             }
+
 
             return true;
         }
@@ -196,11 +197,11 @@ pub fn record_special_keys(cursor: &mut EditorCursor, text: &mut Vec<String>, au
             line.remove(byte_idx);
             cursor.xy.0 -= 1;
         }
-    
+
         return true;
     }
 
-    if is_key_pressed(KeyCode::Tab) {
+    if is_key_down(KeyCode::Tab) {
         audio.play_space();
 
         let line = &mut text[cursor.xy.1];
@@ -208,11 +209,10 @@ pub fn record_special_keys(cursor: &mut EditorCursor, text: &mut Vec<String>, au
         line.insert_str(byte_idx, TAB_PATTERN);
         cursor.xy.0 += TAB_SIZE;
 
-        efs.unsaved_changes = true;
         return true;
     }
 
-    if is_key_pressed(KeyCode::Enter) {
+    if is_key_down(KeyCode::Enter) {
         audio.play_return();
 
         let line = &mut text[cursor.xy.1];
@@ -224,6 +224,7 @@ pub fn record_special_keys(cursor: &mut EditorCursor, text: &mut Vec<String>, au
         text.insert(cursor.xy.1, rest);
 
         efs.unsaved_changes = true;
+
         return true;
     }
 

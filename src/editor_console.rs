@@ -118,8 +118,6 @@ impl EditorConsole {
             }
 
             console_text_special_navigation(&mut self.cursor.x, &mut self.directive, audio);
-        } else {
-            console_text_navigation(&mut self.cursor.x, &mut self.directive, audio);
         }
 
         if is_key_pressed(KeyCode::Enter) {

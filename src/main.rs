@@ -23,12 +23,7 @@ use editor_text::*;
 mod editor_pallete;
 use editor_pallete::*;
 
-// FIXME: Console cursor render moving not left and right through navigation
 // FIXME: Directories split with spaces do not work.
-// FIXME: Text cursor Y missalignment
-// FIXME: Drawing breaks a bit for some invalid directives
-// FIXME: Add is_key_down for arrow keys in text mode, remove
-//        The shift + control + arrow keys functionality 
 // TODO: Add :cd autocomplete with TAB
 // TODO: Add smarter identation
 // TODO: Finish all the directives
@@ -65,7 +60,6 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     set_fullscreen(true);
-    show_mouse(false);
 
     // Editor camera
     let mut ec = EditorCamera::new();

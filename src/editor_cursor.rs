@@ -7,13 +7,15 @@ use crate::editor_audio::EditorAudio;
 
 #[allow(dead_code)]
 pub struct EditorCursor {
-    pub xy: (usize, usize)
+    pub xy: (usize, usize),
 }
 
 impl EditorCursor {
     #[allow(dead_code)]
     pub fn new() -> EditorCursor {
-        EditorCursor { xy: (0, 0) }
+        EditorCursor {
+            xy: (0, 0),
+         }
     }
 }
 
@@ -175,12 +177,12 @@ fn calibrate_distance_to_whitespace_or_character(leftorright: bool, cursor_idx: 
             return 0;
         }
 
-        let is_space = chars[cursor] == ' ';
+        let is_not_special = !chars[cursor].is_alphanumeric();
         for i in cursor..len {
-            if chars[i] == ' ' && !is_space {
+            if !chars[i].is_alphanumeric() && !is_not_special {
                 break;
             }
-            if chars[i] != ' ' && is_space {
+            if chars[i].is_alphanumeric() && is_not_special {
                 break;
             }
             steps += 1;
@@ -193,13 +195,13 @@ fn calibrate_distance_to_whitespace_or_character(leftorright: bool, cursor_idx: 
         }
 
         cursor -= 1;
-        let is_space = chars[cursor] == ' ';
+        let is_not_special = !chars[cursor].is_alphanumeric();
 
         while cursor > 0 {
-            if chars[cursor - 1] == ' ' && !is_space {
+            if !chars[cursor - 1].is_alphanumeric() && !is_not_special {
                 break;
             }
-            if chars[cursor - 1] != ' ' && is_space {
+            if chars[cursor - 1].is_alphanumeric() && is_not_special {
                 break;
             }
             cursor -= 1;
