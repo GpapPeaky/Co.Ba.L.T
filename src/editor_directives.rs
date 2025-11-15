@@ -59,7 +59,7 @@ use std::str::FromStr;
 
 use macroquad::prelude::rand;
 
-use crate::{editor_console::{console_manual, editor_file::*}, editor_cursor::EditorCursor};
+use crate::{VERSION, editor_console::{console_manual, editor_file::*}, editor_cursor::EditorCursor};
 
 /// Check if there is a ':', trim it, match it to a directive and execute it
 /// else we will see it as switch-to-file operation
@@ -168,7 +168,7 @@ pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, tex
             "ecman"         => return (console_manual(3), true),
             "eoman"         => return (console_manual(4), true),
             "ectrl"         => return (console_manual(5), true),
-            "ever" => return ("Muse v1.3.0".to_string(), false),
+            "ever" => return (VERSION.to_string(), false),
 
             "egam" | "rand" | "roll" => {
                 if let Some(param) = parameter {

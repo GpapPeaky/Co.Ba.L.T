@@ -28,6 +28,8 @@ use editor_pallete::*;
 // FIXME: :cd directive autocomplete
 // TODO: Finish all the directives
 
+pub const VERSION: &str = "Muse-V1.3.1";
+
 /// Window configuration
 fn window_conf() -> Conf {
     let icon = Icon {
@@ -37,7 +39,7 @@ fn window_conf() -> Conf {
     };
 
     Conf {
-        window_title: "Muse-v1.3.0".to_string(),
+        window_title: VERSION.to_string(),
         icon: Some(icon),
         ..Default::default()
     }
