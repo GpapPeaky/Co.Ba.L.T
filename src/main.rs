@@ -24,10 +24,9 @@ mod editor_pallete;
 use editor_pallete::*;
 
 // FIXME: Directories split with spaces do not work.
+// FIXME: Smart identation is problematic
 // TODO: Add :cd autocomplete with TAB
 // TODO: Finish all the directives
-// TODO: Add Ctrl + x shortcut to cut line
-// TODO: Add Ctrl + s shortcut to quickly save the file
 // TODO: Add Ctrl + f shortcut to quickly open the find directive
 // TODO: Add Ctrl + l shortcut to quickly go to line directive
 // TODO: Add Ctrl + z to undo last change
@@ -58,8 +57,6 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    set_fullscreen(true);
-
     // Editor camera
     let mut ec = EditorCamera::new();
     // File system

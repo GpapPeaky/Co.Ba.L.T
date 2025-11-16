@@ -8,7 +8,7 @@ pub mod editor_file;
 use editor_file::*;
 
 #[path = "editor_directives.rs"]
-mod editor_directives;
+pub mod editor_directives;
 use editor_directives::*;
 
 #[path = "editor_console_cursor.rs"]

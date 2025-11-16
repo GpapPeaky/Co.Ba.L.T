@@ -15,6 +15,8 @@ use crate::editor_cursor::*;
 use crate::editor_console::EditorConsole;
 use crate::editor_pallete::CONSOLE_TEXT_COLOR;
 
+use crate::editor_console::editor_directives::*;
+
 #[path = "editor_cursor.rs"]
 mod editor_cursor;
 
@@ -263,6 +265,33 @@ pub fn record_special_keys(cursor: &mut EditorCursor, text: &mut Vec<String>, au
         }
 
         return true;
+    }
+    
+    // Shotrcuts test
+    if is_key_down(KeyCode::LeftControl) {
+
+        // Delete line
+        if is_key_pressed(KeyCode::X) {
+            if text.len() > 0 {
+                audio.play_delete();
+                text.remove(cursor.xy.1);
+            }
+
+            return true;
+        }
+
+        // Save/write to file
+        if is_key_pressed(KeyCode::S) {
+            console.directive = ":w".to_string();
+            execute_directive(&mut console.directive, efs, text, cursor);
+        }
+        
+        // Go to line
+        if is_key_pressed(KeyCode::L) {
+            console.directive = ":l ".to_string();
+            console.mode = true; // Opens the console with the cursor right on where it needs to be
+            console.cursor.x = console.directive.len();
+        }
     }
 
     // More special keys
