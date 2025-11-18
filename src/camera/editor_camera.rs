@@ -1,5 +1,5 @@
 use macroquad::window::{screen_height, screen_width};
-use crate::editor_text::{FILE_TEXT_X_MARGIN, MODE_FONT_SIZE, MODE_Y_MARGIN};
+use crate::text::editor_text::*;
 
 pub struct EditorCamera {
     pub offset_x: f32,

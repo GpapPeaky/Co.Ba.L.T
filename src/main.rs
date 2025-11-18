@@ -1,27 +1,24 @@
 // Hide the scary console.
 #![windows_subsystem = "windows"]
 
+mod console;
+mod camera;
+mod text;
+mod audio;
+mod options;
+
 use macroquad::prelude::*;
 use miniquad::{conf::Icon};
 
-mod editor_camera;
-use editor_camera::*;
-
-mod editor_console;
-use editor_console::*;
-use crate::editor_console::editor_file::*;
-
-mod editor_audio;
-use editor_audio::*;
-
-mod editor_cursor;
-use editor_cursor::*;
-
-mod editor_text;
-use editor_text::*;
-
-mod editor_pallete;
-use editor_pallete::*;
+use crate::audio::editor_audio::EditorAudio;
+use crate::camera::editor_camera::EditorCamera;
+use crate::console::editor_console::{EditorConsole, console_message};
+use crate::console::editor_file::{EditorFileSystem, draw_dir_contents, path_buffer_file_to_string, path_buffer_to_string};
+use crate::options::editor_pallete::{BACKGROUND_COLOR, COMPOSITE_TYPE_COLOR, FILE_COLOR, FOLDER_COLOR};
+use crate::text::editor_cursor::EditorCursor;
+use crate::text::editor_input::record_keyboard_to_file_text;
+use crate::text::editor_text::{CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE, MODE_Y_MARGIN, MODE_Y_OFFSET, draw_file_text};
+use crate::text::editor_text_stylizer::EditorGeneralTextStylizer;
 
 // FIXME: Directories split with spaces do not work.
 // FIXME: Smart identation is problematic
@@ -47,7 +44,7 @@ fn window_conf() -> Conf {
     };
 
     Conf {
-        window_title: "muse".to_string(),
+        window_title: "Muse".to_string(),
         icon: Some(icon),
         window_width: 1920,
         window_height: 1080,
@@ -79,7 +76,7 @@ async fn main() {
     loop {
         clear_background(BACKGROUND_COLOR);
 
-        draw(&mut file_text, &mut file_cursor, &mut gts, &console, &mut ec);
+        draw_file_text(&mut file_text, &mut file_cursor, &mut gts, &console, &mut ec);
         if console.mode {
             let autocomplete = draw_dir_contents(&efs.current_file, &efs.current_dir, console.directive.to_string());
             
@@ -111,6 +108,9 @@ async fn main() {
             draw_text("CONSOLE MODE", MODE_Y_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, COMPOSITE_TYPE_COLOR,);
             draw_text(&path_buffer_to_string(&efs.current_dir), console_word_w + 25.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, FOLDER_COLOR);
             draw_text(&fname, console_word_w + CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + 15.0, MODE_FONT_SIZE, FILE_COLOR);
+
+            // Console draw
+            console.draw();
         }
 
         // Show message

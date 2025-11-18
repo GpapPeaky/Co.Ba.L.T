@@ -1,3 +1,5 @@
+// Editor options structure and constructor
+
 pub struct EditorOptions {
       pub pallete: String,
       pub font: String,
@@ -7,14 +9,14 @@ pub struct EditorOptions {
       pub fullscreen: bool,
       pub highlight: bool,
       pub cursor_has_w: bool
-};
+}
 
 impl EditorOptions {
       /// Constructor
       pub fn new() -> EditorOptions {
             EditorOptions {
-                  pallete: "",
-                  font: "",
+                  pallete: "".to_string(),
+                  font: "".to_string(),
                   audio: true,
                   volume: 50,
                   smart: true,
@@ -24,4 +26,3 @@ impl EditorOptions {
             }
       }
 }
-

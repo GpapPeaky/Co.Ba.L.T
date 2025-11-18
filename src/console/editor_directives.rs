@@ -53,7 +53,10 @@ use std::str::FromStr;
 
 use macroquad::prelude::rand;
 
-use crate::{VERSION, editor_console::{console_manual, editor_file::*}, editor_cursor::EditorCursor};
+use crate::console::editor_console::*;
+use crate::console::editor_file::*;
+use crate::text::editor_cursor::*;
+use crate::VERSION;
 
 /// Check if there is a ':', trim it, match it to a directive and execute it
 /// else we will see it as switch-to-file operation

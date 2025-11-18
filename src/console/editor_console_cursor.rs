@@ -3,7 +3,7 @@
 
 use macroquad::prelude::*;
 
-use crate::editor_audio::EditorAudio;
+use crate::audio::editor_audio::*;
 
 #[allow(dead_code)]
 pub struct EditorConsoleCursor {

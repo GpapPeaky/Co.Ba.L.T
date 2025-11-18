@@ -1,0 +1,52 @@
+// Stylizer for general text in the editor
+
+use macroquad::prelude::*;
+
+use crate::text::editor_keywords::*;
+use crate::options::editor_pallete::*;
+
+pub struct EditorGeneralTextStylizer {
+    pub font: Font,
+    pub font_size: u16,
+    pub color: Color
+}
+
+impl EditorGeneralTextStylizer {
+    pub async fn new() -> EditorGeneralTextStylizer {
+        EditorGeneralTextStylizer {
+            font: load_ttf_font("assets/font/default.ttf").await.unwrap(),
+            font_size: 25,
+            color: WHITE
+        }
+    }
+
+    /// Calibrate the color of a token
+    pub fn calibrate_string_color(
+        &self,
+        string: &str
+    ) -> Color {
+        if CONTROL_FLOW_STATEMENTS.contains(&string) {
+            return CONTROL_FLOW_COLOR;
+        } else if TYPE_QUALIFIERS.contains(&string) {
+            return TYPE_QUALIFIER_COLOR;
+        } else if COMPOSITE_TYPES.contains(&string) {
+            return COMPOSITE_TYPE_COLOR;
+        } else if STORAGE_CLASS_SPECIFIERS.contains(&string) {
+            return STORAGE_CLASS_COLOR;
+        } else if MISC.contains(&string) {
+            return MISC_COLOR;
+        } else if DATA_TYPES.contains(&string) {
+            return DATA_TYPE_COLOR;
+        } else if string.chars().all(|c| c.is_ascii_digit()) {
+            return NUMBER_LITERAL_COLOR;
+        } else {
+            return IDENTIFIER_COLOR;
+        }
+    }
+    
+
+    pub fn draw(&self, text: &str, x: f32, y: f32){
+        draw_text_ex(text, x, y,
+            TextParams { font: Some(&self.font), font_size: self.font_size, color: self.color, ..Default::default() });
+    }
+}

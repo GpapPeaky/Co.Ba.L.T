@@ -4,7 +4,8 @@ use rfd::*;
 use std::{fs, io, path::{Path, PathBuf}};
 use std::io::Write;
 
-use crate::{editor_console::{CONSOLE_MARGINS, CONSOLE_WIDTH, editor_pallete::{FILE_COLOR, FOLDER_COLOR}}, editor_pallete::SELECTED_FILE_COLOR};
+use crate::console::editor_console::*;
+use crate::options::editor_pallete::*;
 
 pub struct EditorFileSystem {
     pub current_dir: Option<PathBuf>,

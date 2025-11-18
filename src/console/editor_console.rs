@@ -3,23 +3,18 @@
 
 use macroquad::prelude::*;
 
-#[path = "editor_file.rs"]
-pub mod editor_file;
-use editor_file::*;
-
-#[path = "editor_directives.rs"]
-pub mod editor_directives;
-use editor_directives::*;
-
-#[path = "editor_console_cursor.rs"]
-mod editor_console_cursor;
-use editor_console_cursor::*;
-
-#[path = "editor_pallete.rs"]
-mod editor_pallete;
-use editor_pallete::*;
-
-use crate::{editor_audio::EditorAudio, editor_cursor::EditorCursor, editor_text::*};
+use crate::audio::editor_audio::*;
+use crate::options::editor_pallete::{
+    CONSOLE_CONTAINER_COLOR,
+    CONSOLE_CURSOR_COLOR,
+    CONSOLE_TEXT_COLOR,
+    CONSOLE_FRAME_COLOR,
+};
+use crate::text::editor_input::*;
+use crate::console::editor_console_cursor::*;
+use crate::console::editor_file::*;
+use crate::text::editor_cursor::*;
+use crate::console::editor_directives::*;
 
 pub struct EditorConsole {
     pub mode: bool,
@@ -30,7 +25,7 @@ pub struct EditorConsole {
     pub showing_manual: bool,
 }
 
-const CONSOLE_WIDTH: f32 = 400.0;
+pub const CONSOLE_WIDTH: f32 = 400.0;
 pub const CONSOLE_MARGINS: f32 = 15.0;
 
 impl EditorConsole {
