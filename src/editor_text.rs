@@ -555,8 +555,10 @@ pub fn draw(text: &Vec<String>, cursor: &mut EditorCursor, gts: &mut EditorGener
 
             let width = measure_text(&token, Some(&gts.font), gts.font_size, 1.0).width;
             let (sx, sy) = camera.world_to_screen(x, y + text_y_offset);
+            
             gts.color = color;
             gts.draw(&token, sx, sy);
+            
             x += width;
         }
     }
