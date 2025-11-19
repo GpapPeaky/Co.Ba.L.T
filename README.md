@@ -1,4 +1,4 @@
-# Muse Code Text Editor (v1.4.0)
+# Muse Code Text Editor (v1.5.0)
 
 A lightweight console-based editor that allows users to manage files, directories, and editor configurations directly from a command-line interface. The editor supports switching between console mode and insert mode seamlessly, along with a wide range of file, directory, and editor management directives.
 
@@ -18,6 +18,7 @@ A lightweight console-based editor that allows users to manage files, directorie
   - [Other Directives](#other-directives)
 - [Usage](#usage)
 - [Autocomplete](#autocomplete)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
 - [License](#license)
 
 ---
@@ -41,8 +42,8 @@ We can navigate the current file's text in these ways:
 |-----------|-------------|
 | `ArrowKeys` | Move the cursor index in the file 1 at a time. |
 | `LCtrl + ArrowKeys` | Move the cursor index in the file 5 steps at a time. |
-| `LCtrl + LShift+ ArrowKeys` | Move the cursor index continously up and down, 1 index increment/decrement at a time. |
-| `:l <N>` | Go to line `N` in the current file. Throws an error if invalid. |
+| `LCtrl + LShift + ArrowKeys` | Move the cursor index continously up and down, 1 index increment/decrement at a time. |
+| `:l <N> OR LCtlr + l` | Go to line `N` in the current file. Throws an error if invalid. |
 
 ---
 
@@ -120,6 +121,27 @@ All configuration changes are saved in `cal.conf`.
 - While typing a file or directory name, the console will display similar existing names.
 - Press `TAB` to autocomplete the first match.
 
+---
+## Keyboard Shortcuts
+
+| Shortcut                       | Action                                                       |
+| ------------------------------ | ------------------------------------------------------------ |
+| **LCtrl + `X`**                | Delete current line.                                         |
+| **LCtrl + `S`**                | Save/write current file (`:w`).                              |
+| **LCtrl + `L`**                | Open console with `:l` (go to line).                         |
+| **LCtrl + `O`**                | Open current directory in system file explorer (`:O`).       |
+| **LCtrl + `N`**                | Create a new file (`:c f`) and immediately rename it (`:b`). |
+| **LCtrl + `B`**                | Rename current file (`:b`).                                  |
+| **LCtrl + `R`**                | Remove current file (`:r`).                                  |
+| **LCtrl + `M`**                | Create a new directory (`:md`).                              |
+| **LCtrl + `D`**                | Duplicate current line.                                      |
+| **LCtrl + `W`**                | Delete the word at the cursor index.                         |
+| **LCtrl + `Q`**                | Save and Quit (`:W`, then `:q`).                             |
+| **LCtrl + `` ` ``**            | Switch to console mode.                                      |
+| **LCtrl + `-`**                | Decrease editor font size.                                   |
+| **LCtrl + `=`**                | Increase editor font size.                                   |
+| **LCtrl + ArrowKeys**          | Move cursor 5 steps.                                         |
+| **LCtrl + LShift + ArrowKeys** | Hold to continuously move cursor (1 step per tick).          |
 ---
 
 ## License

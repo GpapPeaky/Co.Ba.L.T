@@ -20,13 +20,13 @@ use crate::text::editor_input::record_keyboard_to_file_text;
 use crate::text::editor_text::{CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE, MODE_Y_MARGIN, MODE_Y_OFFSET, draw_file_text};
 use crate::text::editor_text_stylizer::EditorGeneralTextStylizer;
 
-// FIXME: Unsaved changes mark, doesn't proc with ctrl + key shortcuts.
 // FIXME: Directories split with spaces do not work.
 // FIXME: Smart identation is problematic
 // TODO: Add :cd autocomplete with TAB
 // TODO: Finish all the directives
 // TODO: Add Ctrl + f shortcut to quickly open the find directive
 // TODO: Add Ctrl + z to undo last change
+// TODO: Add selection mode
 // TODO: Add Ctrl + c to copy selected text
 // TODO: Add Ctrl + v to paste copied text
 // TODO: Add editor options
@@ -34,7 +34,7 @@ use crate::text::editor_text_stylizer::EditorGeneralTextStylizer;
 
 // IDEA: Add a cmd/terminal wrapper maybe, for compiling/executing code and other commands.
 
-pub const VERSION: &str = "Muse-v01.04.00";
+pub const VERSION: &str = "Muse-v01.05.00";
 
 /// Window configuration
 fn window_conf() -> Conf {

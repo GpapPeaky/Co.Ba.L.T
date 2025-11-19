@@ -58,7 +58,8 @@ fn lctrl_shortcuts(
         // Go to line
         if is_key_pressed(KeyCode::L) {
             console.directive = ":l ".to_string();
-            console.mode = true; // Opens the console with the cursor right on where it needs to be
+            console.mode = true;
+            // Opens the console with the cursor right on where it needs to be
             console.cursor.x = console.directive.len();
 
             return true;
