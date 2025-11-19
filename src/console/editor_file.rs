@@ -71,7 +71,10 @@ impl EditorFileSystem {
 
     /// Change to another cwd, cd use ,
     /// returns true if the change was valid, else false
-    pub fn change_current_directory(&mut self, p: impl AsRef<Path>) -> bool {
+    pub fn change_current_directory(
+        &mut self,
+        p: impl AsRef<Path>
+    ) -> bool {
         let base = self.current_dir.clone().unwrap_or_else(|| std::env::current_dir().unwrap());
         let new_path = base.join(p.as_ref());
     
@@ -100,7 +103,10 @@ impl EditorFileSystem {
     /// Change to another file inside the current directory
     /// by typing its name in the console
     /// returns true if the change was valid, else false
-    pub fn change_current_file(&mut self, f: String) -> bool {
+    pub fn change_current_file(
+        &mut self,
+        f: String
+    ) -> bool {
         let Some(dir) = &self.current_dir else {
             return false;
         };
@@ -130,7 +136,10 @@ impl EditorFileSystem {
     /// Create a file of name <fname>
     /// returns true if it was successful
     /// false if not, or if the file with that name already exists
-    pub fn create_file(&mut self, fname: &str) -> bool {
+    pub fn create_file(
+        &mut self,
+        fname: &str
+    ) -> bool {
         let Some(dir) = &self.current_dir else {
             return false;
         };
@@ -150,7 +159,10 @@ impl EditorFileSystem {
 
     /// Delete a file of name <fname>
     /// returns true if it was successful
-    pub fn delete_file(&mut self, fname: &str) -> bool {
+    pub fn delete_file(
+        &mut self,
+        fname: &str
+    ) -> bool {
         let Some(dir) = &self.current_dir else {
             return false;
         };
@@ -166,7 +178,10 @@ impl EditorFileSystem {
 
    /// Create a new directory.
    /// Returns true if the name is valid, false if not
-   pub fn create_dir(&mut self, dname: &str) -> bool {
+    pub fn create_dir(
+        &mut self,
+        dname: &str
+    ) -> bool {
       let base = match &self.current_dir {
          Some(p) => p.clone(),
          
@@ -184,7 +199,10 @@ impl EditorFileSystem {
 
    /// Delete a directory
    /// Returns true if possible, false if not
-   pub fn delete_dir(&mut self, dname: &str) -> bool {
+    pub fn delete_dir(
+        &mut self,
+        dname: &str
+    ) -> bool {
       let base = match &self.current_dir {
          Some(p) => p.clone(),
          
@@ -205,7 +223,10 @@ impl EditorFileSystem {
 
     /// Rename the current open file to fname
     /// return true if complete, false if not
-    pub fn baptize_file(&mut self, fname: &str) -> bool {
+    pub fn baptize_file(
+        &mut self,
+        fname: &str
+    ) -> bool {
         let old_path = match &self.current_file {
             Some(p) => p.clone(),
             None => return false,
@@ -258,7 +279,9 @@ impl EditorFileSystem {
 }
 
 /// Get a path buffer as a string
-pub fn path_buffer_to_string(p: &Option<std::path::PathBuf>) -> String {
+pub fn path_buffer_to_string(
+    p: &Option<std::path::PathBuf>
+) -> String {
     match p {
         Some(path) => path.display().to_string(),
         None => "</>".to_string(),
@@ -266,7 +289,9 @@ pub fn path_buffer_to_string(p: &Option<std::path::PathBuf>) -> String {
 }
 
 /// Get the path to the file, then trim it to only get the file text
-pub fn path_buffer_file_to_string(pb: &Option<PathBuf>) -> String {
+pub fn path_buffer_file_to_string(
+    pb: &Option<PathBuf>
+) -> String {
     if let Some(path) = pb {
         path.file_name()
             .and_then(|name| name.to_str())
@@ -281,7 +306,11 @@ pub fn path_buffer_file_to_string(pb: &Option<PathBuf>) -> String {
 /// Highlights the currently open file.
 /// When typing in the console, only the ones matching the text input will be shown.
 /// Returns the closet matching filename for autocompletion when TAB is pressed.
-pub fn draw_dir_contents(current_file: &Option<PathBuf>, current_dir: &Option<PathBuf>, switch_to_file_directive: String) -> String {
+pub fn draw_dir_contents(
+    current_file: &Option<PathBuf>,
+    current_dir: &Option<PathBuf>,
+    switch_to_file_directive: String
+) -> String {
     let Some(dir) = current_dir else {
         return "".to_string();
     };

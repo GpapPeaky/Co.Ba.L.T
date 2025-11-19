@@ -103,7 +103,6 @@ pub fn execute_directive(
 
             "f" | "F" => {
                 if let Some(param) = parameter {                
-                    // FIXME
                     let r = find_word_in_text(param, &text, cursor);
                     
                     if !r {

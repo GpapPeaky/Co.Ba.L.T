@@ -29,20 +29,27 @@ pub const FILE_TEXT_Y_MARGIN: f32 = 80.0;
 /// Find a word in the text 
 /// and move the cursor there
 /// return true if found, false if not
-pub fn find_word_in_text(word: &str, text: &Vec<String>, cursor: &mut EditorCursor) -> bool {
-    for i in 0..text.len() {
-        if text[i].contains(word) {
-            cursor.xy.1 = i;
-
-            return true;
-        }
+pub fn find_word_in_text(
+    word: &str,
+    text: &Vec<String>,
+    cursor: &mut EditorCursor
+) -> bool {
+    if let Some(line_index) = text.iter().position(|line| line.contains(word)) {
+        cursor.xy.1 = line_index;
+        true
+    } else {
+        false
     }
-
-    false
 }
 
 /// All around draw function for the editor text
-pub fn draw_file_text(text: &Vec<String>, cursor: &mut EditorCursor, gts: &mut EditorGeneralTextStylizer, console: &EditorConsole, camera: &mut EditorCamera) {
+pub fn draw_file_text(
+    text: &Vec<String>,
+    cursor: &mut EditorCursor,
+    gts: &mut EditorGeneralTextStylizer,
+    console: &EditorConsole,
+    camera: &mut EditorCamera
+) {
     if text.is_empty() {
         return;
     }

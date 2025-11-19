@@ -41,7 +41,9 @@ impl EditorConsole {
     }
 
     /// Console will be drawn to the right of the screen
-    pub fn draw(&self) {
+    pub fn draw(
+        &self
+    ) {
         // Console background
         draw_rectangle(screen_width() - CONSOLE_WIDTH,
             0.0,

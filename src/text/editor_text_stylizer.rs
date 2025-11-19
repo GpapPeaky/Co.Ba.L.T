@@ -45,7 +45,12 @@ impl EditorGeneralTextStylizer {
     }
     
 
-    pub fn draw(&self, text: &str, x: f32, y: f32){
+    pub fn draw(
+        &self,
+        text: &str,
+        x: f32,
+        y: f32
+    ){
         draw_text_ex(text, x, y,
             TextParams { font: Some(&self.font), font_size: self.font_size, color: self.color, ..Default::default() });
     }

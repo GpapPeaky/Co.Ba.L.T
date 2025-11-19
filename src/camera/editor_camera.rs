@@ -19,7 +19,10 @@ impl EditorCamera {
     }
 
     /// Cursor-following camera movement
-    pub fn follow_cursor(&mut self, cursor_x_px: f32, cursor_y_px: f32) {
+    pub fn follow_cursor(
+        &mut self, cursor_x_px: f32,
+        cursor_y_px: f32
+    ) {
         let follow_margin = 50.0;
         let top_ui_height = MODE_Y_MARGIN + MODE_FONT_SIZE + 25.0;
         let left_ui_width = FILE_TEXT_X_MARGIN + 80.0;
@@ -44,7 +47,11 @@ impl EditorCamera {
     }
 
     /// Convert world coordinates to screen coordinates
-    pub fn world_to_screen(&self, x: f32, y: f32) -> (f32, f32) {
+    pub fn world_to_screen(
+        &self,
+        x: f32,
+        y: f32
+    ) -> (f32, f32) {
         (x - self.offset_x, y - self.offset_y)
     }
 }

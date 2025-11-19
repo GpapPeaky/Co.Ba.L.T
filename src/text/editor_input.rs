@@ -149,6 +149,14 @@ fn lctrl_shortcuts(
             
             return true;
         }
+        
+        // Save and quit
+        if is_key_pressed(KeyCode::Q) {
+            console.directive = ":W".to_string();
+            execute_directive(&mut console.directive, efs, text, cursor);
+            console.directive = ":q".to_string();
+            execute_directive(&mut console.directive, efs, text, cursor);
+        }
 
         // Console switch
         if is_key_pressed(KeyCode::GraveAccent) {
@@ -314,7 +322,14 @@ pub fn record_special_keys(
 }
 
 /// Standard key recording function
-pub fn record_keyboard_to_file_text(cursor: &mut EditorCursor, text: &mut Vec<String>, audio: &EditorAudio, console: &mut EditorConsole, gts: &mut EditorGeneralTextStylizer, efs: &mut EditorFileSystem) {
+pub fn record_keyboard_to_file_text(
+    cursor: &mut EditorCursor,
+    text: &mut Vec<String>,
+    audio: &EditorAudio,
+    console: &mut EditorConsole,
+    gts: &mut EditorGeneralTextStylizer,
+    efs: &mut EditorFileSystem
+) {
     // let c = get_char_pressed().unwrap(); // Unwrap removes the Result/Option wrapper.
 
     if text.is_empty() { // Allocate memory for a new string
