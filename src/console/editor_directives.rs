@@ -62,7 +62,12 @@ use crate::VERSION;
 /// else we will see it as switch-to-file operation
 /// returns a message if there is an error OR a manual to show
 /// as well as boolean to delcare if it's a manual
-pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, text: &mut Vec<String>, cursor: &mut EditorCursor) -> (String, bool) {
+pub fn execute_directive(
+    directive: &mut String,
+    efs: &mut EditorFileSystem, 
+    text: &mut Vec<String>, 
+    cursor: &mut EditorCursor
+) -> (String, bool) {
     if directive.starts_with(':') {
         let directive_command = directive.trim_start_matches(':').trim();
         let mut tokens = directive_command.split_whitespace();
@@ -94,6 +99,20 @@ pub fn execute_directive(directive: &mut String, efs: &mut EditorFileSystem, tex
             //         }
             //     }
             // }
+
+            "f" | "F" => {
+                if let Some(param) = parameter {                
+                    // FIXME
+                    let r = find_word_in_text(&text, cursor);
+                    
+                    if !r {
+                        return ("IdentifierNotFound <:f>".to_string(), false);
+                    }
+                    
+                } else {
+                    return ("NoIdentifierProvided <:f>".to_string(), false);
+                }
+            }
 
             "r" | "R" => {
                 if let Some(param) = parameter {
