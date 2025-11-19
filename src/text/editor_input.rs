@@ -118,7 +118,7 @@ fn lctrl_shortcuts(
         }
         
         // Delete the word that the cursor is currently at
-        if is_key_pressed(KeyCode::P) {
+        if is_key_pressed(KeyCode::W) {
             // Find the character collection of the word, left and right
             // from the word_idx
 

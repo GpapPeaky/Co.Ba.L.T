@@ -1,5 +1,6 @@
 // Editor options structure and constructor
 
+#[allow(dead_code)]
 pub struct EditorOptions {
       pub pallete: String,
       pub font: String,
@@ -13,6 +14,7 @@ pub struct EditorOptions {
 
 impl EditorOptions {
       /// Constructor
+      #[allow(dead_code)]
       pub fn new() -> EditorOptions {
             EditorOptions {
                   pallete: "".to_string(),
