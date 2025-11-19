@@ -20,6 +20,7 @@ use crate::text::editor_input::record_keyboard_to_file_text;
 use crate::text::editor_text::{CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE, MODE_Y_MARGIN, MODE_Y_OFFSET, draw_file_text};
 use crate::text::editor_text_stylizer::EditorGeneralTextStylizer;
 
+// FIXME: Unsaved changes mark, doesn't proc with ctrl + key shortcuts.
 // FIXME: Directories split with spaces do not work.
 // FIXME: Smart identation is problematic
 // TODO: Add :cd autocomplete with TAB

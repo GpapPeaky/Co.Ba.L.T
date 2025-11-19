@@ -40,6 +40,7 @@ fn lctrl_shortcuts(
         if is_key_pressed(KeyCode::X) {
             if text.len() > 0 {
                 audio.play_delete();
+                efs.unsaved_changes = true;
                 text.remove(cursor.xy.1);
             }
 
@@ -113,6 +114,36 @@ fn lctrl_shortcuts(
                 text.insert(cursor.xy.1 + 1, line_clone);
             }
     
+            return true;
+        }
+        
+        // Delete the word that the cursor is currently at
+        if is_key_pressed(KeyCode::P) {
+            // Find the character collection of the word, left and right
+            // from the word_idx
+
+            let cursor_idx = cursor.xy.0;
+            let left_distance = calibrate_distance_to_whitespace_or_character(false, cursor_idx, &text[cursor.xy.1]);
+            let right_distance = calibrate_distance_to_whitespace_or_character(true, cursor_idx, &text[cursor.xy.1]);
+            
+            // Index of where the word starts
+            let left_cursor_idx = cursor_idx - left_distance;
+            
+            // Word length.
+            let word_len = cursor_idx + right_distance;
+            
+            // Actual deletion
+            for _ in left_cursor_idx..word_len {
+                let line = &mut text[cursor.xy.1];
+                let byte_idx = char_to_byte(line, left_cursor_idx);
+                if byte_idx < line.len() {
+                    line.remove(byte_idx);
+                }
+            }
+            
+            audio.play_delete();
+            efs.unsaved_changes = true;
+            
             return true;
         }
 

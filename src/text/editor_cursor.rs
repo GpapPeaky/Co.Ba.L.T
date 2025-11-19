@@ -5,7 +5,6 @@ use macroquad::prelude::*;
 
 use crate::audio::editor_audio::*;
 
-#[allow(dead_code)]
 pub struct EditorCursor {
     pub xy: (usize, usize),
 }
@@ -19,9 +18,6 @@ impl EditorCursor {
     }
 }
 
-// pub const CURSOR_LINE_TO_WIDTH: bool = true;
-
-#[allow(dead_code)]
 /// Standard cursor navigation
 pub fn file_text_navigation(cursor: &mut EditorCursor, text: &mut Vec<String>, audio: &EditorAudio) {
     if text.is_empty() {
@@ -73,7 +69,6 @@ pub fn file_text_navigation(cursor: &mut EditorCursor, text: &mut Vec<String>, a
     }
 }
 
-#[allow(dead_code)]
 /// Special navigation with LCTRL movement
 pub fn file_text_special_navigation(cursor: &mut EditorCursor, text: &mut Vec<String>, audio: &EditorAudio) {
     if text.is_empty() {
@@ -95,7 +90,7 @@ pub fn file_text_special_navigation(cursor: &mut EditorCursor, text: &mut Vec<St
                 cursor.xy.0 = 0;
             }
         }
-    
+
         if is_key_down(KeyCode::Down) {
             if cursor.xy.1 + 1 < text.len() {
                 audio.play_nav();
@@ -171,6 +166,7 @@ pub fn calibrate_distance_to_whitespace_or_character(leftorright: bool, cursor_i
     let mut cursor = cursor_idx.min(len);
     let mut steps = 0;
 
+    // True right, false left
     if leftorright {
         if cursor >= len {
             return 0;
