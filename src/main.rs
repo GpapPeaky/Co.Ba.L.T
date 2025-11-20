@@ -28,7 +28,6 @@ use crate::text::editor_text_stylizer::EditorGeneralTextStylizer;
 // TODO: Add selection mode
 // TODO: Add Ctrl + c to copy selected text
 // TODO: Add Ctrl + v to paste copied text
-// TODO: Add editor options
 // TODO: Add the palletes
 
 // IDEA: Add a cmd/terminal wrapper maybe, for compiling/executing code and other commands.
