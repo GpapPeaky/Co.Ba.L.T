@@ -53,6 +53,7 @@ use std::str::FromStr;
 
 use macroquad::prelude::rand;
 
+use crate::options::editor_options::*;
 use crate::console::editor_console::*;
 use crate::console::editor_file::*;
 use crate::text::editor_cursor::*;
@@ -67,7 +68,8 @@ pub fn execute_directive(
     directive: &mut String,
     efs: &mut EditorFileSystem, 
     text: &mut Vec<String>, 
-    cursor: &mut EditorCursor
+    cursor: &mut EditorCursor,
+    ops: &mut EditorOptions,
 ) -> (String, bool) {
     if directive.starts_with(':') {
         let directive_command = directive.trim_start_matches(':').trim();
@@ -222,6 +224,23 @@ pub fn execute_directive(
                 } else {
                     return ("NoMaxNumProvided <:egam>".to_string(), false);
                 }
+            }
+
+            // Options
+            "eau" => {
+                ops.toggle_audio();
+            }
+
+            "esm" => {
+                ops.toggle_smart();                
+            }
+            
+            "efl" => {
+                ops.toggle_fullscreen();    
+            }
+            
+            "ehi" => {
+                ops.toggle_highlight();    
             }
 
             _ => return ("UnknownDirective".to_string(), false),

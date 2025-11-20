@@ -1,6 +1,7 @@
 // Text input module
 
 use macroquad::prelude::*;
+use crate::options::editor_options::EditorOptions;
 use crate::text::editor_text_stylizer::*;
 use crate::text::editor_cursor::*;
 
@@ -30,7 +31,8 @@ fn lctrl_shortcuts(
     audio: &EditorAudio,
     console: &mut EditorConsole,
     efs: &mut EditorFileSystem,
-    gts: &mut EditorGeneralTextStylizer
+    gts: &mut EditorGeneralTextStylizer,
+    ops: &mut EditorOptions
 ) -> bool {
     // Left control shorcuts
     if is_key_down(KeyCode::LeftControl) {
@@ -50,7 +52,7 @@ fn lctrl_shortcuts(
         // Save/write to file
         if is_key_pressed(KeyCode::S) {
             console.directive = ":w".to_string();
-            execute_directive(&mut console.directive, efs, text, cursor);
+            execute_directive(&mut console.directive, efs, text, cursor, ops);
 
             return true;
         }
@@ -68,7 +70,7 @@ fn lctrl_shortcuts(
         // Open native file explorer        
         if is_key_pressed(KeyCode::O) {
             console.directive = ":O".to_string();
-            execute_directive(&mut console.directive, efs, text, cursor);
+            execute_directive(&mut console.directive, efs, text, cursor, ops);
 
             return true;
         }
@@ -76,7 +78,7 @@ fn lctrl_shortcuts(
         // Create a new file
         if is_key_pressed(KeyCode::N) {
             console.directive = ":c f".to_string();
-            execute_directive(&mut console.directive, efs, text, cursor);
+            execute_directive(&mut console.directive, efs, text, cursor, ops);
             console.directive = ":b ".to_string();
             console.mode = true;
             console.cursor.x = console.directive.len();
@@ -96,7 +98,7 @@ fn lctrl_shortcuts(
         // Remove current file
         if is_key_pressed(KeyCode::R) {
             console.directive = ":r".to_string();
-            execute_directive(&mut console.directive, efs, text, cursor);
+            execute_directive(&mut console.directive, efs, text, cursor, ops);
 
             return true;
         }
@@ -154,9 +156,15 @@ fn lctrl_shortcuts(
         // Save and quit
         if is_key_pressed(KeyCode::Q) {
             console.directive = ":W".to_string();
-            execute_directive(&mut console.directive, efs, text, cursor);
+            execute_directive(&mut console.directive, efs, text, cursor, ops);
             console.directive = ":q".to_string();
-            execute_directive(&mut console.directive, efs, text, cursor);
+            execute_directive(&mut console.directive, efs, text, cursor, ops);
+        }
+        
+        // Quit
+        if is_key_pressed(KeyCode::E) {
+            console.directive = ":e".to_string();
+            execute_directive(&mut console.directive, efs, text, cursor, ops);
         }
 
         // Console switch
@@ -199,7 +207,8 @@ pub fn record_special_keys(
     audio: &EditorAudio,
     console: &mut EditorConsole,
     gts: &mut EditorGeneralTextStylizer,
-    efs: &mut EditorFileSystem
+    efs: &mut EditorFileSystem,
+    ops: &mut EditorOptions
 ) -> bool {
     // Backspace
     if is_key_pressed(KeyCode::Backspace) {
@@ -315,7 +324,7 @@ pub fn record_special_keys(
         }
     }
         
-    if !lctrl_shortcuts(cursor, text, audio, console, efs, gts) {
+    if !lctrl_shortcuts(cursor, text, audio, console, efs, gts, ops) {
         file_text_navigation(cursor, text, audio);
     }
 
@@ -329,7 +338,8 @@ pub fn record_keyboard_to_file_text(
     audio: &EditorAudio,
     console: &mut EditorConsole,
     gts: &mut EditorGeneralTextStylizer,
-    efs: &mut EditorFileSystem
+    efs: &mut EditorFileSystem,
+    ops: &mut EditorOptions
 ) {
     // let c = get_char_pressed().unwrap(); // Unwrap removes the Result/Option wrapper.
 
@@ -337,7 +347,7 @@ pub fn record_keyboard_to_file_text(
         text.push(String::new());
     }
 
-    if record_special_keys(cursor, text, audio, console, gts, efs) {
+    if record_special_keys(cursor, text, audio, console, gts, efs, ops) {
         return; // Handle the special key and terminate the call, as to 
         // not record any special escape character
     }

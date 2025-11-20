@@ -305,53 +305,97 @@ pub fn path_buffer_file_to_string(
 /// Display files and folders in the current working directory.
 /// Highlights the currently open file.
 /// When typing in the console, only the ones matching the text input will be shown.
-/// Returns the closet matching filename for autocompletion when TAB is pressed.
+/// Returns the closet matching filename/directory for autocompletion when TAB is pressed.
 pub fn draw_dir_contents(
     current_file: &Option<PathBuf>,
     current_dir: &Option<PathBuf>,
-    switch_to_file_directive: String
+    directive: &str,
+    is_cd: bool,
 ) -> String {
     let Some(dir) = current_dir else {
         return "".to_string();
     };
 
     let entries = match fs::read_dir(dir) {
-        Ok(entries) => entries,
+        Ok(v) => v,
         Err(_) => return "".to_string(),
     };
 
+    // Make to lowercase
+    let directive_lc = directive.to_lowercase();
+    
+    // Extract query text
+    let query = if directive.is_empty() {
+        "".to_string()
+    } else if directive_lc.starts_with(":cd ") {
+        directive[4..].to_lowercase()
+    } else if directive.starts_with(':') {
+        directive.split_whitespace().last().unwrap_or("").to_lowercase()
+    } else {
+        directive.to_lowercase()
+    };
+    
+    // Mode flags
+    let show_all = directive.is_empty();
+    let show_dirs_only = directive_lc.starts_with(":cd ");
+    let show_files_only = !show_all && !show_dirs_only;
+
+    let mut best_match = String::new();
     let mut y = 50.0 + CONSOLE_MARGINS;
     let x = screen_width() - CONSOLE_WIDTH + CONSOLE_MARGINS;
 
     for entry in entries.flatten() {
         let path = entry.path();
-        let file_name = entry.file_name();
-        let file_name_str = file_name.to_string_lossy();
+        let name_os = entry.file_name();
+        let mut name = name_os.to_string_lossy().to_string();
+        let name_lc = name.to_lowercase();
+        let is_dir = path.is_dir();
 
-        if !entry.path().is_dir() { // Autoselect files only
-            if !switch_to_file_directive.is_empty() && !switch_to_file_directive.starts_with(':') {
-                if !file_name_str.contains(&switch_to_file_directive) {
-                    continue;
-                }
-
-                if is_key_pressed(KeyCode::Tab) {
-                   // Autocomplete to the console, the first entry shown.                                             
-                   return file_name_str.to_string();
-                }
+        // Filtering logic
+        if !show_all {
+            if is_cd && !is_dir {
+                continue;
+            }
+            if !is_cd && is_dir {
+                continue;
+            }
+            
+            // Matching names
+            if !name_lc.contains(&query) {
+                continue;
             }
         }
 
+        // Autocomplete match
+        if best_match.is_empty() && !show_all {
+            if show_dirs_only && is_dir {
+                best_match = name.clone();
+            } else if show_files_only && !is_dir {
+                best_match = name.clone();
+            }
+        }
+
+        // Highlight and formatting
         let color = if Some(&path) == current_file.as_ref() {
             SELECTED_FILE_COLOR
-        } else if path.is_dir() {
+        } else if is_dir {
             FOLDER_COLOR
         } else {
             FILE_COLOR
         };
 
-        draw_text(&file_name_str, x, y, 24.0, color);
+        if is_dir {
+            name.push('/');
+        }
+
+        draw_text(&name, x, y, 24.0, color);
         y += 20.0;
     }
 
-    return "".to_string();
+    if is_key_pressed(KeyCode::Tab) {
+        return best_match;
+    }
+
+    "".to_string()
 }
+

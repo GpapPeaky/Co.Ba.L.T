@@ -87,7 +87,9 @@ All configuration changes are saved in `cal.conf`.
 | `:epa <p>` | Change the editor palette to `<p>`. |
 | `:efn <p>` | Change the editor font to `<p>`. |
 | `:eau` | Toggle editor audio on/off. |
-| `:eav <N>` | Set editor audio volume to `N`. |
+| `:esm` | Set editor smart identation on/off. |
+| `:efl` | Set editor fullscreen on/off. |
+| `:ehi` | Set editor text highlighting on/off |
 
 ---
 
@@ -137,6 +139,7 @@ All configuration changes are saved in `cal.conf`.
 | **LCtrl + `D`**                | Duplicate current line.                                      |
 | **LCtrl + `W`**                | Delete the word at the cursor index.                         |
 | **LCtrl + `Q`**                | Save and Quit (`:W`, then `:q`).                             |
+| **LCtrl + `E`**                | Quit/Exit (`:e`).                                            |
 | **LCtrl + `` ` ``**            | Switch to console mode.                                      |
 | **LCtrl + `-`**                | Decrease editor font size.                                   |
 | **LCtrl + `=`**                | Increase editor font size.                                   |

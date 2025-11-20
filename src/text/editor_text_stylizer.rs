@@ -15,7 +15,7 @@ impl EditorGeneralTextStylizer {
     pub async fn new() -> EditorGeneralTextStylizer {
         EditorGeneralTextStylizer {
             font: load_ttf_font("assets/font/default.ttf").await.unwrap(),
-            font_size: 25,
+            font_size: 18,
             color: WHITE
         }
     }

@@ -4,6 +4,7 @@
 use macroquad::prelude::*;
 
 use crate::audio::editor_audio::*;
+use crate::options::editor_options::EditorOptions;
 use crate::options::editor_pallete::{
     CONSOLE_CONTAINER_COLOR,
     CONSOLE_CURSOR_COLOR,
@@ -92,7 +93,8 @@ impl EditorConsole {
         audio: &EditorAudio,
         efs: &mut EditorFileSystem,
         text: &mut Vec<String>,
-        cursor: &mut EditorCursor
+        cursor: &mut EditorCursor,
+        ops: &mut EditorOptions
     ) {
         if is_key_pressed(KeyCode::Backspace) {
             if self.cursor.x > 0 && !self.directive.is_empty() {
@@ -124,7 +126,7 @@ impl EditorConsole {
         if is_key_pressed(KeyCode::Enter) {
             // execute whatever is inside the directive string
             // check the directives' source
-            let message_and_manual_toggle = execute_directive(&mut self.directive, efs, text, cursor).clone();
+            let message_and_manual_toggle = execute_directive(&mut self.directive, efs, text, cursor, ops).clone();
 
             // Update for rendering.
             self.message = message_and_manual_toggle.0;
@@ -143,9 +145,10 @@ impl EditorConsole {
         audio: &EditorAudio,
         efs: &mut EditorFileSystem,
         text: &mut Vec<String>,
-        cursor: &mut EditorCursor
+        cursor: &mut EditorCursor,
+        ops: &mut EditorOptions
     ) {
-        self.record_special_console_keys(audio, efs, text, cursor);
+        self.record_special_console_keys(audio, efs, text, cursor, ops);
 
         // Disable special characters from the console.
         if let Some(c) = get_char_pressed() {
@@ -296,7 +299,9 @@ pub fn console_manual(man_id: u8) -> String {
                 :epa <p>    : Change to pallete of name 'p'
                 :efn <p>    : Change to a font of name 'p'
                 :eau        : Audio on/off switch
-                :eav <N>    : Set editor audio volume to N
+                :esm        : Smart identation on/off switch
+                :efl        : Editor fullsreen on/off switch
+                :ehi        : Editor text highlighting on/off switch
                     
                 Other directives:
                 :e/q                : Exit, close editor                                           
@@ -343,7 +348,9 @@ pub fn console_manual(man_id: u8) -> String {
                         :epa <p>    : Change to pallete of name 'p'
                         :efn <p>    : Change to a font of name 'p'
                         :eau        : Audio on/off switch
-                        :eav <N>    : Set editor audio volume to N
+                        :esm        : Smart identation on/off switch
+                        :efl        : Editor fullscreen on/off switch
+                        :ehi        : Edito highlighting on/off switch
                 ".to_string();
             }
 
@@ -369,7 +376,9 @@ pub fn console_manual(man_id: u8) -> String {
                      ArrowKeys: Move the cursor index by one vertically/horizontally.
                      LCtrl + ArrowKeys: Move the cursor index to the next non whitespace character
                                         horizontally, or by 5 vertically.
-                     LCtrl + LShift + ArrowKeys: Smoothly slide the cursor vertically. 
+                     LCtrl + LShift + ArrowKeys: Smoothly slide the cursor vertically.
+                     
+                     // TODO: Add shortcuts
                ".to_string();
             }
 
