@@ -93,7 +93,10 @@ pub fn rust_keywords() -> EditorLanguageKeywords {
     }
 }
 
-pub fn load_keywords_for_extension(ext: &str) -> EditorLanguageKeywords {
+/// Load keywords for extensions based on the upper functions
+pub fn load_keywords_for_extension(
+    ext: &str
+) -> EditorLanguageKeywords {
     match ext {
         "c" | "h" | "cpp" | "hpp" | "cc" => cpp_keywords(),
         "java" => java_keywords(),
