@@ -5,16 +5,40 @@ use macroquad::prelude::*;
 
 use crate::audio::editor_audio::*;
 
+pub const CURSOR_PREFIX_OFFSET: f32 = 600.0;
+
 pub struct EditorCursor {
     pub xy: (usize, usize),
+    pub prefix: String,
 }
 
 impl EditorCursor {
     pub fn new() -> EditorCursor {
         EditorCursor {
             xy: (0, 0),
-         }
+            prefix: String::from("")
+        }
     }
+}
+
+/// Find the cursor's prefix fragment
+pub fn recognize_cursor_prefix(
+    cursor: &mut EditorCursor,
+    line: &String
+) {
+    // Find the character collection of the word, left and right
+    // from the word_idx
+
+    let cursor_idx = cursor.xy.0;
+    let left_distance = calibrate_distance_to_whitespace(false, cursor_idx, line);
+    let right_distance = calibrate_distance_to_whitespace(true, cursor_idx, line);
+    
+    // Index of where the word starts
+    let left_cursor_idx = cursor_idx - left_distance;
+    let right_cursor_idx = right_distance + cursor_idx;
+    
+    // Prefix is everything from the word start up to cursor
+    cursor.prefix = line[left_cursor_idx..right_cursor_idx].to_string();
 }
 
 /// Standard cursor navigation
@@ -70,6 +94,8 @@ pub fn file_text_navigation(
             cursor.xy.0 = 0;
         }
     }
+
+    recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
 }
 
 /// Special navigation with LCTRL movement
@@ -159,6 +185,8 @@ pub fn file_text_special_navigation(
             cursor.xy.0 = 0;
         }
     }
+
+    recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
 }
 
 /// Calculate the distance from the left or right 

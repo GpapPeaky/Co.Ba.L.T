@@ -61,6 +61,8 @@ use crate::text::editor_cursor::*;
 use crate::VERSION;
 use crate::text::editor_language_manager::EditorLanguageKeywords;
 use crate::text::editor_language_manager::load_keywords_for_extension;
+use crate::text::editor_language_manager::recognize_identifiers;
+use crate::text::editor_language_manager::tokenize_text_file;
 use crate::text::editor_text::find_word_in_text;
 
 /// Check if there is a ':', trim it, match it to a directive and execute it
@@ -254,6 +256,9 @@ pub fn execute_directive(
         if efs.change_current_file(directive.to_string()) {
             text.clear();
             *text = efs.load_current_file().unwrap_or_default();
+
+            let tokens = tokenize_text_file(text);
+            recognize_identifiers(tokens, elk);
 
             let fname = path_buffer_file_to_string(&efs.current_file);
 

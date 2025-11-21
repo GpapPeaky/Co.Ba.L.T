@@ -18,6 +18,9 @@ use crate::text::editor_cursor::*;
 use crate::console::editor_directives::*;
 use crate::text::editor_language_manager::EditorLanguageKeywords;
 
+pub const CONSOLE_WIDTH: f32 = 400.0;
+pub const CONSOLE_MARGINS: f32 = 15.0;
+
 pub struct EditorConsole {
     pub mode: bool,
     pub directive: String,
@@ -26,9 +29,6 @@ pub struct EditorConsole {
     pub showing_message: bool,
     pub showing_manual: bool,
 }
-
-pub const CONSOLE_WIDTH: f32 = 400.0;
-pub const CONSOLE_MARGINS: f32 = 15.0;
 
 impl EditorConsole {
     /// Console constructor

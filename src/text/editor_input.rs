@@ -294,7 +294,6 @@ pub fn record_special_keys(
         let opener = line.trim_end().chars().last();
     
         let mut inner_indent = base_indent.clone();
-        let mut insert_closer = false;
     
         // Check if we are between opener and closer
         if let Some(opener) = opener {
@@ -309,10 +308,8 @@ pub fn record_special_keys(
                 // If rest_of_line starts with the closer, move it out temporarily
                 if rest_of_line.starts_with(expected_closer) {
                     rest_of_line = rest_of_line[expected_closer.len_utf8()..].to_string();
-                    insert_closer = false; // closer already exists, don’t insert
-                } else {
-                    insert_closer = true;
                 }
+                
                 inner_indent.push_str(TAB_PATTERN); // indent inside block
             }
         }
@@ -326,17 +323,15 @@ pub fn record_special_keys(
         text.insert(cursor.xy.1, format!("{}{}", inner_indent, rest_of_line));
     
         // Insert closer if needed
-        if insert_closer {
-            if let Some(opener) = opener {
-                let closer = match opener {
-                    '(' => ')',
-                    '{' => '}',
-                    '[' => ']',
-                    _ => '\0',
-                };
-                if closer != '\0' {
-                    text.insert(cursor.xy.1 + 1, format!("{}{}", base_indent, closer));
-                }
+        if let Some(opener) = opener {
+            let closer = match opener {
+                '(' => ')',
+                '{' => '}',
+                '[' => ']',
+                   _ => '\0',
+           };
+            if closer != '\0' {
+                text.insert(cursor.xy.1 + 1, format!("{}{}", base_indent, closer));
             }
         }
     }
@@ -434,6 +429,8 @@ pub fn record_keyboard_to_file_text(
                 let next_byte_idx = char_to_byte(line, cursor.xy.0);
 
                 line.insert(next_byte_idx, '>');
+
+                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
             }
 
             '(' => {
@@ -450,6 +447,8 @@ pub fn record_keyboard_to_file_text(
                 let next_byte_idx = char_to_byte(line, cursor.xy.0);
 
                 line.insert(next_byte_idx, ')');
+
+                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
             }
 
             '{' => {
@@ -466,6 +465,8 @@ pub fn record_keyboard_to_file_text(
                 let next_byte_idx = char_to_byte(line, cursor.xy.0);
 
                 line.insert(next_byte_idx, '}');
+
+                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
             }
 
             '\'' => {
@@ -482,6 +483,8 @@ pub fn record_keyboard_to_file_text(
                 let next_byte_idx = char_to_byte(line, cursor.xy.0);
 
                 line.insert(next_byte_idx, '\'');
+
+                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
             }
 
             '"' => {
@@ -498,6 +501,8 @@ pub fn record_keyboard_to_file_text(
                 let next_byte_idx = char_to_byte(line, cursor.xy.0);
 
                 line.insert(next_byte_idx, '"');
+
+                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
             }
 
             '[' => {
@@ -514,6 +519,8 @@ pub fn record_keyboard_to_file_text(
                 let next_byte_idx = char_to_byte(line, cursor.xy.0);
 
                 line.insert(next_byte_idx, ']');
+
+                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
             }
 
             _ => {
@@ -529,6 +536,8 @@ pub fn record_keyboard_to_file_text(
                 
                 line.insert(byte_idx, c); // Normal insertion.
                 cursor.xy.0 += 1;
+
+                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
             }
         }
     }

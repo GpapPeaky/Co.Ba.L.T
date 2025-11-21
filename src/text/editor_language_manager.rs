@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 #[derive(Debug, Clone)]
 pub struct EditorLanguageKeywords {
     pub control_flow: Vec<&'static str>,
@@ -6,6 +8,7 @@ pub struct EditorLanguageKeywords {
     pub composite_types: Vec<&'static str>,
     pub misc: Vec<&'static str>,
     pub data_types: Vec<&'static str>,
+    pub file_ids: Vec<String>,
 }
 
 pub fn cpp_keywords() -> EditorLanguageKeywords {
@@ -34,6 +37,7 @@ pub fn cpp_keywords() -> EditorLanguageKeywords {
             "int", "float", "double", "char", "void",
             "short", "long", "unsigned", "bool",
         ],
+        file_ids: vec![],
     }
 }
 
@@ -63,6 +67,7 @@ pub fn java_keywords() -> EditorLanguageKeywords {
             "int", "float", "double", "boolean", "char",
             "short", "long", "byte",
         ],
+        file_ids: vec![],
     }
 }
 
@@ -90,6 +95,7 @@ pub fn rust_keywords() -> EditorLanguageKeywords {
             "u8","u16","u32","u64","u128","usize",
             "f32","f64","bool","char","str", "String"
         ],
+        file_ids: vec![],
     }
 }
 
@@ -108,7 +114,62 @@ pub fn load_keywords_for_extension(
             composite_types: vec![],
             misc: vec![],
             data_types: vec![],
+            file_ids: vec![],
         }
     }
 }
 
+/// Check if a token is a keyword
+/// return true if it is, false if not
+pub fn is_keyword(
+    token: &str,
+    elk: &EditorLanguageKeywords
+) -> bool {
+    if 
+        elk.control_flow.contains(&token)
+        || elk.storage_class.contains(&token)
+        || elk.type_qualifiers.contains(&token)
+        || elk.composite_types.contains(&token)
+        || elk.misc.contains(&token)
+        || elk.data_types.contains(&token) {
+            return false;
+    }
+     
+    true
+}
+
+/// Tokenize text file
+/// from line-major to 
+/// word-major, return the 
+/// text file's tokens
+pub fn tokenize_text_file(
+    text: &Vec<String>
+) -> Vec<String> {
+    let mut tokens = Vec::new();
+    let mut seen = HashSet::new();
+
+    for line in text {
+        for word in line.split_whitespace() {
+            if seen.insert(word) {
+                tokens.push(word.to_string());
+            }
+        }
+    }
+
+    tokens
+}
+
+/// Recognize identifiers
+/// from the tokenized file text
+/// pass the result into the
+/// ELK's file identifier fields. 
+pub fn recognize_identifiers(
+    tokens: Vec<String>,
+    elk: &mut EditorLanguageKeywords
+) {
+    for s in tokens {
+        if is_keyword(&s, elk) {
+            elk.file_ids.push(s);
+        }
+    }
+}
