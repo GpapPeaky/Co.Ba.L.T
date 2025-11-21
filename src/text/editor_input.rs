@@ -279,54 +279,68 @@ pub fn record_special_keys(
 
         return true;
     }
-
-    // Return/Enter key
+    
     if is_key_pressed(KeyCode::Enter) {
         audio.play_return();
         efs.unsaved_changes = true;
     
-        let line = &mut text[cursor.xy.1];
         let cursor_pos = cursor.xy.0;
     
-        // Split the line at cursor
-        let rest_of_line = line.split_off(char_to_byte(line, cursor_pos));
+        let mut line = text.remove(cursor.xy.1);
+        let split_index = char_to_byte(&line, cursor_pos);
+        let mut rest_of_line = line.split_off(split_index);
     
-        // Get base indentation (spaces/tabs at start of line)
         let base_indent: String = line.chars().take_while(|c| c.is_whitespace()).collect();
+        let opener = line.trim_end().chars().last();
     
-        // Determine if we should increase indent
-        let increase_indent = matches!(line.trim_end().chars().last(), Some('{') | Some('(') | Some('['));
+        let mut inner_indent = base_indent.clone();
+        let mut insert_closer = false;
     
-        // Determine if we need to insert a closer
-        let next_closer = match (line.trim_end().chars().last(), rest_of_line.chars().next()) {
-            (Some('{'), Some('}')) => Some('}'),
-            (Some('('), Some(')')) => Some(')'),
-            (Some('['), Some(']')) => Some(']'),
-            _ => None,
-        };
+        // Check if we are between opener and closer
+        if let Some(opener) = opener {
+            let expected_closer = match opener {
+                '(' => ')',
+                '{' => '}',
+                '[' => ']',
+                _ => '\0',
+            };
     
-        // Prepare new line indentation
-        let mut new_line = base_indent.clone();
-        if increase_indent {
-            new_line.push_str(TAB_PATTERN);
+            if expected_closer != '\0' {
+                // If rest_of_line starts with the closer, move it out temporarily
+                if rest_of_line.starts_with(expected_closer) {
+                    rest_of_line = rest_of_line[expected_closer.len_utf8()..].to_string();
+                    insert_closer = false; // closer already exists, don’t insert
+                } else {
+                    insert_closer = true;
+                }
+                inner_indent.push_str(TAB_PATTERN); // indent inside block
+            }
         }
     
-        // Insert new line
-        cursor.xy.1 += 1;
-        cursor.xy.0 = new_line.chars().count();
-        text.insert(cursor.xy.1, new_line);
+        // Insert original line
+        text.insert(cursor.xy.1, line);
     
-        // If there’s a closer, handle it smartly
-        if let Some(closer) = next_closer {
-            // Remove the closer from rest_of_line
-            let rest_cleaned = rest_of_line[closer.len_utf8()..].to_string();
-            text[cursor.xy.1 - 1].push_str(&rest_cleaned); // append rest to previous line
-            text.insert(cursor.xy.1 + 1, format!("{}{}", base_indent, closer)); // insert closer on new line
-        } else if !rest_of_line.is_empty() {
-            text.insert(cursor.xy.1 + 1, rest_of_line);
+        // Insert new indented line
+        cursor.xy.1 += 1;
+        cursor.xy.0 = inner_indent.chars().count();
+        text.insert(cursor.xy.1, format!("{}{}", inner_indent, rest_of_line));
+    
+        // Insert closer if needed
+        if insert_closer {
+            if let Some(opener) = opener {
+                let closer = match opener {
+                    '(' => ')',
+                    '{' => '}',
+                    '[' => ']',
+                    _ => '\0',
+                };
+                if closer != '\0' {
+                    text.insert(cursor.xy.1 + 1, format!("{}{}", base_indent, closer));
+                }
+            }
         }
     }
-        
+    
     if !lctrl_shortcuts(cursor, text, audio, console, efs, gts, ops, elk) {
         file_text_navigation(cursor, text, audio);
     }
@@ -360,6 +374,43 @@ pub fn record_keyboard_to_file_text(
         // Skip control characters
         if c.is_control() || c.is_ascii_control() {
             return;
+        }
+        
+        if c == ')' {
+            let line = &text[cursor.xy.1];
+            if line.chars().nth(cursor.xy.0) == Some(')') {
+                cursor.xy.0 += 1;
+                
+                return;
+            }
+        }
+
+        if c == '>' {
+            let line = &text[cursor.xy.1];
+            if line.chars().nth(cursor.xy.0) == Some('>') {
+                cursor.xy.0 += 1;
+                
+                return;
+            }
+        }
+        
+        if c == ']' {
+            let line = &text[cursor.xy.1];
+            if line.chars().nth(cursor.xy.0) == Some(']') {
+                cursor.xy.0 += 1;
+                
+                return;
+            }
+    
+        }
+        
+        if c == '}' {
+            let line = &text[cursor.xy.1];
+            if line.chars().nth(cursor.xy.0) == Some('}') {
+                cursor.xy.0 += 1;
+                
+                return;
+            }
         }
     
         efs.unsaved_changes = true;
