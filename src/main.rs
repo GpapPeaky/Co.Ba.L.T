@@ -24,7 +24,6 @@ use crate::text::editor_language_manager::{EditorLanguageKeywords ,load_keywords
 use crate::text::editor_text::{CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE, MODE_Y_MARGIN, MODE_Y_OFFSET, draw_file_text};
 use crate::text::editor_text_stylizer::EditorGeneralTextStylizer;
 
-// FIXME: Smart identation is problematic
 // TODO: Finish all the directives
 // TODO: Add Ctrl + z to undo last change
 // TODO: Add selection mode
