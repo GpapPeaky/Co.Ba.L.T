@@ -76,7 +76,7 @@ pub fn rust_keywords() -> EditorLanguageKeywords {
             "static", "const", "mut",
         ],
         type_qualifiers: vec![
-            "ref", "mut", "unsafe",
+            "ref", "mut", "unsafe",  "fn"
         ],
         composite_types: vec![
             "struct", "enum", "trait", "impl", "union",
@@ -88,7 +88,7 @@ pub fn rust_keywords() -> EditorLanguageKeywords {
         data_types: vec![
             "i8","i16","i32","i64","i128","isize",
             "u8","u16","u32","u64","u128","usize",
-            "f32","f64","bool","char","str",
+            "f32","f64","bool","char","str", "String"
         ],
     }
 }

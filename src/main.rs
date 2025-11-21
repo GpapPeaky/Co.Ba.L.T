@@ -72,7 +72,7 @@ async fn main() {
     let mut console = EditorConsole::new();
     // Actual file text
     let mut file_text = vec![];
-    // Language support based on file
+    // Language support based on file, default no higlighting
     let mut elk: EditorLanguageKeywords = load_keywords_for_extension("txt"); 
 
     let insert_word_w = measure_text("INSERT MODE", None, MODE_FONT_SIZE as u16, 1.0).width;
