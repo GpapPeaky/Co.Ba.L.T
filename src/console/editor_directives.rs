@@ -257,9 +257,9 @@ pub fn execute_directive(
             text.clear();
             *text = efs.load_current_file().unwrap_or_default();
             
-            // Problematic
-            let tokens = tokenize_text_file(text);
-            recognize_identifiers(tokens, elk);
+            // FIXME: No tokens shown
+            // let tokens = tokenize_text_file(text);
+            // recognize_identifiers(tokens, elk);
 
             let fname = path_buffer_file_to_string(&efs.current_file);
 
