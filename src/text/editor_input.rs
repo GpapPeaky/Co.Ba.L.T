@@ -430,7 +430,7 @@ pub fn record_keyboard_to_file_text(
 
                 line.insert(next_byte_idx, '>');
 
-                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
+                recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
 
             '(' => {
@@ -448,7 +448,7 @@ pub fn record_keyboard_to_file_text(
 
                 line.insert(next_byte_idx, ')');
 
-                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
+                recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
 
             '{' => {
@@ -466,7 +466,7 @@ pub fn record_keyboard_to_file_text(
 
                 line.insert(next_byte_idx, '}');
 
-                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
+                recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
 
             '\'' => {
@@ -484,7 +484,7 @@ pub fn record_keyboard_to_file_text(
 
                 line.insert(next_byte_idx, '\'');
 
-                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
+                recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
 
             '"' => {
@@ -502,7 +502,7 @@ pub fn record_keyboard_to_file_text(
 
                 line.insert(next_byte_idx, '"');
 
-                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
+                recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
 
             '[' => {
@@ -520,7 +520,7 @@ pub fn record_keyboard_to_file_text(
 
                 line.insert(next_byte_idx, ']');
 
-                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
+                recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
 
             _ => {
@@ -537,7 +537,7 @@ pub fn record_keyboard_to_file_text(
                 line.insert(byte_idx, c); // Normal insertion.
                 cursor.xy.0 += 1;
 
-                recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
+                recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
         }
     }

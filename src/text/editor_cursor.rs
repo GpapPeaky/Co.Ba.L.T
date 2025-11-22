@@ -5,24 +5,24 @@ use macroquad::prelude::*;
 
 use crate::audio::editor_audio::*;
 
-pub const CURSOR_PREFIX_OFFSET: f32 = 600.0;
+pub const CURSOR_WORD_OFFSET: f32 = 600.0;
 
 pub struct EditorCursor {
     pub xy: (usize, usize),
-    pub prefix: String,
+    pub word: String,
 }
 
 impl EditorCursor {
     pub fn new() -> EditorCursor {
         EditorCursor {
             xy: (0, 0),
-            prefix: String::from("")
+            word: String::from("")
         }
     }
 }
 
-/// Find the cursor's prefix fragment
-pub fn recognize_cursor_prefix(
+/// Find the cursor's word fragment
+pub fn recognize_cursor_word(
     cursor: &mut EditorCursor,
     line: &String
 ) {
@@ -37,8 +37,7 @@ pub fn recognize_cursor_prefix(
     let left_cursor_idx = cursor_idx - left_distance;
     let right_cursor_idx = right_distance + cursor_idx;
     
-    // Prefix is everything from the word start up to cursor
-    cursor.prefix = line[left_cursor_idx..right_cursor_idx].to_string();
+    cursor.word = line[left_cursor_idx..right_cursor_idx].to_string();
 }
 
 /// Standard cursor navigation
@@ -95,7 +94,7 @@ pub fn file_text_navigation(
         }
     }
 
-    recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
+    recognize_cursor_word(cursor, &text[cursor.xy.1]);
 }
 
 /// Special navigation with LCTRL movement
@@ -186,7 +185,7 @@ pub fn file_text_special_navigation(
         }
     }
 
-    recognize_cursor_prefix(cursor, &text[cursor.xy.1]);
+    recognize_cursor_word(cursor, &text[cursor.xy.1]);
 }
 
 /// Calculate the distance from the left or right 
