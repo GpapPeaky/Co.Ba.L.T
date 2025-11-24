@@ -49,7 +49,7 @@ We can navigate the current file's text in these ways:
 
 ## Console Directives
 
-All console commands are prefixed with a `:`. Commands without `:` are treated as **switch-to-file or directory commands**.
+All console commands are prefixed with a `:`. Commands without `:` are treated as **switch-to-file commands**.
 
 ---
 
