@@ -162,7 +162,7 @@ pub fn tokenize_text_file(
 /// Recognize identifiers
 /// from the tokenized file text
 /// pass the result into the
-/// ELK's file identifier fields. 
+/// ELK's file identifier field. 
 pub fn recognize_identifiers(
     tokens: Vec<String>,
     elk: &mut EditorLanguageKeywords
