@@ -113,6 +113,28 @@ pub fn file_text_special_navigation(
     let cursor_special_vertical_movement = 4;
 
     if is_key_down(KeyCode::LeftShift) {
+
+        // Faster horizontal movement
+        if is_key_down(KeyCode::Right) {
+            if cursor.xy.0 + 1 < text.len() {
+                audio.play_nav();
+                cursor.xy.0 += 1;
+            } else {
+                audio.play_nav();
+                cursor.xy.0 = text.len() - 1;
+            }
+        }
+
+        if is_key_down(KeyCode::Left) {
+            if cursor.xy.0 > 1 {
+                audio.play_nav();
+                cursor.xy.0 -= 1;
+            } else if cursor.xy.0 <= 0 {
+                audio.play_nav();
+                cursor.xy.0 = 0;
+            }
+        }
+
         // Even faster vertical movement
         if is_key_down(KeyCode::Up) {
             if cursor.xy.1 > 1 {

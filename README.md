@@ -143,8 +143,9 @@ All configuration changes are saved in `cal.conf`.
 | **LCtrl + `` ` ``**            | Switch to console mode.                                      |
 | **LCtrl + `-`**                | Decrease editor font size.                                   |
 | **LCtrl + `=`**                | Increase editor font size.                                   |
-| **LCtrl + ArrowKeys**          | Move cursor 5 steps.                                         |
+| **LCtrl + Up/Down**            | Move cursor 5 steps.                                         |
 | **LCtrl + LShift + ArrowKeys** | Hold to continuously move cursor (1 step per tick).          |
+| **LAlt + Up/Down**             | Move line at cursor by one.                                  |
 ---
 
 ## License

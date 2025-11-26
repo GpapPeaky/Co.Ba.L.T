@@ -25,6 +25,45 @@ pub fn char_to_byte(
     line.char_indices().nth(char_idx).map(|(b, _)| b).unwrap_or(line.len())
 }
 
+/// Left alt shortcuts
+fn lalt_shortcuts(
+    cursor: &mut EditorCursor,
+    text: &mut Vec<String>,
+    audio: &EditorAudio,
+    console: &mut EditorConsole,
+    efs: &mut EditorFileSystem,
+    gts: &mut EditorGeneralTextStylizer,
+    elk: &mut EditorLanguageKeywords
+) -> bool {
+    if is_key_down(KeyCode::LeftAlt) {
+        // Move line at cursor up by one
+        if is_key_pressed(KeyCode::Up) {
+            if cursor.xy.1 > 0 {
+                text.swap(cursor.xy.1, cursor.xy.1 - 1);
+                cursor.xy.1 -= 1;
+                efs.unsaved_changes = true;
+                audio.play_nav();
+            }
+    
+            return true;
+        }
+    
+        // Move line at cursor down by one
+        if is_key_pressed(KeyCode::Down) {
+            if cursor.xy.1 + 1 < text.len() {
+                text.swap(cursor.xy.1, cursor.xy.1 + 1);
+                cursor.xy.1 += 1;
+                efs.unsaved_changes = true;
+                audio.play_nav();
+            }
+    
+            return true;
+        }
+    }
+    
+    false
+}
+
 /// Left control shortcuts
 fn lctrl_shortcuts(
     cursor: &mut EditorCursor,
@@ -75,6 +114,13 @@ fn lctrl_shortcuts(
             execute_directive(&mut console.directive, efs, text, cursor, ops, elk);
 
             return true;
+        }
+        
+        // Find infile
+        if is_key_pressed(KeyCode::F) {
+            console.directive = ":f ".to_string();
+            console.cursor.x = console.directive.len();
+            console.mode = true;            
         }
         
         // Create a new file
@@ -310,7 +356,7 @@ pub fn record_special_keys(
                     rest_of_line = rest_of_line[expected_closer.len_utf8()..].to_string();
                 }
                 
-                inner_indent.push_str(TAB_PATTERN); // indent inside block
+                inner_indent.push_str(TAB_PATTERN);
             }
         }
     
@@ -336,10 +382,16 @@ pub fn record_special_keys(
         }
     }
     
-    if !lctrl_shortcuts(cursor, text, audio, console, efs, gts, ops, elk) {
-        file_text_navigation(cursor, text, audio);
+    if lalt_shortcuts(cursor, text, audio, console, efs, gts, elk) {
+        return true;
     }
 
+    if lctrl_shortcuts(cursor, text, audio, console, efs, gts, ops, elk) {
+        return true;
+    }
+
+    file_text_navigation(cursor, text, audio);
+    
     false
 }
 
