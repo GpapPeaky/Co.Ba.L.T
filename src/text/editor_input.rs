@@ -160,13 +160,10 @@ pub fn lctrl_shortcuts(
             let left_distance = calibrate_distance_to_whitespace(false, cursor_idx, &text[cursor.xy.1]);
             let right_distance = calibrate_distance_to_whitespace(true, cursor_idx, &text[cursor.xy.1]);
             
-            // Index of where the word starts
             let left_cursor_idx = cursor_idx - left_distance;
-            
-            // Word length.
             let word_len = cursor_idx + right_distance;
             
-            // Actual deletion
+            // Actual deletion.            
             for _ in left_cursor_idx..word_len {
                 let line = &mut text[cursor.xy.1];
                 let byte_idx = char_to_byte(line, left_cursor_idx);
@@ -360,13 +357,88 @@ pub fn record_keyboard_to_file_text(
     if let Some(c) = get_char_pressed() {
         if c.is_control() || c.is_ascii_control() { return; }
 
-        let line = &mut text[cursor.xy.1];
+        let line = text.get_mut(cursor.xy.1).unwrap();
         efs.unsaved_changes = true;
 
         let idx = char_to_byte(line, cursor.xy.0);
-        line.insert(idx, c);
-        cursor.xy.0 += 1;
+            
+        // Next opener/closer autocomplete.
+        match c {
+            '(' => {
+                line.insert(idx, c);
+                let idx_next = char_to_byte(line, cursor.xy.0 + 1);
+                line.insert(idx_next, ')');
+                cursor.xy.0 += 1;
+            }
+            
+            '[' => {
+                line.insert(idx, c);
+                let idx_next = char_to_byte(line, cursor.xy.0 + 1);
+                line.insert(idx_next, ']');
+                cursor.xy.0 += 1;
+            }
+            
+            '{' => {
+                line.insert(idx, c);
+                let idx_next = char_to_byte(line, cursor.xy.0 + 1);
+                line.insert(idx_next, '}');
+                cursor.xy.0 += 1;
+            }
+            
+            
+            '"' => {
+                if next_char_is('"', cursor, line) {
+                    // Just move cursor over existing quote
+                    cursor.xy.0 += 1;
+                } else {
+                    line.insert(idx, '"');
+                    line.insert(idx + 1, '"');
+                    cursor.xy.0 += 1;
+                }
+            }
+            
+            ')' => {
+                if next_char_is(')', cursor, line) {
+                    cursor.xy.0 += 1;
+                } else {
+                    line.insert(idx, ')');
+                    cursor.xy.0 += 1;
+                }
+            }
+        
+            ']' => {
+                if next_char_is(']', cursor, line) {
+                    cursor.xy.0 += 1;
+                } else {
+                    line.insert(idx, ']');
+                    cursor.xy.0 += 1;
+                }
+            }
+        
+            '}' => {
+                if next_char_is('}', cursor, line) {
+                    cursor.xy.0 += 1;
+                } else {
+                    line.insert(idx, '}');
+                    cursor.xy.0 += 1;
+                }
+            }
 
+            _ => {
+                line.insert(idx, c);
+                cursor.xy.0 += 1;
+            }
+        }
+
+        audio.play_insert();
         recognize_cursor_word(cursor, &text[cursor.xy.1]);
     }
+}
+
+/// Check the character next to the cursor, for autocomplete
+/// issues
+fn next_char_is(c: char, cursor: &EditorCursor, line: &str) -> bool {
+    line.chars().nth(cursor.xy.0)
+        .map(|ch| ch == c)
+        .unwrap_or(false)
 }

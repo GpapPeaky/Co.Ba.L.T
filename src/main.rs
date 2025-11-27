@@ -26,9 +26,9 @@ use crate::win::editor_win_config::*;
 
 // FIXME: Window icon issues.
 
+// TODO: Add selection mode.
 // TODO: Finish all the directives.
 // TODO: Add Ctrl + z to undo last change.
-// TODO: Add selection mode.
 // TODO: Add Ctrl + c to copy selected text.
 // TODO: Add Ctrl + v to paste copied text.
 // TODO: Add the palletes.
