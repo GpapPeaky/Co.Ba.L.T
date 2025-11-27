@@ -221,9 +221,4 @@ pub fn draw_file_text(
     // Draw cursor position
     let cursor_idx = format!("Ln {}, Col {}", cursor.xy.1, cursor.xy.0);
     draw_text(&cursor_idx, MODE_Y_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + MODE_Y_OFFSET, MODE_FONT_SIZE, CONSOLE_TEXT_COLOR);
-
-    // Console draw
-    if console.mode {
-        console.draw();
-    }
 }

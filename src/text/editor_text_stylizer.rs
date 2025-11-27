@@ -44,7 +44,6 @@ impl EditorGeneralTextStylizer {
             return IDENTIFIER_COLOR;
         }
     }
-    
 
     pub fn draw(
         &self,

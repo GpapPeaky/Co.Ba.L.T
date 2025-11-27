@@ -164,16 +164,29 @@ pub fn file_text_special_navigation(
             cursor.xy.0 = 0;
         }
     }
+    
+    // Vertical step
+    let cursor_vertical_step = 5; 
 
-    if cursor.is_combo_active(KeyCode::Up, None, dt) && cursor.xy.1 > 0 {
-        cursor.xy.1 -= 1;
-        cursor.xy.0 = cursor.xy.0.min(text[cursor.xy.1].len());
+    if cursor.is_combo_active(KeyCode::Up, None, dt) {
+        if cursor.xy.1 > cursor_vertical_step {
+            cursor.xy.1 -= cursor_vertical_step;
+            cursor.xy.0 = cursor.xy.0.min(text[cursor.xy.1].len());
+        } else {
+            cursor.xy.1 = 0;
+        }
+        
         audio.play_nav();
     }
 
-    if cursor.is_combo_active(KeyCode::Down, None, dt) && cursor.xy.1 + 1 < text.len() {
-        cursor.xy.1 += 1;
-        cursor.xy.0 = cursor.xy.0.min(text[cursor.xy.1].len());
+    if cursor.is_combo_active(KeyCode::Down, None, dt) {
+        if cursor.xy.1 + cursor_vertical_step < text.len() {
+            cursor.xy.1 += cursor_vertical_step;
+            cursor.xy.0 = cursor.xy.0.min(text[cursor.xy.1].len());
+        } else {
+            cursor.xy.1 = text.len() - 1;
+        }
+            
         audio.play_nav();
     }
 

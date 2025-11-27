@@ -370,7 +370,7 @@ pub fn record_keyboard_to_file_text(
                 line.insert(idx_next, ')');
                 cursor.xy.0 += 1;
 
-                recognize_cursor_word(cursor, &text[cursor.xy.1]);
+                // recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
             
             '[' => {
@@ -379,7 +379,7 @@ pub fn record_keyboard_to_file_text(
                 line.insert(idx_next, ']');
                 cursor.xy.0 += 1;
 
-                recognize_cursor_word(cursor, &text[cursor.xy.1]);
+                // recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
             
             '{' => {
@@ -388,7 +388,7 @@ pub fn record_keyboard_to_file_text(
                 line.insert(idx_next, '}');
                 cursor.xy.0 += 1;
 
-                recognize_cursor_word(cursor, &text[cursor.xy.1]);
+                // recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
             
             
@@ -402,7 +402,7 @@ pub fn record_keyboard_to_file_text(
                     cursor.xy.0 += 1;
                 }
 
-                recognize_cursor_word(cursor, &text[cursor.xy.1]);
+                // recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
             
             ')' => {
@@ -412,8 +412,6 @@ pub fn record_keyboard_to_file_text(
                     line.insert(idx, ')');
                     cursor.xy.0 += 1;
                 }
-
-                recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
         
             ']' => {
@@ -423,8 +421,6 @@ pub fn record_keyboard_to_file_text(
                     line.insert(idx, ']');
                     cursor.xy.0 += 1;
                 }
-
-                recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
         
             '}' => {
@@ -434,15 +430,11 @@ pub fn record_keyboard_to_file_text(
                     line.insert(idx, '}');
                     cursor.xy.0 += 1;
                 }
-
-                recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
 
             _ => {
                 line.insert(idx, c);
                 cursor.xy.0 += 1;
-
-                recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
 
         }
