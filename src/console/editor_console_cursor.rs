@@ -1,17 +1,44 @@
 // Cursor navigation and
 // kickback module
 
-use macroquad::prelude::*;
+use std::collections::HashMap;
 
-use crate::audio::editor_audio::*;
+use macroquad::prelude::*;
+use miniquad::date;
+
+use crate::{audio::editor_audio::*, text::editor_cursor::{CURSOR_CONTINUOUS_PRESS_DELAY, CURSOR_CONTINUOUS_PRESS_INITIAL_DELAY}};
 
 pub struct EditorConsoleCursor {
-    pub x: usize
+    pub x: usize,
+    pub key_timers: HashMap<(KeyCode, Option<KeyCode>), f64>,
 }
 
 impl EditorConsoleCursor {
     pub fn new() -> EditorConsoleCursor {
-        EditorConsoleCursor { x: 0 }
+        EditorConsoleCursor {
+            x: 0,
+            key_timers: HashMap::new()
+        }
+    }
+
+    /// Returns true if key is pressed with continuous repeat
+    pub fn is_combo_active(&mut self, key: KeyCode, modifier: Option<KeyCode>) -> bool {
+        if is_key_down(key) && modifier.map_or(true, |m| is_key_down(m)) {
+            let now = date::now();
+
+            let timer = self.key_timers.entry((key, modifier)).or_insert(now + CURSOR_CONTINUOUS_PRESS_INITIAL_DELAY);
+
+            if now >= *timer {
+                // Set next repeat
+                *timer = now + CURSOR_CONTINUOUS_PRESS_DELAY;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            self.key_timers.remove(&(key, modifier));
+            return false;
+        }
     }
 }
 

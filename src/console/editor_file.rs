@@ -310,6 +310,7 @@ pub fn draw_dir_contents(
     current_file: &Option<PathBuf>,
     current_dir: &Option<PathBuf>,
     directive: &str,
+    console: &EditorConsole,
     is_cd: bool,
 ) -> String {
     let Some(dir) = current_dir else {
@@ -342,7 +343,7 @@ pub fn draw_dir_contents(
 
     let mut best_match = String::new();
     let mut y = 50.0 + CONSOLE_MARGINS;
-    let x = screen_width() - CONSOLE_WIDTH + CONSOLE_MARGINS;
+    let x = screen_width() - console.width + CONSOLE_MARGINS;
 
     for entry in entries.flatten() {
         let path = entry.path();

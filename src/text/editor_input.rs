@@ -24,6 +24,7 @@ fn lshift_shortcuts(
     cursor: &mut EditorCursor,
     text: &mut Vec<String>,
     _audio: &EditorAudio,
+    _console: &mut EditorConsole,
     efs: &mut EditorFileSystem,
 ) -> bool {
     if cursor.is_combo_active(KeyCode::Up, Some(KeyCode::LeftShift)) && cursor.xy.1 > 0 {
@@ -110,6 +111,14 @@ pub fn lctrl_shortcuts(
             console.directive = ":f ".to_string();
             console.cursor.x = console.directive.len();
             console.mode = true;            
+        }
+
+        // Open terminal
+        if is_key_pressed(KeyCode::T) {
+            console.directive = ":t".to_string();
+            execute_directive(&mut console.directive, efs, text, cursor, ops, elk);
+
+            return true;
         }
         
         // Create a new file
@@ -322,7 +331,7 @@ pub fn record_special_keys(
         }
     }
 
-    lshift_shortcuts(cursor, text, audio, efs);
+    lshift_shortcuts(cursor, text, audio, console, efs);
 
     let is_lctrl = lctrl_shortcuts(cursor, text, audio, console, efs, gts, ops, elk);
 

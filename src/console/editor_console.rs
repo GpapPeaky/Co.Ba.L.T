@@ -18,8 +18,10 @@ use crate::text::editor_cursor::*;
 use crate::console::editor_directives::*;
 use crate::text::editor_language_manager::EditorLanguageKeywords;
 
-pub const CONSOLE_WIDTH: f32 = 400.0;
+pub const CONSOLE_INITIAL_WIDTH: f32 = 250.0;
 pub const CONSOLE_MARGINS: f32 = 15.0;
+
+pub const CONSOLE_RESIZE_STEP: f32 = 10.0;
 
 pub struct EditorConsole {
     pub mode: bool,
@@ -28,6 +30,7 @@ pub struct EditorConsole {
     pub message: String,
     pub showing_message: bool,
     pub showing_manual: bool,
+    pub width: f32,
 }
 
 impl EditorConsole {
@@ -38,7 +41,21 @@ impl EditorConsole {
             cursor: EditorConsoleCursor::new(),
             message: String::new(),
             showing_message: false,
-            showing_manual: false
+            showing_manual: false,
+            width: CONSOLE_INITIAL_WIDTH
+        }
+    }
+
+    /// Resize console
+    pub fn resize_console(
+        &mut self,
+        leftorright: bool
+    ) {
+        // Left
+        if leftorright {
+            self.width += CONSOLE_RESIZE_STEP;
+        } else { // Right
+            self.width -= CONSOLE_RESIZE_STEP;
         }
     }
 
@@ -47,22 +64,22 @@ impl EditorConsole {
         &self
     ) {
         // Console background
-        draw_rectangle(screen_width() - CONSOLE_WIDTH,
+        draw_rectangle(screen_width() - self.width,
             0.0,
-            CONSOLE_WIDTH,
+            self.width,
             screen_height(),
             CONSOLE_FRAME_COLOR
         );
 
         // Console foreground
-        draw_rectangle(screen_width() - CONSOLE_WIDTH + 1.5,
+        draw_rectangle(screen_width() - self.width + 1.5,
             0.0,
-            CONSOLE_WIDTH,
+            self.width,
             screen_height(),
             CONSOLE_CONTAINER_COLOR
         );
 
-        draw_line(screen_width() - CONSOLE_WIDTH,
+        draw_line(screen_width() - self.width,
             CONSOLE_MARGINS + 25.0,
             screen_width(),
             CONSOLE_MARGINS + 25.0,
@@ -73,19 +90,42 @@ impl EditorConsole {
         let directive_len: f32 = measure_text(&self.directive, None, 30, 1.0).width;
 
         // Console cursor
-        draw_line(screen_width() - CONSOLE_WIDTH + CONSOLE_MARGINS + directive_len
+        draw_line(screen_width() - self.width + CONSOLE_MARGINS + directive_len
             ,CONSOLE_MARGINS
-            ,screen_width() - CONSOLE_WIDTH + CONSOLE_MARGINS + directive_len,
+            ,screen_width() - self.width + CONSOLE_MARGINS + directive_len,
             CONSOLE_MARGINS + 15.0,
             2.0,
             CONSOLE_CURSOR_COLOR);
 
         draw_text(&self.directive,
-            screen_width() - CONSOLE_WIDTH + CONSOLE_MARGINS - 5.0,
+            screen_width() - self.width + CONSOLE_MARGINS - 5.0,
             CONSOLE_MARGINS + 15.0,
             30.0,
             CONSOLE_TEXT_COLOR
         );
+    }
+
+    fn lshift_shortcuts(
+        &mut self,
+        audio: &EditorAudio
+    ) -> bool {
+        // Left, resize console
+        if self.cursor.is_combo_active(KeyCode::Left, Some(KeyCode::LeftShift)) {
+            self.resize_console(true);
+            audio.play_nav();   
+
+            return true;
+        }   
+
+        // Right, resize console
+        if self.cursor.is_combo_active(KeyCode::Right, Some(KeyCode::LeftShift)) {
+            self.resize_console(false);
+            audio.play_nav();   
+
+            return true;
+        }
+
+        false
     }
 
     /// Special input, backspace and enter
@@ -125,6 +165,11 @@ impl EditorConsole {
             }
         }
 
+        // Resizing
+        if cursor.is_combo_active(KeyCode::LeftShift, None) {
+            self.lshift_shortcuts(audio);
+        }
+
         if is_key_pressed(KeyCode::Enter) {
             // execute whatever is inside the directive string
             // check the directives' source
@@ -155,7 +200,7 @@ impl EditorConsole {
 
         // Disable special characters from the console.
         if let Some(c) = get_char_pressed() {
-            if !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != ' ' && c != '.' && c != '/' && c != '\\' && c != ':' && c != '<' && c != '>' {
+            if !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != ' ' && c != '.' && c != '/' && c != '\\' && c != ':' && c != '<' && c != '>' && c != '$' {
                 return;
             }
 
@@ -248,7 +293,7 @@ pub fn console_message(
 
     // Draw the message
     if is_manual {
-        let start_y = 5.0;
+        let start_y = 15.0;
         draw_multiline_text_centered(msg, msg_font_size, CONSOLE_FRAME_COLOR, start_y);
     } else {
         draw_text(
@@ -290,6 +335,7 @@ pub fn console_manual(man_id: u8) -> String {
                 :b <f>      : Change the name of the current open file to 'f'
                 :f <f>      : Go to the line where the first iteration of text 'f' exists
                 :c <f>      : Create a new file with name 'f'   
+                :t <c>      : Execute a command 'c' terminal
                     
                 Directory specific directives:
                 :cd         : Change directory                                        
@@ -297,28 +343,28 @@ pub fn console_manual(man_id: u8) -> String {
                 :md <f>     : Create a new directory with name 'f'
                 :rd <f>     : Remove a directory with name 'f' with all its contents
                 :bd <f>     : Change the name of the current open directory to 'f'
-                    
+                                    
                 Configuration directives:
                 :epa <p>    : Change to pallete of name 'p'
                 :efn <p>    : Change to a font of name 'p'
-                :eau        : Audio on/off switch
                 :esm        : Smart identation on/off switch
+                :eau        : Audio on/off switch
                 :efl        : Editor fullsreen on/off switch
                 :ehi        : Editor text highlighting on/off switch
+                :e/q                : Exit, close editor                                           
                     
                 Other directives:
-                :e/q                : Exit, close editor                                           
                 :egman              : Editor general manual (All manuals are displayed)
                 :efman              : Editor file manual    (Display file directives info)
                 :edman              : Editor directory manual  (Display directory directives info)
-                :ecman              : Editor config manual  (Display editor config directives info)
                 :eoman              : Editor others manual  (Display editor other directives info)
+                :ecman              : Editor config manual  (Display editor config directives info)
                 :ectrl              : Editor controls manual (Display editor controls info)
                 :ever               : Editor version
                 :egam/rand/roll <N> : Editor gamble, display a number from 0 to N 
                 ".to_string();
             }
-                    
+                
             // File manual
             1 => {
                 text = "
@@ -330,6 +376,7 @@ pub fn console_manual(man_id: u8) -> String {
                         :b <f>      : Change the name of the current open file to 'f'
                         :f <f>      : Go to the line where the first iteration of text 'f' exists
                         :c <f>      : Create a new file with name 'f'
+                        :t <c>      : Execute a command 'c' terminal
                 ".to_string();
             }      
             

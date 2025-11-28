@@ -54,16 +54,17 @@ use std::str::FromStr;
 
 use macroquad::prelude::rand;
 
+use crate::VERSION;
+use crate::console::editor_console::console_manual;
 use crate::options::editor_options::*;
-use crate::console::editor_console::*;
 use crate::console::editor_file::*;
 use crate::text::editor_cursor::*;
-use crate::VERSION;
 use crate::text::editor_language_manager::EditorLanguageKeywords;
 use crate::text::editor_language_manager::load_keywords_for_extension;
+use crate::console::editor_terminal::execute_terminal_command;
+use crate::text::editor_text::find_word_in_text;
 // use crate::text::editor_language_manager::_recognize_identifiers;
 // use crate::text::editor_language_manager::_tokenize_text_file;
-use crate::text::editor_text::find_word_in_text;
 
 /// Check if there is a ':', trim it, match it to a directive and execute it
 /// else we will see it as switch-to-file operation
@@ -84,6 +85,10 @@ pub fn execute_directive(
         let parameter = tokens.next();
 
         match command {
+            "t" | "T" => { // Execute terminal command
+                return execute_terminal_command(directive_command, &efs.current_dir);
+            }
+        
             "od" | "o" | "O" | "Od" | "oD" | "OD" => efs.open_file_explorer(),
 
             "B" | "b" => {

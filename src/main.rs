@@ -79,6 +79,7 @@ async fn main() {
                 &efs.current_file,
                 &efs.current_dir,
                 &console.directive,
+                &console,
                 is_cd
             );
         
