@@ -50,6 +50,11 @@ impl EditorCursor {
     }
 }
 
+/// Convert character index to byte index for UTF-8 strings
+pub fn char_to_byte(line: &str, char_idx: usize) -> usize {
+    line.char_indices().nth(char_idx).map(|(b, _)| b).unwrap_or(line.len())
+}
+
 /// Find the cursor's word fragment
 pub fn recognize_cursor_word(
     cursor: &mut EditorCursor,
@@ -61,12 +66,16 @@ pub fn recognize_cursor_word(
     let cursor_idx = cursor.xy.0;
     let left_distance = calibrate_distance_to_whitespace(false, cursor_idx, line);
     let right_distance = calibrate_distance_to_whitespace(true, cursor_idx, line);
-    
+     
     // Index of where the word starts
     let left_cursor_idx = cursor_idx - left_distance;
     let right_cursor_idx = right_distance + cursor_idx;
+
+    // Convert char indices → byte indices
+    let left_byte_idx = char_to_byte(line, left_cursor_idx);
+    let right_byte_idx = char_to_byte(line, right_cursor_idx);
     
-    cursor.word = line[left_cursor_idx..right_cursor_idx].to_string();
+    cursor.word = line[left_byte_idx..right_byte_idx].to_string();
 }
 
 /// Standard cursor navigation (with repeat timer)

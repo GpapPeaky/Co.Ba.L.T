@@ -15,11 +15,6 @@ use crate::console::editor_directives::*;
 pub const TAB_SIZE: usize = 4;
 pub const TAB_PATTERN: &str = "    ";
 
-/// Convert character index to byte index for UTF-8 strings
-pub fn char_to_byte(line: &str, char_idx: usize) -> usize {
-    line.char_indices().nth(char_idx).map(|(b, _)| b).unwrap_or(line.len())
-}
-
 fn lshift_shortcuts(
     cursor: &mut EditorCursor,
     text: &mut Vec<String>,
