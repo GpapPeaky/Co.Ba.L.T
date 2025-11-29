@@ -308,6 +308,7 @@ pub fn record_special_keys(
 
         if let Some(opener) = opener {
             let expected_closer = match opener { '(' => ')', '{' => '}', '[' => ']', _ => '\0' };
+
             if expected_closer != '\0' && rest_of_line.starts_with(expected_closer) {
                 rest_of_line = rest_of_line[expected_closer.len_utf8()..].to_string();
                 inner_indent.push_str(TAB_PATTERN);
@@ -321,8 +322,24 @@ pub fn record_special_keys(
 
         if let Some(opener) = opener {
             let closer = match opener { '(' => ')', '{' => '}', '[' => ']', _ => '\0' };
+
             if closer != '\0' {
-                text.insert(cursor.xy.1 + 1, format!("{}{}", base_indent, closer));
+                let mut next_line_idx = cursor.xy.1;
+
+                while next_line_idx < text.len() && text[next_line_idx].trim().is_empty() {
+                    next_line_idx += 1;
+                }
+
+                // Check if the already is a closer
+                let should_insert_closer = if next_line_idx < text.len() {
+                    !text[next_line_idx].trim_start().starts_with(closer)
+                } else {
+                    true
+                };
+                
+                if should_insert_closer {
+                    text.insert(cursor.xy.1 + 1, format!("{}{}", base_indent, closer));
+                }
             }
         }
     }

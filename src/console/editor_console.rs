@@ -11,7 +11,6 @@ use crate::options::editor_pallete::{
     CONSOLE_TEXT_COLOR,
     CONSOLE_FRAME_COLOR,
 };
-use crate::text::editor_input::*;
 use crate::console::editor_console_cursor::*;
 use crate::console::editor_file::*;
 use crate::text::editor_cursor::*;
