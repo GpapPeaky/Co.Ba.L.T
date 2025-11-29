@@ -56,14 +56,14 @@ All console commands are prefixed with a `:`. Commands without `:` are treated a
 ### File Directives
 
 | Directive | Description |
-|-----------|-------------|
-| `:l <N>` | Go to line `N` in the current file. Throws an error if invalid. |
-| `:w` | Write/save the current file. |
-| `:i` | Display information about the current file. |
-| `:r <f>` | Remove the file named `<f>`. |
-| `:b <f>` | Rename the current file to `<f>`. |
-| `:f <f>` | Jump to the line where the first occurrence of text `<f>` exists. |
-| `:c <f>` | Create a new file named `<f>`. |
+|-----------|----------------------------------------------------------------------------------------------------|
+| `:l <N>` | Go to line `N` in the current file. Throws an error if invalid.                                     |
+| `:w` | Write/save the current file.                                                                            |
+| `:i` | Display information about the current file.                                                             |
+| `:r <f>` | Remove the file named `<f>`.                                                                        |
+| `:b <f>` | Rename the current file to `<f>`.                                                                   |
+| `:f <f>` | Jump to the line where the first occurrence of text `<f>` exists.                                   |
+| `:c <f>` | Create a new file named `<f>`.                                                                      |
 | `:t $ <c>` | Execute command `<c>` via the native cmd/terminal, yes we can build the editor inside the editor. |
 
 ---
