@@ -118,19 +118,20 @@ async fn main() {
         }
 
         // Show message
-        if console.showing_message && console.message != "" {
+        if console.showing_message && !console.message.is_empty() {
             console_message(&console.message, console.showing_manual);
-
-            if is_key_pressed(KeyCode::Escape) {
-                console.showing_message = false;
-                console.showing_manual = false;
-                console.message.clear();
-            }
         }
 
-        if is_key_down(KeyCode::LeftAlt) {
-            muse_draw_fps();
+        // Nullify message
+        if is_key_pressed(KeyCode::Escape) {
+            console.showing_message = false;
+            console.showing_manual = false;
+            console.message.clear();
         }
+
+        // if is_key_down(KeyCode::LeftAlt) {
+        //     muse_draw_fps();
+        // }
         
         muse_next_frame().await;
     }
