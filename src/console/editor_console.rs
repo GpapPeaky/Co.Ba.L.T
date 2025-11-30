@@ -63,7 +63,7 @@ impl EditorConsole {
     /// Console will be drawn to the right of the screen
     pub fn draw(
         &self,
-        gts: &EditorGeneralTextStylizer
+        _gts: &EditorGeneralTextStylizer
     ) {
         // Console background
         draw_rectangle(screen_width() - self.width,
@@ -89,22 +89,16 @@ impl EditorConsole {
             CONSOLE_FRAME_COLOR
         );
 
-        // Console cursor, ass
-        let rendered = &self.directive[0..self.cursor.x];
-        let metrics = measure_text(rendered, None, gts.font_size as u16, 1.0);
-        let cursor_width = 2.0; // same as your draw_line thickness
-        
-        let cursor_x = screen_width() - self.width 
-            + CONSOLE_MARGINS 
-            + metrics.width 
-            + cursor_width / 2.0;
-        
+        let cursor_text = &self.directive[..self.cursor.x]; // substring before cursor
+        let cursor_w = measure_text(cursor_text, None, 30, 1.0).width;
+
+        // Console cursor
         draw_line(
-            cursor_x,
+            screen_width() - self.width + CONSOLE_MARGINS + cursor_w - 5.0,
             CONSOLE_MARGINS,
-            cursor_x,
-            CONSOLE_MARGINS + gts.font_size as f32,
-            cursor_width,
+            screen_width() - self.width + CONSOLE_MARGINS + cursor_w - 5.0,
+            CONSOLE_MARGINS + 15.0,
+            2.0,
             CONSOLE_CURSOR_COLOR
         );
 
