@@ -84,7 +84,7 @@ pub fn draw_file_text(
     
         let (sx, sy) = camera.world_to_screen(cursor_x_pos, cursor_y_pos);
         
-        let cursor_width = gts.font_size as f32 / 1.6;
+        let cursor_width = gts.font_size as f32 / 7.5;
 
         let draw_x = sx.round();
         let draw_y = sy.round();
@@ -93,7 +93,7 @@ pub fn draw_file_text(
         
         cursor.draw_cursor_line(cursor_line_draw_x, cursor_line_draw_y, gts.font_size as f32);
 
-        draw_rectangle(draw_x, draw_y, cursor_width, CURSOR_HEIGHT, CURSOR_COLOR);
+        draw_rectangle(draw_x, draw_y - gts.font_size as f32 + CURSOR_HEIGHT, cursor_width, gts.font_size as f32, CURSOR_COLOR);
     }
 
     // Determine visible lines
