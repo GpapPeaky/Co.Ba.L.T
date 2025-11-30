@@ -52,10 +52,6 @@ pub fn draw_file_text(
     camera: &mut EditorCamera,
     elk: &EditorLanguageKeywords
 ) {
-    if text.is_empty() {
-        return;
-    }
-
     let text_y_offset = 25.0;
 
     let start_x = FILE_TEXT_X_MARGIN;
@@ -103,106 +99,108 @@ pub fn draw_file_text(
     let mut in_string = false;
     let mut in_block_comment = false;
 
-    for line_index in first_line..=last_line {
-        let line = &text[line_index];
-        let y = start_y + line_index as f32 * line_spacing;
-        let mut x = start_x + line_start_fix;
+    if !text.is_empty() {
+        for line_index in first_line..=last_line {
+            let line = &text[line_index];
+            let y = start_y + line_index as f32 * line_spacing;
+            let mut x = start_x + line_start_fix;
 
-        // CRITICAL FIX: Replace tabs BEFORE processing
-        let visual_line = line.replace("\t", TAB_PATTERN);
-        
-        let mut chars = visual_line.chars().peekable();
-        while let Some(&c) = chars.peek() {
-            let mut token = String::new();
-            let color: Color;
+            // CRITICAL FIX: Replace tabs BEFORE processing
+            let visual_line = line.replace("\t", TAB_PATTERN);
+            
+            let mut chars = visual_line.chars().peekable();
+            while let Some(&c) = chars.peek() {
+                let mut token = String::new();
+                let color: Color;
 
-            if in_block_comment {
-                while let Some(ch) = chars.next() {
-                    token.push(ch);
-                    if ch == '*' && chars.peek() == Some(&'/') {
-                        token.push(chars.next().unwrap());
-                        in_block_comment = false;
-                        break;
+                if in_block_comment {
+                    while let Some(ch) = chars.next() {
+                        token.push(ch);
+                        if ch == '*' && chars.peek() == Some(&'/') {
+                            token.push(chars.next().unwrap());
+                            in_block_comment = false;
+                            break;
+                        }
                     }
-                }
-                color = COMMENT_COLOR;
-            } else if in_string {
-                while let Some(ch) = chars.next() {
-                    token.push(ch);
-                    if ch == '"' && !token.ends_with("\\\"") {
-                        in_string = false;
-                        break;
+                    color = COMMENT_COLOR;
+                } else if in_string {
+                    while let Some(ch) = chars.next() {
+                        token.push(ch);
+                        if ch == '"' && !token.ends_with("\\\"") {
+                            in_string = false;
+                            break;
+                        }
                     }
-                }
-                color = STRING_LITERAL_COLOR;
-            } else {
-                match c {
-                    '/' => {
-                        chars.next();
-                        if chars.peek() == Some(&'/') {
+                    color = STRING_LITERAL_COLOR;
+                } else {
+                    match c {
+                        '/' => {
                             chars.next();
-                            token.push_str("//");
-                            token.extend(chars.by_ref());
-                            color = COMMENT_COLOR;
-                        } else if chars.peek() == Some(&'*') {
+                            if chars.peek() == Some(&'/') {
+                                chars.next();
+                                token.push_str("//");
+                                token.extend(chars.by_ref());
+                                color = COMMENT_COLOR;
+                            } else if chars.peek() == Some(&'*') {
+                                chars.next();
+                                token.push_str("/*");
+                                in_block_comment = true;
+                                color = COMMENT_COLOR;
+                            } else {
+                                token.push('/');
+                                color = PUNCTUATION_COLOR;
+                            }
+                        }
+                        '"' => {
                             chars.next();
-                            token.push_str("/*");
-                            in_block_comment = true;
-                            color = COMMENT_COLOR;
-                        } else {
-                            token.push('/');
+                            token.push('"');
+                            in_string = true;
+                            color = STRING_LITERAL_COLOR;
+                        }
+                        '#' => {
+                            while let Some(&ch) = chars.peek() {
+                                if ch.is_whitespace() { break; }
+                                token.push(chars.next().unwrap());
+                            }
+                            color = MACRO_COLOR;
+                        }
+                        c if c.is_whitespace() => {
+                            while let Some(&ch) = chars.peek() {
+                                if !ch.is_whitespace() { break; }
+                                token.push(chars.next().unwrap());
+                            }
+                            color = IDENTIFIER_COLOR;
+                        }
+                        c if c.is_ascii_digit() => {
+                            while let Some(&ch) = chars.peek() {
+                                if !(ch.is_ascii_digit() || ch == '.' || ch == 'f' || ch == 'F' || ch == '-') { break; }
+                                token.push(chars.next().unwrap());
+                            }
+                            color = NUMBER_LITERAL_COLOR;
+                        }
+                        c if !c.is_alphanumeric() && c != '_' => {
+                            token.push(chars.next().unwrap());
                             color = PUNCTUATION_COLOR;
                         }
-                    }
-                    '"' => {
-                        chars.next();
-                        token.push('"');
-                        in_string = true;
-                        color = STRING_LITERAL_COLOR;
-                    }
-                    '#' => {
-                        while let Some(&ch) = chars.peek() {
-                            if ch.is_whitespace() { break; }
-                            token.push(chars.next().unwrap());
+                        _ => {
+                            while let Some(&ch) = chars.peek() {
+                                if !ch.is_alphanumeric() && ch != '_' { break; }
+                                token.push(chars.next().unwrap());
+                            }
+                            let clean = token.trim_matches(|c: char| !c.is_alphanumeric() && c != '_');
+                            color = gts.calibrate_string_color(clean, &elk);
                         }
-                        color = MACRO_COLOR;
-                    }
-                    c if c.is_whitespace() => {
-                        while let Some(&ch) = chars.peek() {
-                            if !ch.is_whitespace() { break; }
-                            token.push(chars.next().unwrap());
-                        }
-                        color = IDENTIFIER_COLOR;
-                    }
-                    c if c.is_ascii_digit() => {
-                        while let Some(&ch) = chars.peek() {
-                            if !(ch.is_ascii_digit() || ch == '.' || ch == 'f' || ch == 'F' || ch == '-') { break; }
-                            token.push(chars.next().unwrap());
-                        }
-                        color = NUMBER_LITERAL_COLOR;
-                    }
-                    c if !c.is_alphanumeric() && c != '_' => {
-                        token.push(chars.next().unwrap());
-                        color = PUNCTUATION_COLOR;
-                    }
-                    _ => {
-                        while let Some(&ch) = chars.peek() {
-                            if !ch.is_alphanumeric() && ch != '_' { break; }
-                            token.push(chars.next().unwrap());
-                        }
-                        let clean = token.trim_matches(|c: char| !c.is_alphanumeric() && c != '_');
-                        color = gts.calibrate_string_color(clean, &elk);
                     }
                 }
-            }
 
-            let width = measure_text(&token, Some(&gts.font), gts.font_size, 1.0).width;
-            let (sx, sy) = camera.world_to_screen(x, y + text_y_offset);
-            
-            gts.color = color;
-            gts.draw(&token, sx, sy);
-            
-            x += width;
+                let width = measure_text(&token, Some(&gts.font), gts.font_size, 1.0).width;
+                let (sx, sy) = camera.world_to_screen(x, y + text_y_offset);
+                
+                gts.color = color;
+                gts.draw(&token, sx, sy);
+                
+                x += width;
+            }
         }
     }
 
