@@ -86,8 +86,14 @@ pub fn draw_file_text(
         
         let cursor_width = gts.font_size as f32 / 1.6;
 
-        let font_size_y_fix = gts.font_size as f32;
-        draw_rectangle(sx.round(), gts.font_size as f32 + sy.round() - font_size_y_fix, cursor_width, 3.5, CURSOR_COLOR);
+        let draw_x = sx.round();
+        let draw_y = sy.round();
+        let cursor_line_draw_y = draw_y - gts.font_size as f32;
+        let cursor_line_draw_x = FILE_TEXT_X_MARGIN;
+        
+        cursor.draw_cursor_line(cursor_line_draw_x, cursor_line_draw_y, gts.font_size as f32);
+
+        draw_rectangle(draw_x, draw_y, cursor_width, CURSOR_HEIGHT, CURSOR_COLOR);
     }
 
     // Determine visible lines

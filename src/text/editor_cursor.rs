@@ -14,6 +14,10 @@ pub const CURSOR_CONTINUOUS_PRESS_INITIAL_DELAY: f64 = 0.02;
 
 pub const CURSOR_CONTINUOUS_PRESS_DELAY: f64 = 0.09;
 
+pub const CURSOR_LINE_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.05);
+
+pub const CURSOR_HEIGHT: f32 = 3.5;
+
 pub struct EditorCursor {
     pub xy: (usize, usize),
     pub word: String,
@@ -27,6 +31,22 @@ impl EditorCursor {
             word: String::from(""),
             key_timers: HashMap::new()
         }
+    }
+
+    /// Highlight the line the cursor is at currently
+    pub fn draw_cursor_line(
+        &self,
+        x: f32,
+        y: f32,
+        font_size: f32
+    ) {
+        draw_rectangle(
+            x,
+            y + CURSOR_HEIGHT,
+            screen_width(),
+            font_size,
+            CURSOR_LINE_COLOR
+        );
     }
 
     /// Returns true if key is pressed with continuous repeat
