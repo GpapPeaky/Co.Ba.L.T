@@ -16,7 +16,7 @@ use crate::camera::editor_camera::EditorCamera;
 use crate::console::editor_console::{EditorConsole, console_message};
 use crate::console::editor_file::{EditorFileSystem, draw_dir_contents, path_buffer_file_to_string, path_buffer_to_string};
 use crate::options::editor_options::EditorOptions;
-use crate::options::editor_pallete::{BACKGROUND_COLOR, COMPOSITE_TYPE_COLOR, FILE_COLOR, FOLDER_COLOR};
+use crate::options::editor_pallete::{BACKGROUND_COLOR, COMPOSITE_TYPE_COLOR, CONSOLE_TEXT_COLOR, FILE_COLOR, FOLDER_COLOR};
 use crate::text::editor_cursor::{CURSOR_WORD_OFFSET, EditorCursor};
 use crate::text::editor_input::record_keyboard_to_file_text;
 use crate::text::editor_language_manager::{EditorLanguageKeywords ,load_keywords_for_extension};
@@ -51,8 +51,12 @@ async fn main() {
     let mut efs = EditorFileSystem::new();
     // Editor audio
     let audio = EditorAudio::new().await;
-    // Editor general text stylizer
-    let mut gts = EditorGeneralTextStylizer::new().await;
+    // Editor general text stylizer for file
+    let mut file_gts = EditorGeneralTextStylizer::new().await;
+    // Editor general text stylizer for console, font already preloaded.
+    let mut console_gts = EditorGeneralTextStylizer::new().await;
+    console_gts.color = CONSOLE_TEXT_COLOR;
+    console_gts.font_size = 30;
     // Editor Cursor
     let mut file_cursor = EditorCursor::new();
     // Console
@@ -62,15 +66,15 @@ async fn main() {
     // Language support based on file, default no higlighting
     let mut elk: EditorLanguageKeywords = load_keywords_for_extension("txt"); 
 
-    let insert_word_w = measure_text("INSERT MODE", None, MODE_FONT_SIZE as u16, 1.0).width;
-    let console_word_w = measure_text("CONSOLE MODE", None, MODE_FONT_SIZE as u16, 1.0).width;
+    let insert_word_w = measure_text("INSERT MODE", Some(&console_gts.font), MODE_FONT_SIZE as u16, 1.0).width;
+    let console_word_w = measure_text("CONSOLE MODE", Some(&console_gts.font), MODE_FONT_SIZE as u16, 1.0).width;
 
     loop {
         clear_background(BACKGROUND_COLOR);
 
-        draw_file_text(&mut file_text, &mut file_cursor, &mut gts, &console, &mut ec, &elk);
+        draw_file_text(&mut file_text, &mut file_cursor, &mut file_gts, &console, &mut ec, &elk);
         if console.mode {
-            console.draw(&gts);
+            console.draw(&console_gts);
         
             let is_cd = console.directive.starts_with(":cd ");
             let auto = draw_dir_contents(
@@ -92,18 +96,21 @@ async fn main() {
         }
 
         if !console.mode {
-            record_keyboard_to_file_text(&mut file_cursor, &mut file_text, &audio, &mut console,  &mut gts, &mut efs, &mut ops, &mut elk);
+            record_keyboard_to_file_text(&mut file_cursor, &mut file_text, &audio, &mut console,  &mut file_gts, &mut efs, &mut ops, &mut elk);
 
             let mut fname = path_buffer_file_to_string(&efs.current_file);
             if efs.unsaved_changes {
                 fname = format!("*{}", path_buffer_file_to_string(&efs.current_file));
             }
 
-            draw_text("INSERT MODE", MODE_Y_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, COMPOSITE_TYPE_COLOR);
-            draw_text(&path_buffer_to_string(&efs.current_dir), insert_word_w + 25.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, FOLDER_COLOR);
-            draw_text(&fname, insert_word_w + CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + 15.0, MODE_FONT_SIZE, FILE_COLOR);
-
-            draw_text(&file_cursor.word, insert_word_w + CURRENT_FILE_TOP_BAR_OFFSET + CURSOR_WORD_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + 15.0, MODE_FONT_SIZE, BLUE);
+            console_gts.color = COMPOSITE_TYPE_COLOR;
+            console_gts.draw("INSERT MODE", MODE_Y_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0);
+            console_gts.color = FOLDER_COLOR;
+            console_gts.draw(&path_buffer_to_string(&efs.current_dir), insert_word_w + 25.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0);
+            console_gts.color = FILE_COLOR;
+            console_gts.draw(&fname, insert_word_w + CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + 15.0);
+            console_gts.color = BLUE;
+            console_gts.draw(&file_cursor.word, insert_word_w + CURRENT_FILE_TOP_BAR_OFFSET + CURSOR_WORD_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + 15.0);
         } else {
             console.record_keyboard_to_console_text(&audio, &mut efs, &mut file_text, &mut file_cursor, &mut ops, &mut elk);
             
@@ -112,9 +119,12 @@ async fn main() {
                 fname = format!("*{}", path_buffer_file_to_string(&efs.current_file));
             }
             
-            draw_text("CONSOLE MODE", MODE_Y_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, COMPOSITE_TYPE_COLOR,);
-            draw_text(&path_buffer_to_string(&efs.current_dir), console_word_w + 25.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0, MODE_FONT_SIZE, FOLDER_COLOR);
-            draw_text(&fname, console_word_w + CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + 15.0, MODE_FONT_SIZE, FILE_COLOR);
+            console_gts.color = COMPOSITE_TYPE_COLOR;
+            console_gts.draw("CONSOLE MODE", MODE_Y_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0);
+            console_gts.color = FOLDER_COLOR;
+            console_gts.draw(&path_buffer_to_string(&efs.current_dir), console_word_w + 25.0, MODE_FONT_SIZE + MODE_Y_MARGIN - 15.0);
+            console_gts.color = FILE_COLOR;
+            console_gts.draw(&fname, console_word_w + CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + 15.0);
         }
 
         // Show message
@@ -129,9 +139,9 @@ async fn main() {
             console.message.clear();
         }
 
-        // if is_key_down(KeyCode::LeftAlt) {
-        //     muse_draw_fps();
-        // }
+        if is_key_down(KeyCode::LeftAlt) {
+            muse_draw_fps();
+        }
         
         muse_next_frame().await;
     }

@@ -11,14 +11,35 @@ use crate::{audio::editor_audio::*, text::editor_cursor::{CURSOR_CONTINUOUS_PRES
 pub struct EditorConsoleCursor {
     pub x: usize,
     pub _key_timers: HashMap<(KeyCode, Option<KeyCode>), f64>,
+    pub anim_x: f32,
+    pub vel_x: f32,
 }
 
 impl EditorConsoleCursor {
     pub fn new() -> EditorConsoleCursor {
         EditorConsoleCursor {
             x: 0,
-            _key_timers: HashMap::new()
+            _key_timers: HashMap::new(),
+            anim_x: 0.0,
+            vel_x: 0.0
         }
+    }
+
+    /// Interpolate console cursor position
+    pub fn animate_to(
+        &mut self,
+        target_x: f32
+    ) {
+        let stiffness = 0.41;
+        let damping   = 0.57;
+    
+        let dx = target_x - self.anim_x;
+    
+        self.vel_x += dx * stiffness;
+    
+        self.vel_x *= damping;
+    
+        self.anim_x += self.vel_x;
     }
 
     /// Returns true if key is pressed with continuous repeat

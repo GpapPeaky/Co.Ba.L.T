@@ -22,6 +22,10 @@ pub struct EditorCursor {
     pub xy: (usize, usize),
     pub word: String,
     pub key_timers: HashMap<(KeyCode, Option<KeyCode>), f64>,
+    pub anim_x: f32,
+    pub anim_y: f32,
+    pub vel_x: f32,
+    pub vel_y: f32,
 }
 
 impl EditorCursor {
@@ -29,7 +33,11 @@ impl EditorCursor {
         EditorCursor {
             xy: (0, 0),
             word: String::from(""),
-            key_timers: HashMap::new()
+            key_timers: HashMap::new(),
+            anim_x: 0.0,
+            anim_y: 0.0,
+            vel_x: 0.0,
+            vel_y: 0.0,
         }
     }
 
@@ -67,6 +75,24 @@ impl EditorCursor {
             self.key_timers.remove(&(key, modifier));
             return false;
         }
+    }
+
+    /// Interpolate cursor movement
+    pub fn animate_to(&mut self, target_x: f32, target_y: f32) {
+        let stiffness = 0.51;
+        let damping   = 0.47;
+    
+        let dx = target_x - self.anim_x;
+        let dy = target_y - self.anim_y;
+    
+        self.vel_x += dx * stiffness;
+        self.vel_y += dy * stiffness;
+    
+        self.vel_x *= damping;
+        self.vel_y *= damping;
+    
+        self.anim_x += self.vel_x;
+        self.anim_y += self.vel_y;
     }
 }
 

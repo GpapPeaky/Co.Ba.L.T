@@ -8,7 +8,6 @@ use crate::options::editor_options::EditorOptions;
 use crate::options::editor_pallete::{
     CONSOLE_CONTAINER_COLOR,
     CONSOLE_CURSOR_COLOR,
-    CONSOLE_TEXT_COLOR,
     CONSOLE_FRAME_COLOR,
 };
 use crate::console::editor_console_cursor::*;
@@ -62,7 +61,7 @@ impl EditorConsole {
 
     /// Console will be drawn to the right of the screen
     pub fn draw(
-        &self,
+        &mut self,
         _gts: &EditorGeneralTextStylizer
     ) {
         // Console background
@@ -89,26 +88,29 @@ impl EditorConsole {
             CONSOLE_FRAME_COLOR
         );
 
-        let cursor_text = &self.directive[..self.cursor.x]; // substring before cursor
+
+        let cursor_idx = char_to_byte(&self.directive, self.cursor.x);
+        let cursor_text = &self.directive[..cursor_idx];
         let cursor_w = measure_text(cursor_text, None, 30, 1.0).width;
+
+        // Interpolate
+        self.cursor.animate_to(screen_width() - self.width + CONSOLE_MARGINS + cursor_w - 5.0);
 
         // Console cursor
         draw_line(
-            screen_width() - self.width + CONSOLE_MARGINS + cursor_w - 5.0,
-            CONSOLE_MARGINS,
-            screen_width() - self.width + CONSOLE_MARGINS + cursor_w - 5.0,
-            CONSOLE_MARGINS + 15.0,
+            self.cursor.anim_x,
+            CONSOLE_MARGINS - 5.0,
+            self.cursor.anim_x,
+            CONSOLE_MARGINS + 20.0,
             2.0,
             CONSOLE_CURSOR_COLOR
         );
 
         // Draw the directive written
-        draw_text(
+        _gts.draw(
             &self.directive,
             screen_width() - self.width + CONSOLE_MARGINS - 5.0,
             CONSOLE_MARGINS + 15.0,
-            30.0,
-            CONSOLE_TEXT_COLOR
         );
     }
 

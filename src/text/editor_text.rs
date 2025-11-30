@@ -73,8 +73,16 @@ pub fn draw_file_text(
         let visual_prefix = prefix.replace("\t", TAB_PATTERN);
         let text_before_cursor = measure_text(&visual_prefix, Some(&gts.font), gts.font_size, 1.0);
     
-        let cursor_x_pos = start_x + line_start_fix + text_before_cursor.width;
-        let cursor_y_pos = start_y + cursor.xy.1 as f32 * line_spacing + text_y_offset;
+        // Target location to draw
+        let logical_x = start_x + line_start_fix + text_before_cursor.width;
+        let logical_y = start_y + cursor.xy.1 as f32 * line_spacing + text_y_offset;
+        
+        // Smooth animation step, via interpolation
+        cursor.animate_to(logical_x, logical_y);
+        
+        // Use animated position instead of logical
+        let cursor_x_pos = cursor.anim_x;
+        let cursor_y_pos = cursor.anim_y;
     
         camera.follow_cursor(cursor_x_pos, cursor_y_pos);
     
@@ -224,5 +232,6 @@ pub fn draw_file_text(
 
     // Draw cursor position
     let cursor_idx = format!("Ln {}, Col {}", cursor.xy.1, cursor.xy.0);
-    draw_text(&cursor_idx, MODE_Y_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + MODE_Y_OFFSET, MODE_FONT_SIZE, CONSOLE_TEXT_COLOR);
+    gts.color = CONSOLE_TEXT_COLOR;
+    gts.draw(&cursor_idx, MODE_Y_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + MODE_Y_OFFSET);
 }
