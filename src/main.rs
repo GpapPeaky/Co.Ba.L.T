@@ -27,19 +27,19 @@ use crate::win::editor_win_config::window_conf;
 // TODO: Finish all the directives.
 // TODO: Add Ctrl + z to undo last change.
 // TODO: Add Ctrl + c to copy selected text.
-// TODO: Add Ctrl + v to paste copied text.
+// TODO: Add Ctrl + v to paste copied text. V++
 // TODO: Add the palletes.
 // TODO: Add more fonts.
 
 // IDEA: Add selection mode
-// IDEA: Add a list of user defined functions to make it easier to traverse files.
+// IDEA: Add a list of user defined functions to make it easier to traverse files. V++
 // IDEA: Add a list of user defined identifiers that will pop up as an autocomplete thing.
 // IDEA: Add a cmd/terminal wrapper maybe, for compiling/executing code and git commands.
 // IDEA: Add file markings in specific file indeces for faster traversal <:mark>.
 // IDEA: Add file markings finder <:spot>, moves by one in each directive return, won't clear inside the console so the user can keep moving.
 // IDEA: Add file markings finder <:spot N>, moves to the N-th marked spot inside the file. 
 
-pub const VERSION: &str = "Muse-v01.05.02";
+pub const VERSION: &str = "Muse-v01.05.03";
 
 #[macroquad::main(window_conf())]
 async fn main() {
