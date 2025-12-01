@@ -139,10 +139,6 @@ async fn main() {
             console.message.clear();
         }
 
-        if is_key_down(KeyCode::LeftAlt) {
-            muse_draw_fps();
-        }
-        
         muse_next_frame().await;
     }
 }

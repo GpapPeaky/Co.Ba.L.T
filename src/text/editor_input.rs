@@ -93,7 +93,7 @@ pub fn lctrl_shortcuts(
             return true;
         }
 
-        // Open native file explorer        
+        // Open native file explorer
         if is_key_pressed(KeyCode::O) {
             console.directive = ":O".to_string();
             execute_directive(&mut console.directive, efs, text, cursor, ops, elk);
