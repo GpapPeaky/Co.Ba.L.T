@@ -231,7 +231,9 @@ pub fn draw_file_text(
     draw_rectangle(0.0, 0.0, screen_width(), top_bar_height, BACKGROUND_COLOR);
 
     // Draw cursor position
-    let cursor_idx = format!("Ln {}, Col {}", cursor.xy.1, cursor.xy.0);
-    gts.color = CONSOLE_TEXT_COLOR;
-    gts.draw(&cursor_idx, MODE_Y_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + MODE_Y_OFFSET);
+    if !console.mode {
+        let cursor_idx = format!("Ln {}, Col {}", cursor.xy.1, cursor.xy.0);
+        gts.color = CONSOLE_TEXT_COLOR;
+        gts.draw(&cursor_idx, MODE_Y_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + MODE_Y_OFFSET);
+    }
 }

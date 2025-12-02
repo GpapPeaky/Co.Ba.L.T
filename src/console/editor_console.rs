@@ -8,7 +8,7 @@ use crate::options::editor_options::EditorOptions;
 use crate::options::editor_pallete::{
     CONSOLE_CONTAINER_COLOR,
     CONSOLE_CURSOR_COLOR,
-    CONSOLE_FRAME_COLOR,
+    CONSOLE_FRAME_COLOR
 };
 use crate::console::editor_console_cursor::*;
 use crate::console::editor_file::*;
@@ -87,7 +87,6 @@ impl EditorConsole {
             1.0,
             CONSOLE_FRAME_COLOR
         );
-
 
         let cursor_idx = char_to_byte(&self.directive, self.cursor.x);
         let cursor_text = &self.directive[..cursor_idx];
