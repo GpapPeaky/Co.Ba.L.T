@@ -38,6 +38,7 @@ use crate::win::editor_win_config::window_conf;
 // IDEA: Add file markings in specific file indeces for faster traversal <:mark>.
 // IDEA: Add file markings finder <:spot>, moves by one in each directive return, won't clear inside the console so the user can keep moving.
 // IDEA: Add file markings finder <:spot N>, moves to the N-th marked spot inside the file. 
+// IDEA: Add multiple open files support
 
 pub const VERSION: &str = "Muse-v01.05.03";
 
