@@ -6,7 +6,7 @@ use std::collections::{HashMap};
 use macroquad::prelude::*;
 use miniquad::date;
 
-use crate::audio::editor_audio::*;
+use crate::{audio::editor_audio::*, camera::editor_camera::EditorCamera, text::editor_input::TAB_PATTERN};
 
 pub const CURSOR_WORD_OFFSET: f32 = 600.0;
 
@@ -42,6 +42,76 @@ impl EditorCursor {
             vel_y: 0.0,
             select_mode: false,
             select_xy: (0, 0)
+        }
+    }
+
+    /// Draw selection highlight
+    pub fn draw_selection(
+        &self,
+        text: &[String],
+        start_x: f32,
+        start_y: f32,
+        line_spacing: f32,
+        font: &Font,
+        font_size: u16,
+        camera: &EditorCamera,
+        line_start_fix: f32,
+        text_y_offset: f32,
+    ) {
+        if !self.select_mode {
+            return;
+        }
+
+        // Determine start and end points
+        let (start_line, start_col, end_line, end_col) = 
+            if self.xy.1 < self.select_xy.1 || 
+               (self.xy.1 == self.select_xy.1 && self.xy.0 < self.select_xy.0) {
+                (self.xy.1, self.xy.0, self.select_xy.1, self.select_xy.0)
+            } else {
+                (self.select_xy.1, self.select_xy.0, self.xy.1, self.xy.0)
+            };
+
+        // Draw selection for each line
+        for line_idx in start_line..=end_line {
+            if line_idx >= text.len() {
+                break;
+            }
+
+            let line = &text[line_idx];
+            
+            // Determine start and end columns for this line
+            let col_start = if line_idx == start_line { start_col } else { 0 };
+            let col_end = if line_idx == end_line { end_col } else { line.chars().count() };
+
+            // Get byte indices
+            let byte_start = char_to_byte(line, col_start);
+            let byte_end = char_to_byte(line, col_end);
+
+            // Measure text positions
+            let prefix = &line[..byte_start];
+            let selected = &line[byte_start..byte_end];
+            
+            let visual_prefix = prefix.replace("\t", TAB_PATTERN);
+            let visual_selected = selected.replace("\t", TAB_PATTERN);
+            
+            let prefix_width = measure_text(&visual_prefix, Some(font), font_size, 1.0).width;
+            let selected_width = measure_text(&visual_selected, Some(font), font_size, 1.0).width;
+
+            // Calculate world position
+            let world_x = start_x + line_start_fix + prefix_width;
+            let world_y = start_y + line_idx as f32 * line_spacing + text_y_offset;
+
+            // Convert to screen coordinates
+            let (screen_x, screen_y) = camera.world_to_screen(world_x, world_y);
+
+            // Draw selection rectangle
+            draw_rectangle(
+                screen_x.round(),
+                screen_y.round() - font_size as f32 + CURSOR_HEIGHT,
+                selected_width,
+                font_size as f32,
+                Color::from_rgba(100, 150, 255, 80) // Light blue with transparency
+            );
         }
     }
 

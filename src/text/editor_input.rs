@@ -220,40 +220,158 @@ pub fn lctrl_shortcuts(
             return true;
         }
         
+        // Copy text
         if is_key_pressed(KeyCode::C) {
             let extract = if cursor.select_mode {
-                // extract from select_xy -> cursor_xy if cursor_xy > select_xy
-                // else form cursor_xy -> select_xy
-                "SELECTED_TEXT" // replace with your extraction logic
+                // Determine start and end points
+                let (start_line, start_col, end_line, end_col) = 
+                    if cursor.xy.1 < cursor.select_xy.1 || 
+                    (cursor.xy.1 == cursor.select_xy.1 && cursor.xy.0 < cursor.select_xy.0) {
+                        (cursor.xy.1, cursor.xy.0, cursor.select_xy.1, cursor.select_xy.0)
+                    } else {
+                        (cursor.select_xy.1, cursor.select_xy.0, cursor.xy.1, cursor.xy.0)
+                    };
+                
+                let mut selected = String::new();
+                
+                if start_line == end_line {
+                    // Single line selection
+                    let line = &text[start_line];
+                    let byte_start = char_to_byte(line, start_col);
+                    let byte_end = char_to_byte(line, end_col);
+                    selected = line[byte_start..byte_end].to_string();
+                } else {
+                    // Multi-line selection
+                    // First line: from start_col to end
+                    let first_line = &text[start_line];
+                    let byte_start = char_to_byte(first_line, start_col);
+                    selected.push_str(&first_line[byte_start..]);
+                    selected.push('\n'); // ADD NEWLINE
+                    
+                    // Middle lines: entire lines
+                    for line_idx in (start_line + 1)..end_line {
+                        selected.push_str(&text[line_idx]);
+                        selected.push('\n'); // ADD NEWLINE
+                    }
+                    
+                    // Last line: from start to end_col
+                    let last_line = &text[end_line];
+                    let byte_end = char_to_byte(last_line, end_col);
+                    selected.push_str(&last_line[..byte_end]);
+                    // NO newline after last line
+                }
+                
+                selected
             } else {
-                &text[cursor.xy.1].clone()
+                // No selection, copy current line
+                text[cursor.xy.1].clone()
             };
         
-            cb_set(&extract);
-
-            println!("Setted {}", extract);
+            let _ = copy_to_clipboard(&extract);
         }
         
-        if is_key_down(KeyCode::V) {
-            if let Some(paste_text) = cb_get() {
-                println!("Pasted {}", paste_text);
+        // Paste text
+        if is_key_pressed(KeyCode::V) {
+            match paste_from_clipboard() {
+                Ok(pasted_text) => {
+                    let lines: Vec<&str> = pasted_text.split('\n').collect();
+                    
+                    if lines.len() == 1 {
+                        // Single line paste - insert into current line
+                        let line = &mut text[cursor.xy.1];
+                        let byte_idx = char_to_byte(line, cursor.xy.0);
+                        line.insert_str(byte_idx, &pasted_text);
+                        
+                        // Move cursor to end of pasted text
+                        cursor.xy.0 += pasted_text.chars().count();
+                    } else {
+                        // Multi-line paste
+                        let current_line = &text[cursor.xy.1];
+                        let byte_idx = char_to_byte(current_line, cursor.xy.0);
+                        
+                        let before = current_line[..byte_idx].to_string();
+                        let after = current_line[byte_idx..].to_string();
+                        
+                        // First line: existing beginning + first pasted line
+                        text[cursor.xy.1] = format!("{}{}", before, lines[0]);
+                        
+                        // Insert middle lines (if any)
+                        for i in 1..lines.len() - 1 {
+                            text.insert(cursor.xy.1 + i, lines[i].to_string());
+                        }
+                        
+                        // Last line: last pasted line + existing ending
+                        let last_line = format!("{}{}", lines.last().unwrap(), after);
+                        text.insert(cursor.xy.1 + lines.len() - 1, last_line);
+                        
+                        // Update cursor position
+                        cursor.xy.1 += lines.len() - 1;
+                        cursor.xy.0 = lines.last().unwrap().chars().count();
+                    }
+                    
+                    // Exit selection mode after paste
+                    cursor.select_mode = false;
+                }
+                Err(e) => eprintln!("Paste failed: {}", e),
             }
         }
 
         // Select mode switch
         if is_key_pressed(KeyCode::P) {
-            cursor.select_mode = !cursor.select_mode;
-            
-            // On entry save the initial xy
+            // On exit, copy selection before toggling off
             if cursor.select_mode {
-                cursor.select_xy = cursor.xy;
-            } else { // On exit we reset
+                // Determine start and end points
+                let (start_line, start_col, end_line, end_col) = 
+                    if cursor.xy.1 < cursor.select_xy.1 || 
+                    (cursor.xy.1 == cursor.select_xy.1 && cursor.xy.0 < cursor.select_xy.0) {
+                        (cursor.xy.1, cursor.xy.0, cursor.select_xy.1, cursor.select_xy.0)
+                    } else {
+                        (cursor.select_xy.1, cursor.select_xy.0, cursor.xy.1, cursor.xy.0)
+                    };
+                
+                let mut selected = String::new();
+                
+                if start_line == end_line {
+                    // Single line selection
+                    let line = &text[start_line];
+                    let byte_start = char_to_byte(line, start_col);
+                    let byte_end = char_to_byte(line, end_col);
+                    selected = line[byte_start..byte_end].to_string();
+                } else {
+                    // Multi-line selection
+                    // First line: from start_col to end
+                    let first_line = &text[start_line];
+                    let byte_start = char_to_byte(first_line, start_col);
+                    selected.push_str(&first_line[byte_start..]);
+                    selected.push('\n');
+                    
+                    // Middle lines: entire lines
+                    for line_idx in (start_line + 1)..end_line {
+                        selected.push_str(&text[line_idx]);
+                        selected.push('\n');
+                    }
+                    
+                    // Last line: from start to end_col
+                    let last_line = &text[end_line];
+                    let byte_end = char_to_byte(last_line, end_col);
+                    selected.push_str(&last_line[..byte_end]);
+                }
+                
+                // Copy to clipboard
+                let _ = copy_to_clipboard(&selected);
+                
+                // Reset selection
                 cursor.select_xy = (0, 0);
+            } else {
+                // On entry, save the initial xy
+                cursor.select_xy = cursor.xy;
             }
+            
+            // Toggle selection mode
+            cursor.select_mode = !cursor.select_mode;
             
             return true;
         }
-
 
         file_text_special_navigation(cursor, text, audio);
         
@@ -282,6 +400,8 @@ pub fn record_special_keys(
         if text.is_empty() {
             return true;
         }
+
+        // TODO: Add selected lines deleting
 
         let line = &mut text[cursor.xy.1];
         cursor.xy.0 = cursor.xy.0.min(line.chars().count());

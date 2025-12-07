@@ -64,6 +64,21 @@ pub fn draw_file_text(
     let cam_top = camera.offset_y;
     let cam_bottom = camera.offset_y + screen_height();
 
+    // Draw selection BEFORE drawing cursor
+    if cursor.select_mode && cursor.xy.1 < text.len() {
+        cursor.draw_selection(
+            &text,
+            start_x,
+            start_y,
+            line_spacing,
+            &gts.font,
+            gts.font_size,
+            &camera,
+            line_start_fix,
+            text_y_offset,
+        );
+    }
+
     // Draw cursor
     if !console.mode && cursor.xy.1 < text.len() {
         let line = &text[cursor.xy.1];
