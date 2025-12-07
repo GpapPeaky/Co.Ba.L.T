@@ -29,7 +29,6 @@ use crate::win::editor_win_config::window_conf;
 // TODO: Add the palletes.
 // TODO: Add more fonts.
 
-// IDEA: Add selection mode
 // IDEA: Add a list of user defined functions to make it easier to traverse files. V++
 // IDEA: Add a list of user defined identifiers that will pop up as an autocomplete thing.
 // IDEA: Add a cmd/terminal wrapper maybe, for compiling/executing code and git commands.
