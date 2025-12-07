@@ -1,4 +1,5 @@
 // Hide the scary console.
+// Do not hide it, because appearantly it moves faster??
 // #![windows_subsystem = "windows"]
 
 mod console;
