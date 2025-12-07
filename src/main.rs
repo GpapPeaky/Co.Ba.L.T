@@ -26,8 +26,6 @@ use crate::win::editor_win_config::window_conf;
 
 // TODO: Finish all the directives.
 // TODO: Add Ctrl + z to undo last change.
-// TODO: Add Ctrl + c to copy selected text.
-// TODO: Add Ctrl + v to paste copied text. V++
 // TODO: Add the palletes.
 // TODO: Add more fonts.
 
