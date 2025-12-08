@@ -143,8 +143,8 @@ All configuration changes are saved in `user.pref`.
 | **LCtrl + `E`**                | Quit/Exit (`:e`).                                            |
 | **LCtrl + `T`**                | Open virtual terminal input.  
 |
-| **LCtrl + `P`**                |  Selection mode toggle.  
-|
+ **LCtrl + `P`**                |  Selection mode toggle.  
+
 | **LCtrl + `` ` ``**            | Switch to console mode.                                      |
 | **LCtrl + `-`**                | Decrease editor font size.                                   |
 | **LCtrl + `=`**                | Increase editor font size.                                   |
