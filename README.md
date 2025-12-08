@@ -144,13 +144,20 @@ All configuration changes are saved in `user.pref`.
 | **LCtrl + `T`**                | Open virtual terminal input.  
  **LCtrl + `P`**                 | Selection mode toggle.  
 
-| **LCtrl + `` ` ``**            | Switch to console mode.                                      
-| **LCtrl + `-`**                | Decrease editor font size.                                   
-| **LCtrl + `=`**                | Increase editor font size.                                   
-| **LCtrl + ArrowKeys**          | Move cursor 5 steps.                                         
-| **LCtrl + LShift + ArrowKeys** | Hold to continuously move cursor (1 step per tick).          
-| **LShift + Up/Down**           | Move line at cursor by one.                                  
-| **LShift + Left/Right**        | Resize the console's width.                                  |
+|
+**LCtrl + `` ` ``**            | Switch to console mode.                                      
+|
+**LCtrl + `-`**                | Decrease editor font size.                                   
+|
+**LCtrl + `=`**                | Increase editor font size.                                   
+|
+**LCtrl + ArrowKeys**          | Move cursor 5 steps.                                         
+|
+**LCtrl + LShift + ArrowKeys** | Hold to continuously move cursor (1 step per tick).          
+|
+**LShift + Up/Down**           | Move line at cursor by one.                                  
+|
+**LShift + Left/Right**        | Resize the console's width.                                  |
 ---
 
 ## License
