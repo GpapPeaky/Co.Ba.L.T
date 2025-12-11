@@ -202,7 +202,7 @@ pub fn recognize_cursor_word(
 pub fn file_text_navigation(
     cursor: &mut EditorCursor,
     text: &mut Vec<String>,
-    audio: &EditorAudio,
+    audio: &mut EditorAudio,
 ) {
     if text.is_empty() {
         cursor.xy = (0, 0);
@@ -255,7 +255,7 @@ pub fn file_text_navigation(
 pub fn file_text_special_navigation(
     cursor: &mut EditorCursor, 
     text: &mut Vec<String>, 
-    audio: &EditorAudio,
+    audio: &mut EditorAudio,
 ) {
     if text.is_empty() {
         cursor.xy.0 = 0;

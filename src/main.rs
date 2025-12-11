@@ -49,7 +49,7 @@ async fn main() {
     // File system
     let mut efs = EditorFileSystem::new();
     // Editor audio
-    let audio = EditorAudio::new().await;
+    let mut audio = EditorAudio::new();
     // Editor general text stylizer for file
     let mut file_gts = EditorGeneralTextStylizer::new().await;
     // Editor general text stylizer for console, font already preloaded.
@@ -75,7 +75,7 @@ async fn main() {
         draw_file_text(&mut file_text, &mut file_cursor, &mut file_gts, &console, &mut ec, &elk);
 
         if !console.mode {
-            record_keyboard_to_file_text(&mut file_cursor, &mut file_text, &audio, &mut console,  &mut file_gts, &mut efs, &mut ops, &mut elk);
+            record_keyboard_to_file_text(&mut file_cursor, &mut file_text, &mut audio, &mut console,  &mut file_gts, &mut efs, &mut ops, &mut elk);
 
             let mut fname = path_buffer_file_to_string(&efs.current_file);
             if efs.unsaved_changes {
@@ -104,7 +104,7 @@ async fn main() {
             
                 
         } else {
-            console.record_keyboard_to_console_text(&audio, &mut efs, &mut file_text, &mut file_cursor, &mut ops, &mut elk);
+            console.record_keyboard_to_console_text(&mut audio, &mut efs, &mut file_text, &mut file_cursor, &mut ops, &mut elk);
             
             let mut fname = path_buffer_file_to_string(&efs.current_file);
             if efs.unsaved_changes {

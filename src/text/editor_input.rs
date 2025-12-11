@@ -19,7 +19,7 @@ pub const TAB_PATTERN: &str = "    ";
 fn lshift_shortcuts(
     cursor: &mut EditorCursor,
     text: &mut Vec<String>,
-    _audio: &EditorAudio,
+    _audio: &mut EditorAudio,
     _console: &mut EditorConsole,
     efs: &mut EditorFileSystem,
 ) -> bool {
@@ -54,7 +54,7 @@ fn lshift_shortcuts(
 pub fn lctrl_shortcuts(
     cursor: &mut EditorCursor,
     text: &mut Vec<String>,
-    audio: &EditorAudio,
+    audio: &mut EditorAudio,
     console: &mut EditorConsole,
     efs: &mut EditorFileSystem,
     gts: &mut EditorGeneralTextStylizer,
@@ -385,7 +385,7 @@ pub fn lctrl_shortcuts(
 pub fn record_special_keys(
     cursor: &mut EditorCursor,
     text: &mut Vec<String>,
-    audio: &EditorAudio,
+    audio: &mut EditorAudio,
     console: &mut EditorConsole,
     gts: &mut EditorGeneralTextStylizer,
     efs: &mut EditorFileSystem,
@@ -513,7 +513,7 @@ pub fn record_special_keys(
 pub fn record_keyboard_to_file_text(
     cursor: &mut EditorCursor,
     text: &mut Vec<String>,
-    audio: &EditorAudio,
+    audio: &mut EditorAudio,
     console: &mut EditorConsole,
     gts: &mut EditorGeneralTextStylizer,
     efs: &mut EditorFileSystem,

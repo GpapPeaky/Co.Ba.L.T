@@ -132,7 +132,7 @@ impl EditorConsole {
 
     fn lshift_shortcuts(
         &mut self,
-        audio: &EditorAudio
+        audio: &mut EditorAudio
     ) -> bool {
         // Left, resize console
         if is_key_down(KeyCode::Left) {
@@ -156,7 +156,7 @@ impl EditorConsole {
     /// Special input, backspace and enter
     fn record_special_console_keys(
         &mut self,
-        audio: &EditorAudio,
+        audio: &mut EditorAudio,
         efs: &mut EditorFileSystem,
         text: &mut Vec<String>,
         cursor: &mut EditorCursor,
@@ -214,7 +214,7 @@ impl EditorConsole {
     /// Record  heyboard input
     pub fn record_keyboard_to_console_text(
         &mut self,
-        audio: &EditorAudio,
+        audio: &mut EditorAudio,
         efs: &mut EditorFileSystem,
         text: &mut Vec<String>,
         cursor: &mut EditorCursor,

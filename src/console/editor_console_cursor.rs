@@ -67,7 +67,7 @@ impl EditorConsoleCursor {
 pub fn console_text_navigation(
     cursor_x: &mut usize, 
     directive: &mut String, 
-    audio: &EditorAudio
+    audio: &mut EditorAudio
 ) {
     let cursor_x_pos = *cursor_x as i32;
 

@@ -1,45 +1,86 @@
-// Editor audio module
+use kira::{
+    {AudioManager, AudioManagerSettings},
+    sound::static_sound::{StaticSoundData, StaticSoundSettings},
+};
+use rand::prelude::*;
+use std::sync::Arc;
 
-use macroquad::audio::{Sound, load_sound, play_sound_once};
-
+/// Struct holding all editor sound effects
 pub struct EditorAudio {
-    pub insert: Sound,
-    pub delete: Sound,
-    pub space:  Sound,
-    pub enter:  Sound,
-    pub nav:    Sound
+    pub manager: AudioManager,
+    pub insert: Arc<StaticSoundData>,
+    pub delete: Arc<StaticSoundData>,
+    pub space: Arc<StaticSoundData>,
+    pub enter: Arc<StaticSoundData>,
+    pub nav: Arc<StaticSoundData>,
 }
 
 impl EditorAudio {
-    pub async fn new() -> Self {
-        let editor_audio =  EditorAudio {
-            insert: load_sound("assets/sound/insert.wav").await.unwrap(),
-            delete: load_sound("assets/sound/del.wav"   ).await.unwrap(),
-            enter:  load_sound("assets/sound/return.wav").await.unwrap(),
-            space:  load_sound("assets/sound/space.wav" ).await.unwrap(),
-            nav:    load_sound("assets/sound/nav.wav"   ).await.unwrap()
-        };
+    /// Load all sounds and create AudioManager
+    pub fn new() -> Self {
+        let manager = AudioManager::new(AudioManagerSettings::default())
+            .expect("Failed to create AudioManager");
 
-        editor_audio
+        let insert = Arc::new(
+            StaticSoundData::from_file("assets/sound/insert.wav").expect("insert.wav missing"),
+        );
+        let delete = Arc::new(
+            StaticSoundData::from_file("assets/sound/del.wav").expect("del.wav missing"),
+        );
+        let enter = Arc::new(
+            StaticSoundData::from_file("assets/sound/return.wav").expect("return.wav missing"),
+        );
+        let space = Arc::new(
+            StaticSoundData::from_file("assets/sound/space.wav").expect("space.wav missing"),
+        );
+        let nav = Arc::new(
+            StaticSoundData::from_file("assets/sound/nav.wav").expect("nav.wav missing"),
+        );
+
+        Self {
+            manager,
+            insert,
+            delete,
+            space,
+            enter,
+            nav,
+        }
     }
 
-    pub fn play_nav(&self) {
-        play_sound_once(&self.nav);
+    /// Generates a subtle ±5% pitch variation
+    fn random_pitch() -> f64 {
+        let mut rng = rand::rng();
+        let pitch = 1.0 + rng.random_range(-0.075..0.075);
+        pitch
     }
 
-    pub fn play_insert(&self) {
-        play_sound_once(&self.insert);
+    /// Plays a sound with pitch and volume variation
+    fn play_static_sound(&mut self, sound: Arc<StaticSoundData>) {
+        let mut settings = StaticSoundSettings::default();
+        settings.volume = (-5.0).into();
+        settings.playback_rate = Self::random_pitch().into();
+
+        let sound_data = (*sound).clone().with_settings(settings);
+        self.manager.play(sound_data).expect("Failed to play sound");
     }
 
-    pub fn play_delete(&self) {
-        play_sound_once(&self.delete);
+    pub fn play_insert(&mut self) {
+        self.play_static_sound(Arc::clone(&self.insert));
     }
 
-    pub fn play_space(&self) {
-        play_sound_once(&self.space);
+    pub fn play_delete(&mut self) {
+        self.play_static_sound(Arc::clone(&self.delete));
     }
 
-    pub fn play_return(&self) {
-        play_sound_once(&self.enter);
+    pub fn play_space(&mut self) {
+        self.play_static_sound(Arc::clone(&self.space));
+    }
+
+    pub fn play_return(&mut self) {
+        self.play_static_sound(Arc::clone(&self.enter));
+    }
+
+    pub fn play_nav(&mut self) {
+        self.play_static_sound(Arc::clone(&self.nav));
     }
 }
