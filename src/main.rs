@@ -29,6 +29,20 @@ use crate::win::editor_win_config::window_conf;
 // TODO: Add Ctrl + z to undo last change.
 // TODO: Add the palletes.
 // TODO: Add more fonts.
+// TODO: Aquire a windows publisher certificate to hide the scary publisher pop-up
+// TODO: Add a few more directives for easier use
+// TODO: Fix indentation and TAB navigation <1.5.5>
+// TODO: Complete the editor options to include sound settings, cursor animation toggles and values, background images via shader and maybe keybind settings <1.5.6>
+// TODO: Update docs
+// TODO: Fix some issues regarding powershell and the shell bridge
+// TODO: Improve directory and file navigation <1.5.7>
+// TODO: Multiple open file support with "window splitting" per file <1.6.0>
+// TODO: Find a suitable keybind for faster infile navigation
+// TODO: Add some more keybinds
+// TODO: Improve docs and codebase <1.6.1..1.6.X>
+// TODO: More language support
+// TODO: Tokenizer for autocompleting keywords
+// TODO: Autocomplete for user defined identifiers and functions? <1.7.0>
 
 // IDEA: Add a list of user defined functions to make it easier to traverse files. V++
 // IDEA: Add a list of user defined identifiers that will pop up as an autocomplete thing.

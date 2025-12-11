@@ -205,13 +205,34 @@ pub fn draw_file_text(
                             token.push(chars.next().unwrap());
                             color = PUNCTUATION_COLOR;
                         }
+                        // Inside the identifier branch of your token loop
                         _ => {
                             while let Some(&ch) = chars.peek() {
                                 if !ch.is_alphanumeric() && ch != '_' { break; }
                                 token.push(chars.next().unwrap());
                             }
+                        
                             let clean = token.trim_matches(|c: char| !c.is_alphanumeric() && c != '_');
-                            color = gts.calibrate_string_color(clean, &elk);
+                        
+                            // Peek ahead to check for '('
+                            let mut lookahead = chars.clone().peekable();
+                            while let Some(&ch) = lookahead.peek() {
+                                if ch.is_whitespace() { lookahead.next(); } else { break; }
+                            }
+                        
+                            // Only mark as FUNCTION_COLOR if it's not a keyword
+                            if lookahead.peek() == Some(&'(')
+                                && !elk.control_flow.contains(&clean)
+                                && !elk.type_qualifiers.contains(&clean)
+                                && !elk.composite_types.contains(&clean)
+                                && !elk.storage_class.contains(&clean)
+                                && !elk.misc.contains(&clean)
+                                && !elk.data_types.contains(&clean)
+                            {
+                                color = FUNCTION_COLOR;
+                            } else {
+                                color = gts.calibrate_string_color(clean, &elk);
+                            }
                         }
                     }
                 }
