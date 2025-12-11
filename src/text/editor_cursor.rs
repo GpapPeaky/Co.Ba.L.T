@@ -375,11 +375,11 @@ pub fn calibrate_distance_to_whitespace(
     
 }
 
-/// Calculate the distance from the left or right of a whitespace if the cursor is inside text
-/// or a character if the cursor is inside whitespace
+/// Calculate the distance from the cursor to the next "word boundary"
+/// A word boundary is: whitespace, punctuation, or parentheses/brackets
 pub fn calibrate_distance_to_whitespace_or_character(
-    leftorright: bool, 
-    cursor_idx: usize, 
+    left_or_right: bool,
+    cursor_idx: usize,
     line: &str
 ) -> usize {
     let chars: Vec<char> = line.chars().collect();
@@ -388,46 +388,31 @@ pub fn calibrate_distance_to_whitespace_or_character(
         return 0;
     }
 
-    let mut cursor = cursor_idx.min(len);
     let mut steps = 0;
 
-    // True right, false left
-    if leftorright {
-        if cursor >= len {
-            return 0;
-        }
-
-        let is_not_special = !chars[cursor].is_alphanumeric();
-        for i in cursor..len {
-            if !chars[i].is_alphanumeric() && !is_not_special {
+    if left_or_right {
+        // Move right
+        let mut i = cursor_idx.min(len);
+        while i < len {
+            let c = chars[i];
+            if !c.is_alphanumeric() {
                 break;
             }
-            if chars[i].is_alphanumeric() && is_not_special {
-                break;
-            }
+            i += 1;
             steps += 1;
         }
-
-        return steps;
     } else {
-        if cursor == 0 {
-            return 0;
-        }
-
-        cursor -= 1;
-        let is_not_special = !chars[cursor].is_alphanumeric();
-
-        while cursor > 0 {
-            if !chars[cursor - 1].is_alphanumeric() && !is_not_special {
+        // Move left
+        let mut i = cursor_idx.min(len);
+        while i > 0 {
+            let c = chars[i - 1];
+            if !c.is_alphanumeric() {
                 break;
             }
-            if chars[cursor - 1].is_alphanumeric() && is_not_special {
-                break;
-            }
-            cursor -= 1;
+            i -= 1;
             steps += 1;
         }
-
-        steps + 1
     }
+
+    steps
 }
