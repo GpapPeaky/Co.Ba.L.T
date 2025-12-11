@@ -6,6 +6,9 @@ A lightweight console-based editor that allows users to manage files, directorie
   <img src = "assets/icon/mdmuse.png"/>
 </p>
 
+<p align="center">
+  <img src = "assets/md/md.png"/>
+</p>
 
 ## Table of Contents
 
