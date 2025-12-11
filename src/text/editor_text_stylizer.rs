@@ -14,7 +14,7 @@ pub struct EditorGeneralTextStylizer {
 impl EditorGeneralTextStylizer {
     pub async fn new() -> EditorGeneralTextStylizer {
         EditorGeneralTextStylizer {
-            font: load_ttf_font("assets/font/UbuntuMono-R.ttf").await.unwrap(),
+            font: load_ttf_font("assets/font/GoogleSansCode-Regular.ttf").await.unwrap(),
             font_size: 18,
             color: WHITE,
         }

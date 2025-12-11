@@ -73,6 +73,7 @@ pub fn lctrl_shortcuts(
             audio.play_insert();
             let line_clone = text[cursor.xy.1].clone();
             text.insert(cursor.xy.1 + 1, line_clone);
+            cursor.xy.1 += 1;
             return true;
         }
 
@@ -157,13 +158,13 @@ pub fn lctrl_shortcuts(
         }
 
         // Delete the word that the cursor is currently at
-        if is_key_pressed(KeyCode::W) {
+        if cursor.is_combo_active(KeyCode::W, None) {
             // Find the character collection of the word, left and right
             // from the word_idx
 
             let cursor_idx = cursor.xy.0;
-            let left_distance = calibrate_distance_to_whitespace(false, cursor_idx, &text[cursor.xy.1]);
-            let right_distance = calibrate_distance_to_whitespace(true, cursor_idx, &text[cursor.xy.1]);
+            let left_distance = calibrate_distance_to_whitespace_or_character(false, cursor_idx, &text[cursor.xy.1]);
+            let right_distance = calibrate_distance_to_whitespace_or_character(true, cursor_idx, &text[cursor.xy.1]);
             
             let left_cursor_idx = cursor_idx - left_distance;
             let word_len = cursor_idx + right_distance;
@@ -179,7 +180,8 @@ pub fn lctrl_shortcuts(
             
             audio.play_delete();
             efs.unsaved_changes = true;
-            
+            cursor.xy.0 = left_cursor_idx; // Move back
+
             return true;
         }
         
@@ -311,6 +313,8 @@ pub fn lctrl_shortcuts(
                     
                     // Exit selection mode after paste
                     cursor.select_mode = false;
+
+                    efs.unsaved_changes = true;
                 }
                 Err(e) => eprintln!("Paste failed: {}", e),
             }
@@ -485,12 +489,14 @@ pub fn record_special_keys(
                 }
 
                 // Check if the already is a closer
-                let should_insert_closer = if next_line_idx < text.len() {
-                    !text[next_line_idx].trim_start().starts_with(closer)
-                } else {
-                    true
-                };
+                // let should_insert_closer = if next_line_idx < text.len() {
+                    // !text[next_line_idx].trim_start().starts_with(closer)
+                // } else {
+                    // true
+                // };
                 
+                let should_insert_closer = true;
+
                 if should_insert_closer {
                     text.insert(cursor.xy.1 + 1, format!("{}{}", base_indent, closer));
                 }

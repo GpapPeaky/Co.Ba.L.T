@@ -12,7 +12,7 @@ pub const CURSOR_WORD_OFFSET: f32 = 600.0;
 
 pub const CURSOR_CONTINUOUS_PRESS_INITIAL_DELAY: f64 = 0.02;
 
-pub const CURSOR_CONTINUOUS_PRESS_DELAY: f64 = 0.09;
+pub const CURSOR_CONTINUOUS_PRESS_DELAY: f64 = 0.08;
 
 pub const CURSOR_LINE_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.05);
 
@@ -153,8 +153,8 @@ impl EditorCursor {
 
     /// Interpolate cursor movement
     pub fn animate_to(&mut self, target_x: f32, target_y: f32) {
-        let stiffness = 0.51;
-        let damping   = 0.47;
+        let stiffness = 0.76;
+        let damping   = 0.34;
     
         let dx = target_x - self.anim_x;
         let dy = target_y - self.anim_y;
@@ -184,8 +184,8 @@ pub fn recognize_cursor_word(
     // from the word_idx
 
     let cursor_idx = cursor.xy.0;
-    let left_distance = calibrate_distance_to_whitespace(false, cursor_idx, line);
-    let right_distance = calibrate_distance_to_whitespace(true, cursor_idx, line);
+    let left_distance = calibrate_distance_to_whitespace_or_character(false, cursor_idx, line);
+    let right_distance = calibrate_distance_to_whitespace_or_character(true, cursor_idx, line);
      
     // Index of where the word starts
     let left_cursor_idx = cursor_idx - left_distance;
@@ -324,6 +324,7 @@ pub fn file_text_special_navigation(
 /// Calculate the distance from the left or right 
 /// to a whitepsace based on the cursor's position
 /// return the distance
+#[allow(dead_code)]
 pub fn calibrate_distance_to_whitespace(
     leftorright: bool,
     cursor_idx: usize,
