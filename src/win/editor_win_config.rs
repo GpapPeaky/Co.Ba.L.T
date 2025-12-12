@@ -10,7 +10,7 @@ pub fn window_conf() -> Conf {
     };
 
     Conf {
-        window_title: "Muse-V1.5.4".to_string(),
+        window_title: "CoBaLT-V1.5.4".to_string(),
         icon: Some(icon),
         window_width: 1700,
         window_height: 1000,

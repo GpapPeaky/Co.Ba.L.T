@@ -51,7 +51,7 @@ use crate::win::editor_win_config::window_conf;
 // IDEA: Add file markings finder <:spot N>, moves to the N-th marked spot inside the file. 
 // IDEA: Add multiple open files support
 
-pub const VERSION: &str = "Muse-v01.05.04";
+pub const VERSION: &str = "CoBaLT-v01.05.04";
 
 #[macroquad::main(window_conf())]
 async fn main() {

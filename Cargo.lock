@@ -3,7 +3,7 @@
 version = 4
 
 [[package]]
-name = "Muse"
+name = "CoBaLT"
 version = "1.5.4"
 dependencies = [
  "bevy_kira_audio",
