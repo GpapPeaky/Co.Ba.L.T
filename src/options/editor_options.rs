@@ -28,7 +28,7 @@ impl EditorOptions {
       pub fn toggle_audio(
           &mut self
       ) {
-          self.audio = !self.smart;
+          self.audio = !self.audio;
       }
       
       /// Toggle on and off smart identation

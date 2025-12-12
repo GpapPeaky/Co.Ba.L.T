@@ -268,8 +268,8 @@ pub fn file_text_special_navigation(
     cursor.xy.0 = cursor.xy.0.min(text[cursor.xy.1].len());
     
     let line_len = text[cursor.xy.1].len();
-    let left_steps_to_whitespace = calibrate_distance_to_whitespace_or_character(false, cursor.xy.0, &text[cursor.xy.1]);
-    let right_steps_to_whitespace = calibrate_distance_to_whitespace_or_character(true, cursor.xy.0, &text[cursor.xy.1]);
+    let left_steps_to_whitespace = calibrate_distance_to_whitespace_or_character_for_movement(false, cursor.xy.0, &text[cursor.xy.1]);
+    let right_steps_to_whitespace = calibrate_distance_to_whitespace_or_character_for_movement(true, cursor.xy.0, &text[cursor.xy.1]);
 
     if cursor.is_combo_active(KeyCode::Left, None) {
         if cursor.xy.0 > 0 {
@@ -410,6 +410,52 @@ pub fn calibrate_distance_to_whitespace_or_character(
                 break;
             }
             i -= 1;
+            steps += 1;
+        }
+    }
+
+    steps
+}
+
+/// Move to next word boundary, including the boundary character itself.
+/// Boundaries = any non-alphanumeric character (parentheses, brackets, punctuation, whitespace).
+pub fn calibrate_distance_to_whitespace_or_character_for_movement(
+    right: bool,
+    cursor_idx: usize,
+    line: &str,
+) -> usize {
+    let chars: Vec<char> = line.chars().collect();
+    let len = chars.len();
+    if len == 0 {
+        return 0;
+    }
+
+    let mut steps = 0;
+
+    if right {
+        let mut i = cursor_idx.min(len);
+
+        // Phase 1: move over word characters
+        while i < len && chars[i].is_alphanumeric() {
+            i += 1;
+            steps += 1;
+        }
+
+        // Phase 2: if there's a boundary character, include ONE step onto it
+        if i < len && !chars[i].is_alphanumeric() {
+            steps += 1;
+        }
+    } else {
+        let mut i = cursor_idx.min(len);
+
+        // Phase 1: move left over word characters
+        while i > 0 && chars[i - 1].is_alphanumeric() {
+            i -= 1;
+            steps += 1;
+        }
+
+        // Phase 2: include boundary character on the left
+        if i > 0 && !chars[i - 1].is_alphanumeric() {
             steps += 1;
         }
     }
