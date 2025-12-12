@@ -68,6 +68,7 @@ All console commands are prefixed with a `:`. Commands without `:` are treated a
 | `:f <f>` | Jump to the line where the first occurrence of text `<f>` exists.                                   |
 | `:c <f>` | Create a new file named `<f>`.                                                                      |
 | `:t $ <c>` | Execute command `<c>` via the native cmd/terminal, yes we can build the editor inside the editor. |
+| `:cp` | Copy the currently open file 'f' into a new 'f_copy' with the same extension. |
 
 ---
 
@@ -146,6 +147,9 @@ All configuration changes are saved in `user.pref`.
 | **LCtrl + `E`**                | Quit/Exit (`:e`).                                            |
 | **LCtrl + `T`**                | Open virtual terminal input.  
  **LCtrl + `P`**                 | Selection mode toggle. |
+ **LCtrl + `C`**                 | Selection mode copy selected text. |
+ **LCtrl + `V`**                 | Paste clipboard at cursor position. |
+ **LCtrl + `I`**                 | Display current open file info and metadata. |
 **LCtrl + `` ` ``**            | Switch to console mode. |                                     
 **LCtrl + `-`**                | Decrease editor font size. |                                  
 **LCtrl + `=`**                | Increase editor font size.|                                   

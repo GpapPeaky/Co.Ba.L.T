@@ -10,9 +10,9 @@ use crate::{audio::editor_audio::*, camera::editor_camera::EditorCamera, text::e
 
 pub const CURSOR_WORD_OFFSET: f32 = 600.0;
 
-pub const CURSOR_CONTINUOUS_PRESS_INITIAL_DELAY: f64 = 0.02;
+pub const CURSOR_CONTINUOUS_PRESS_INITIAL_DELAY: f64 = 0.03;
 
-pub const CURSOR_CONTINUOUS_PRESS_DELAY: f64 = 0.08;
+pub const CURSOR_CONTINUOUS_PRESS_DELAY: f64 = 0.09;
 
 pub const CURSOR_LINE_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.05);
 

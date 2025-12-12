@@ -320,6 +320,21 @@ pub fn lctrl_shortcuts(
             }
         }
 
+        // Display file info
+        if is_key_pressed(KeyCode::I) {
+            // This looks like shit
+            let (info, mode) = execute_directive(&mut ":I".to_string(), efs, text, cursor, ops, elk);
+        
+            // Show message
+            console.message = info.clone();    
+            console.showing_message = true;
+            console.showing_manual = mode;
+
+            console_message(&console.message, console.showing_manual);
+        
+            return true;
+        }
+
         // Select mode switch
         if is_key_pressed(KeyCode::P) {
             // On exit, copy selection before toggling off

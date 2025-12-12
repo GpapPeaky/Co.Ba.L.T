@@ -276,6 +276,41 @@ impl EditorFileSystem {
 
     //     true
     // }
+    
+    /// Copy the currently open file with name 'f.e' to 'f_copy.e'
+    pub fn copy_open_file(
+        &mut self
+    ) -> bool {
+        let Some(orig_path) = &self.current_file else {
+            return false; // No open file.
+        };
+
+        let file_name = match orig_path.file_stem().and_then(|s| s.to_str()) {
+            Some(s) => s,
+            None => return false,
+        };
+        
+        let ext = orig_path.extension().and_then(|e| e.to_str());
+            
+        let new_name = if let Some(extension) = ext {
+            format!("{}_copy.{}", file_name, extension) 
+        } else {
+            format!("{}_copy", file_name)
+        };
+        
+        let new_path = orig_path.with_file_name(new_name);
+        
+        match std::fs::copy(orig_path, &new_path){
+            Ok(_) => { 
+                // Switch to the new file
+                self.current_file = Some(new_path);
+                
+                true
+            }
+            
+            Err(_) => false,
+        }
+    }
 }
 
 /// Get a path buffer as a string

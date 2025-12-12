@@ -25,7 +25,6 @@ use crate::text::editor_text::{CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE, MODE
 use crate::text::editor_text_stylizer::EditorGeneralTextStylizer;
 use crate::win::editor_win_config::window_conf;
 
-// TODO: Finish all the directives.
 // TODO: Add Ctrl + z to undo last change.
 // TODO: Add the palletes.
 // TODO: Add more fonts.

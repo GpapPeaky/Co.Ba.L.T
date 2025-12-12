@@ -16,8 +16,9 @@
 //              :c <f>      : Create a new file with name 'f'                                (C)
 //              :l <N>      : Go to line N inside the file, if possible, else throw an error (C)
 //              :b <f>      : Change the name of the current open file to 'f'                (C)
-//              :i          : Current file info display
-//              :f <f>      : Go to the line where the first iteration of text 'f' exists
+//              :f <f>      : Go to the line where the first iteration of text 'f' exists    (C)
+//              :i          : Current file info display                                      (C)                        
+//              :cp         : Copy the currently open file                                   (C)  
 //
 //      Directory specific:
 //              :cd         : Change directory                                         (C)
@@ -49,9 +50,12 @@
 // Pressing TAB will select the first seen file closest to the name given and autocomplete it
 // in the console.
 
+use std::fs;
 use std::path::Path;
 use std::str::FromStr;
 
+use chrono::DateTime;
+use chrono::Local;
 use macroquad::prelude::rand;
 
 use crate::VERSION;
@@ -100,6 +104,94 @@ pub fn execute_directive(
                     }
                 } else {
                     return ("NoFileNameProvided <:b>".to_string(), false);
+                }
+            }
+
+            "I" | "i" => {
+                if let Some(current_file) = &efs.current_file {
+                    // Build full path
+                    let path = efs
+                        .current_dir
+                        .clone()
+                        .unwrap_or_else(|| std::env::current_dir().unwrap())
+                        .join(current_file);
+            
+                    if path.exists() {
+                        // Get metadata
+                        let metadata = match fs::metadata(&path) {
+                            Ok(m) => m,
+                            Err(e) => return (format!("Error reading metadata: {}", e), false),
+                        };
+            
+                        // File type
+                        let file_type = if metadata.is_dir() {
+                            "Directory"
+                        } else if metadata.file_type().is_symlink() {
+                            "Symlink"
+                        } else {
+                            "File"
+                        };
+            
+                        // Size in bytes
+                        let size = metadata.len();
+            
+                        // Read-only?
+                        let readonly = metadata.permissions().readonly();
+            
+                        // Hidden? (starts with .)
+                        let hidden = path
+                            .file_name()
+                            .and_then(|n| n.to_str())
+                            .map(|s| s.starts_with('.'))
+                            .unwrap_or(false);
+            
+                        // Timestamps
+                        let created: DateTime<Local> = metadata
+                            .created()
+                            .unwrap_or_else(|_| metadata.modified().unwrap())
+                            .into();
+                        let modified: DateTime<Local> = metadata.modified().unwrap().into();
+                        let accessed: DateTime<Local> = metadata.accessed().unwrap_or(modified.into()).into();
+            
+                        let line_count = if metadata.is_file() {
+                            match fs::read_to_string(&path) {
+                                Ok(text) => Some(text.lines().count()),
+                                Err(_) => None,
+                            }
+                        } else {
+                            None
+                        };
+            
+                        let info = format!(
+                            "Path: {}\nType: {}\nSize: {} bytes\nRead-only: {}\nHidden: {}\nCreated: {}\nModified: {}\nAccessed: {}{}",
+                            path.display(),
+                            file_type,
+                            size,
+                            readonly,
+                            hidden,
+                            created.format("%Y-%m-%d %H:%M:%S"),
+                            modified.format("%Y-%m-%d %H:%M:%S"),
+                            accessed.format("%Y-%m-%d %H:%M:%S"),
+                            match line_count {
+                                Some(n) => format!("\nLines: {}", n),
+                                None => "".to_string(),
+                            }
+                        );
+            
+                        return (info, true);
+                    } else {
+                        return ("File not found <:i>".to_string(), false);
+                    }
+                } else {
+                    return ("No file open <:i>".to_string(), false);
+                }
+            }
+
+            "Cp" | "cp" | "cP" | "CP" => {
+                let r = efs.copy_open_file();
+
+                if !r {
+                    return ("NoFileOpen <:cp>".to_string(), false);
                 }
             }
 
