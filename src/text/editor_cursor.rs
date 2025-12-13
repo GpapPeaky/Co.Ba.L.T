@@ -6,7 +6,7 @@ use std::collections::{HashMap};
 use macroquad::prelude::*;
 use miniquad::date;
 
-use crate::{audio::editor_audio::*, camera::editor_camera::EditorCamera, text::editor_input::TAB_PATTERN};
+use crate::{audio::editor_audio::*, camera::editor_camera::EditorCamera, options::editor_pallete::CURSOR_COLOR, text::editor_input::TAB_PATTERN};
 
 pub const CURSOR_WORD_OFFSET: f32 = 600.0;
 
@@ -110,7 +110,7 @@ impl EditorCursor {
                 screen_y.round() - font_size as f32 + CURSOR_HEIGHT,
                 selected_width,
                 font_size as f32,
-                Color::from_rgba(100, 150, 255, 80) // Light blue with transparency
+                Color::from_vec(vec4(CURSOR_COLOR.r, CURSOR_COLOR.g, CURSOR_COLOR.b, 0.25)) // cursor color transparent
             );
         }
     }

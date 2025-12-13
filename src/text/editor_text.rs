@@ -51,6 +51,7 @@ pub fn draw(
     gts: &mut EditorGeneralTextStylizer,
     console: &EditorConsole,
     camera: &mut EditorCamera,
+    file_text: &mut Vec<String>
 ) {
     let text_y_offset = 25.0;
     let start_x = FILE_TEXT_X_MARGIN;
@@ -61,10 +62,15 @@ pub fn draw(
     let cam_top = camera.offset_y;
     let cam_bottom = camera.offset_y + screen_height();
 
+    // Draw visible tokens
+    let first_line = ((cam_top - start_y) / line_spacing).max(0.0) as usize;
+    let last_line = ((cam_bottom - start_y) / line_spacing)
+        .min(tokens.len() as f32 - 1.0) as usize;
+
     // Draw selection before cursor
     if cursor.select_mode {
         cursor.draw_selection(
-            &[],
+            file_text,
             start_x,
             start_y,
             line_spacing,
@@ -75,11 +81,6 @@ pub fn draw(
             text_y_offset,
         );
     }
-
-    // Draw visible tokens
-    let first_line = ((cam_top - start_y) / line_spacing).max(0.0) as usize;
-    let last_line = ((cam_bottom - start_y) / line_spacing)
-        .min(tokens.len() as f32 - 1.0) as usize;
 
     for (i, line) in tokens.iter().enumerate().skip(first_line).take(last_line - first_line + 1) {
         let y = start_y + i as f32 * line_spacing + text_y_offset;

@@ -43,7 +43,6 @@ use crate::win::editor_win_config::window_conf;
 // TODO: More language support
 // TODO: Tokenizer for autocompleting keywords
 // TODO: Autocomplete for user defined identifiers and functions? <1.7.0>
-
 // IDEA: Add a list of user defined functions to make it easier to traverse files. V++
 // IDEA: Add a list of user defined identifiers that will pop up as an autocomplete thing.
 // IDEA: Add a cmd/terminal wrapper maybe, for compiling/executing code and git commands.
@@ -89,7 +88,7 @@ async fn main() {
     loop {
         clear_background(BACKGROUND_COLOR);
 
-        draw(&mut file_tokens, &mut file_cursor, &mut file_gts, &console, &mut ec);
+        draw(&mut file_tokens, &mut file_cursor, &mut file_gts, &console, &mut ec, &mut file_text);
 
         if !console.mode {
             record_keyboard_to_file_text(&mut file_cursor, &mut file_text, &mut file_tokens, &mut audio, &mut console,  &mut file_gts, &mut efs, &mut ops, &mut elk);

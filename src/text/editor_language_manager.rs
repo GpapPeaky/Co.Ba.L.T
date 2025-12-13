@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 #[derive(Debug, Clone)]
 pub struct EditorLanguageKeywords {
     pub control_flow: Vec<&'static str>,
@@ -88,7 +86,7 @@ pub fn rust_keywords() -> EditorLanguageKeywords {
         ],
         misc: vec![
             "crate", "super", "self", "pub", "use",
-            "mod", "async", "await", "dyn",
+            "mod", "async", "await", "dyn", "let",
         ],
         data_types: vec![
             "i8","i16","i32","i64","i128","isize",
@@ -115,61 +113,6 @@ pub fn load_keywords_for_extension(
             misc: vec![],
             data_types: vec![],
             _file_ids: vec![],
-        }
-    }
-}
-
-/// Check if a token is a keyword
-/// return true if it is, false if not
-pub fn _is_keyword(
-    token: &str,
-    elk: &EditorLanguageKeywords
-) -> bool {
-    if 
-        elk.control_flow.contains(&token)
-        || elk.storage_class.contains(&token)
-        || elk.type_qualifiers.contains(&token)
-        || elk.composite_types.contains(&token)
-        || elk.misc.contains(&token)
-        || elk.data_types.contains(&token) {
-            return false;
-    }
-     
-    true
-}
-
-/// Tokenize text file
-/// from line-major to 
-/// word-major, return the 
-/// text file's tokens
-pub fn _tokenize_text_file(
-    text: &Vec<String>
-) -> Vec<String> {
-    let mut tokens = Vec::new();
-    let mut seen = HashSet::new();
-
-    for line in text {
-        for word in line.split_whitespace() {
-            if seen.insert(word) {
-                tokens.push(word.to_string());
-            }
-        }
-    }
-
-    tokens
-}
-
-/// Recognize identifiers
-/// from the tokenized file text
-/// pass the result into the
-/// ELK's file identifier field. 
-pub fn _recognize_identifiers(
-    tokens: Vec<String>,
-    elk: &mut EditorLanguageKeywords
-) {
-    for s in tokens {
-        if _is_keyword(&s, elk) {
-            elk._file_ids.push(s);
         }
     }
 }
