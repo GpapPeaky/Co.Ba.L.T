@@ -16,6 +16,7 @@ use crate::text::editor_cursor::*;
 use crate::text::editor_text_stylizer::*;
 use crate::console::editor_directives::*;
 use crate::text::editor_language_manager::EditorLanguageKeywords;
+use crate::text::editor_token::EditorToken;
 
 pub const CONSOLE_INITIAL_WIDTH: f32 = 250.0;
 pub const CONSOLE_MARGINS: f32 = 15.0;
@@ -162,6 +163,8 @@ impl EditorConsole {
         cursor: &mut EditorCursor,
         ops: &mut EditorOptions,
         elk: &mut EditorLanguageKeywords,
+        text_tokens: &mut Vec<Vec<EditorToken>>,
+        gts: &mut EditorGeneralTextStylizer
     ) {
         if cursor.is_combo_active(KeyCode::Backspace, None) {
             if self.cursor.x > 0 && !self.directive.is_empty() {
@@ -198,7 +201,7 @@ impl EditorConsole {
         if is_key_pressed(KeyCode::Enter) {
             // execute whatever is inside the directive string
             // check the directives' source
-            let message_and_manual_toggle = execute_directive(&mut self.directive, efs, text, cursor, ops, elk).clone();
+            let message_and_manual_toggle = execute_directive(&mut self.directive, efs, text, text_tokens, cursor, ops, elk, gts).clone();
 
             // Update for rendering.
             self.message = message_and_manual_toggle.0;
@@ -220,8 +223,10 @@ impl EditorConsole {
         cursor: &mut EditorCursor,
         ops: &mut EditorOptions,
         elk: &mut EditorLanguageKeywords,
+        text_tokens: &mut Vec<Vec<EditorToken>>,
+        gts: &mut EditorGeneralTextStylizer
     ) {
-        self.record_special_console_keys(audio, efs, text, cursor, ops, elk);
+        self.record_special_console_keys(audio, efs, text, cursor, ops, elk, text_tokens, gts);
 
         // Disable special characters from the console.
         if let Some(c) = get_char_pressed() {

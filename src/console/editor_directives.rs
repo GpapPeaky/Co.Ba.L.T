@@ -67,6 +67,9 @@ use crate::text::editor_language_manager::EditorLanguageKeywords;
 use crate::text::editor_language_manager::load_keywords_for_extension;
 use crate::console::editor_terminal::execute_terminal_command;
 use crate::text::editor_text::find_word_in_text;
+use crate::text::editor_text_stylizer::EditorGeneralTextStylizer;
+use crate::text::editor_token::EditorToken;
+use crate::text::editor_token::tokenize_text;
 // use crate::text::editor_language_manager::_recognize_identifiers;
 // use crate::text::editor_language_manager::_tokenize_text_file;
 
@@ -77,10 +80,12 @@ use crate::text::editor_text::find_word_in_text;
 pub fn execute_directive(
     directive: &mut String,
     efs: &mut EditorFileSystem, 
-    text: &mut Vec<String>, 
+    text: &mut Vec<String>,
+    text_tokens: &mut Vec<Vec<EditorToken>>,
     cursor: &mut EditorCursor,
     ops: &mut EditorOptions,
-    elk: &mut EditorLanguageKeywords
+    elk: &mut EditorLanguageKeywords,
+    gts: &mut EditorGeneralTextStylizer
 ) -> (String, bool) {
     if directive.starts_with(':') {
         let directive_command = directive.trim_start_matches(':').trim();
@@ -261,6 +266,8 @@ pub fn execute_directive(
 
                     efs.change_current_file(param.to_string());
                     *text = efs.load_current_file().unwrap_or_default();
+                    text_tokens.clear(); // Clear and retokenize per file change
+                    *text_tokens = tokenize_text(text, elk, gts);
                 } else {
                     return ("NoFileNameProvided <:c>".to_string(), false);
                 }
@@ -274,6 +281,8 @@ pub fn execute_directive(
                         let path = efs.current_dir.clone().unwrap_or_default().join(current_file);
                         if path.exists() {
                             *text = efs.load_current_file().unwrap_or_default();
+                            text_tokens.clear();
+                            *text_tokens = tokenize_text(text, elk, gts);
                         } else {
                             return ("FileNotFound <:cd>".to_string(), false);
                         }
@@ -363,9 +372,13 @@ pub fn execute_directive(
 
             // Load the new language support
             *elk = load_keywords_for_extension(ext);
+
+            // Tokenize after getting the correct language keywords
+            text_tokens.clear();
+            *text_tokens = tokenize_text(text, elk, gts);
         } else {
-            text.clear();
-            efs.current_file = None;
+            // text.clear();
+            // efs.current_file = None;
             return ("FileNotFound".to_string(), false);
         }
     }

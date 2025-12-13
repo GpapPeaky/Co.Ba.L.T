@@ -57,7 +57,7 @@ impl EditorAudio {
     /// Plays a sound with pitch and volume variation
     fn play_static_sound(&mut self, sound: Arc<StaticSoundData>) {
         let mut settings = StaticSoundSettings::default();
-        settings.volume = (-5.0).into();
+        settings.volume = (-2.0).into();
         settings.playback_rate = Self::random_pitch().into();
 
         let sound_data = (*sound).clone().with_settings(settings);

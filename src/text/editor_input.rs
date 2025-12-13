@@ -12,6 +12,7 @@ use crate::audio::editor_audio::*;
 use crate::console::editor_console::*;
 use crate::console::editor_file_system::*;
 use crate::console::editor_directives::*;
+use crate::text::editor_token::EditorToken;
 
 pub const TAB_SIZE: usize = 4;
 pub const TAB_PATTERN: &str = "    ";
@@ -54,6 +55,7 @@ fn lshift_shortcuts(
 pub fn lctrl_shortcuts(
     cursor: &mut EditorCursor,
     text: &mut Vec<String>,
+    text_tokens: &mut Vec<Vec<EditorToken>>,
     audio: &mut EditorAudio,
     console: &mut EditorConsole,
     efs: &mut EditorFileSystem,
@@ -80,7 +82,7 @@ pub fn lctrl_shortcuts(
         // Save/write to file
         if is_key_pressed(KeyCode::S) {
             console.directive = ":w".to_string();
-            execute_directive(&mut console.directive, efs, text, cursor, ops, elk);
+            execute_directive(&mut console.directive, efs, text, text_tokens, cursor, ops, elk, gts);
 
             return true;
         }
@@ -98,7 +100,7 @@ pub fn lctrl_shortcuts(
         // Open native file explorer
         if is_key_pressed(KeyCode::O) {
             console.directive = ":O".to_string();
-            execute_directive(&mut console.directive, efs, text, cursor, ops, elk);
+            execute_directive(&mut console.directive, efs, text, text_tokens, cursor, ops, elk, gts);
 
             return true;
         }
@@ -122,7 +124,7 @@ pub fn lctrl_shortcuts(
         // Create a new file
         if is_key_pressed(KeyCode::N) {
             console.directive = ":c f".to_string();
-            execute_directive(&mut console.directive, efs, text, cursor, ops, elk);
+            execute_directive(&mut console.directive, efs, text, text_tokens, cursor, ops, elk, gts);
             console.directive = ":b ".to_string();
             console.mode = true;
             console.cursor.x = console.directive.len();
@@ -188,15 +190,15 @@ pub fn lctrl_shortcuts(
         // Save and quit
         if is_key_pressed(KeyCode::Q) {
             console.directive = ":W".to_string();
-            execute_directive(&mut console.directive, efs, text, cursor, ops, elk);
+            execute_directive(&mut console.directive, efs, text, text_tokens, cursor, ops, elk, gts);
             console.directive = ":q".to_string();
-            execute_directive(&mut console.directive, efs, text, cursor, ops, elk);
+            execute_directive(&mut console.directive, efs, text, text_tokens, cursor, ops, elk, gts);
         }
         
         // Quit
         if is_key_pressed(KeyCode::E) {
             console.directive = ":e".to_string();
-            execute_directive(&mut console.directive, efs, text, cursor, ops, elk);
+            execute_directive(&mut console.directive, efs, text, text_tokens, cursor, ops, elk, gts);
         }
 
         // Console switch
@@ -323,7 +325,7 @@ pub fn lctrl_shortcuts(
         // Display file info
         if is_key_pressed(KeyCode::I) {
             // This looks like shit
-            let (info, mode) = execute_directive(&mut ":I".to_string(), efs, text, cursor, ops, elk);
+            let (info, mode) = execute_directive(&mut ":I".to_string(), efs, text, text_tokens, cursor, ops, elk, gts);
         
             // Show message
             console.message = info.clone();    
@@ -404,6 +406,7 @@ pub fn lctrl_shortcuts(
 pub fn record_special_keys(
     cursor: &mut EditorCursor,
     text: &mut Vec<String>,
+    text_tokens: &mut Vec<Vec<EditorToken>>,
     audio: &mut EditorAudio,
     console: &mut EditorConsole,
     gts: &mut EditorGeneralTextStylizer,
@@ -521,7 +524,7 @@ pub fn record_special_keys(
 
     lshift_shortcuts(cursor, text, audio, console, efs);
 
-    let is_lctrl = lctrl_shortcuts(cursor, text, audio, console, efs, gts, ops, elk);
+    let is_lctrl = lctrl_shortcuts(cursor, text, text_tokens, audio, console, efs, gts, ops, elk);
 
     if !is_lctrl {
         file_text_navigation(cursor, text, audio);
@@ -534,6 +537,7 @@ pub fn record_special_keys(
 pub fn record_keyboard_to_file_text(
     cursor: &mut EditorCursor,
     text: &mut Vec<String>,
+    text_tokens: &mut Vec<Vec<EditorToken>>,
     audio: &mut EditorAudio,
     console: &mut EditorConsole,
     gts: &mut EditorGeneralTextStylizer,
@@ -543,7 +547,7 @@ pub fn record_keyboard_to_file_text(
 ) {
     if text.is_empty() { text.push(String::new()); }
 
-    if record_special_keys(cursor, text, audio, console, gts, efs, ops, elk) {
+    if record_special_keys(cursor, text, text_tokens, audio, console, gts, efs, ops, elk) {
         return;
     }
 

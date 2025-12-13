@@ -11,9 +11,9 @@ use crate::console::editor_console::*;
 use crate::options::editor_pallete::*;
 use crate::text::editor_cursor::*;
 use crate::text::editor_input::*;
-use crate::text::editor_language_manager::EditorLanguageKeywords;
 use crate::text::editor_text_stylizer::*;
 use crate::camera::editor_camera::*;
+use crate::text::editor_token::EditorToken;
 
 pub const CURRENT_FILE_TOP_BAR_OFFSET: f32 = 100.0;
 
@@ -43,245 +43,93 @@ pub fn find_word_in_text(
     }
 }
 
-/// All around draw function for the editor text
-pub fn draw_file_text(
-    text: &Vec<String>,
+/// General file text drawing via tokenization
+/// as well as everything else
+pub fn draw(
+    tokens: &Vec<Vec<EditorToken>>,
     cursor: &mut EditorCursor,
     gts: &mut EditorGeneralTextStylizer,
     console: &EditorConsole,
     camera: &mut EditorCamera,
-    elk: &EditorLanguageKeywords
 ) {
     let text_y_offset = 25.0;
-
     let start_x = FILE_TEXT_X_MARGIN;
     let start_y = FILE_TEXT_Y_MARGIN;
     let line_spacing = gts.font_size as f32;
     let line_start_fix = gts.font_size as f32 * 1.5;
 
-    // let cam_left = camera.offset_x;
-    // let cam_right = camera.offset_x + screen_width();
     let cam_top = camera.offset_y;
     let cam_bottom = camera.offset_y + screen_height();
 
-    // Draw selection BEFORE drawing cursor
-    if cursor.select_mode && cursor.xy.1 < text.len() {
+    // Draw selection before cursor
+    if cursor.select_mode {
         cursor.draw_selection(
-            &text,
+            &[],
             start_x,
             start_y,
             line_spacing,
             &gts.font,
             gts.font_size,
-            &camera,
+            camera,
             line_start_fix,
             text_y_offset,
         );
     }
 
-    // Draw cursor
-    if !console.mode && cursor.xy.1 < text.len() {
-        let line = &text[cursor.xy.1];
-        let byte_idx = char_to_byte(line, cursor.xy.0);
-        let prefix = &line[..byte_idx];
-    
-        let visual_prefix = prefix.replace("\t", TAB_PATTERN);
-        let text_before_cursor = measure_text(&visual_prefix, Some(&gts.font), gts.font_size, 1.0);
-    
-        // Target location to draw
-        let logical_x = start_x + line_start_fix + text_before_cursor.width;
-        let logical_y = start_y + cursor.xy.1 as f32 * line_spacing + text_y_offset;
-        
-        // Smooth animation step, via interpolation
-        cursor.animate_to(logical_x, logical_y);
-        
-        // Use animated position instead of logical
-        let cursor_x_pos = cursor.anim_x;
-        let cursor_y_pos = cursor.anim_y;
-    
-        camera.follow_cursor(cursor_x_pos, cursor_y_pos);
-    
-        let (sx, sy) = camera.world_to_screen(cursor_x_pos, cursor_y_pos);
-        
-        let cursor_width = gts.font_size as f32 / 7.5;
+    // Draw visible tokens
+    let first_line = ((cam_top - start_y) / line_spacing).max(0.0) as usize;
+    let last_line = ((cam_bottom - start_y) / line_spacing)
+        .min(tokens.len() as f32 - 1.0) as usize;
 
-        let draw_x = sx.round();
-        let draw_y = sy.round();
-        let cursor_line_draw_y = draw_y - gts.font_size as f32;
-        let cursor_line_draw_x = FILE_TEXT_X_MARGIN;
-        
-        cursor.draw_cursor_line(cursor_line_draw_x, cursor_line_draw_y, gts.font_size as f32);
+    for (i, line) in tokens.iter().enumerate().skip(first_line).take(last_line - first_line + 1) {
+        let y = start_y + i as f32 * line_spacing + text_y_offset;
+        let mut x = start_x + line_start_fix;
 
-        draw_rectangle(draw_x, draw_y - gts.font_size as f32 + CURSOR_HEIGHT, cursor_width, gts.font_size as f32, CURSOR_COLOR);
+        for token in line {
+            let width = measure_text(&token.text, Some(&gts.font), gts.font_size, 1.0).width;
+            let (sx, sy) = camera.world_to_screen(x, y);
+            gts.color = token.color;
+            gts.draw(&token.text, sx, sy);
+            x += width;
+        }
     }
 
-    // Determine visible lines
-    let first_line = ((cam_top - start_y) / line_spacing).max(0.0) as usize;
-    let last_line = ((cam_bottom - start_y) / line_spacing).min(text.len() as f32 - 1.0) as usize;
+    // Draw cursor (by character, not token)
+    if !console.mode && !tokens.is_empty() && cursor.xy.1 < tokens.len() {
+        let line_tokens = &tokens[cursor.xy.1];
+        let mut prefix_text = String::new();
+        let mut char_count = 0;
 
-    let mut in_string = false;
-    let mut in_block_comment = false;
-
-    if !text.is_empty() {
-        for line_index in first_line..=last_line {
-            let line = &text[line_index];
-            let y = start_y + line_index as f32 * line_spacing;
-            let mut x = start_x + line_start_fix;
-
-            // CRITICAL FIX: Replace tabs BEFORE processing
-            let visual_line = line.replace("\t", TAB_PATTERN);
-            
-            let mut chars = visual_line.chars().peekable();
-            while let Some(&c) = chars.peek() {
-                let mut token = String::new();
-                let color: Color;
-
-                if in_block_comment {
-                    while let Some(&ch) = chars.peek() {
-                        // If we hit a @thing inside a comment
-                        if ch == '@' {
-                            // draw what we have so far as comment
-                            if !token.is_empty() {
-                                let w = measure_text(&token, Some(&gts.font), gts.font_size, 1.0).width;
-                                let (sx, sy) = camera.world_to_screen(x, y + text_y_offset);
-                                gts.color = COMMENT_COLOR;
-                                gts.draw(&token, sx, sy);
-                                x += w;
-                                token.clear();
-                            }
-                
-                            chars.next(); 
-                            token.push('@');
-                            while let Some(&c) = chars.peek() {
-                                if c.is_alphanumeric() || c == '_' {
-                                    token.push(chars.next().unwrap());
-                                } else {
-                                    break;
-                                }
-                            }
-                
-                            let w = measure_text(&token, Some(&gts.font), gts.font_size, 1.0).width;
-                            let (sx, sy) = camera.world_to_screen(x, y + text_y_offset);
-                            gts.color = MACRO_COLOR;
-                            gts.draw(&token, sx, sy);
-                            x += w;
-                            token.clear();
-                            continue;
-                        }
-                
-                        // normal comment char
-                        let ch = chars.next().unwrap();
-                        token.push(ch);
-                
-                        if ch == '*' && chars.peek() == Some(&'/') {
-                            token.push(chars.next().unwrap());
-                            in_block_comment = false;
-                            break;
-                        }
-                    }
-                
-                    color = COMMENT_COLOR;
-                } else if in_string {
-                    while let Some(ch) = chars.next() {
-                        token.push(ch);
-                        if ch == '"' && !token.ends_with("\\\"") {
-                            in_string = false;
-                            break;
-                        }
-                    }
-                    color = STRING_LITERAL_COLOR;
-                } else {
-                    match c {
-                        '/' => {
-                            chars.next();
-                            if chars.peek() == Some(&'/') {
-                                chars.next();
-                                token.push_str("//");
-                                token.extend(chars.by_ref());
-                                color = COMMENT_COLOR;
-                            } else if chars.peek() == Some(&'*') {
-                                chars.next();
-                                token.push_str("/*");
-                                in_block_comment = true;
-                                color = COMMENT_COLOR;
-                            } else {
-                                token.push('/');
-                                color = PUNCTUATION_COLOR;
-                            }
-                        }
-                        '"' => {
-                            chars.next();
-                            token.push('"');
-                            in_string = true;
-                            color = STRING_LITERAL_COLOR;
-                        }
-                        '#' => {
-                            while let Some(&ch) = chars.peek() {
-                                if ch.is_whitespace() { break; }
-                                token.push(chars.next().unwrap());
-                            }
-                            color = MACRO_COLOR;
-                        }
-                        c if c.is_whitespace() => {
-                            while let Some(&ch) = chars.peek() {
-                                if !ch.is_whitespace() { break; }
-                                token.push(chars.next().unwrap());
-                            }
-                            color = IDENTIFIER_COLOR;
-                        }
-                        c if c.is_ascii_digit() => {
-                            while let Some(&ch) = chars.peek() {
-                                if !(ch.is_ascii_digit() || ch == '.' || ch == 'f' || ch == 'F' || ch == '-') { break; }
-                                token.push(chars.next().unwrap());
-                            }
-                            color = NUMBER_LITERAL_COLOR;
-                        }
-                        c if !c.is_alphanumeric() && c != '_' => {
-                            token.push(chars.next().unwrap());
-                            color = PUNCTUATION_COLOR;
-                        }
-                        // Inside the identifier branch of your token loop
-                        _ => {
-                            while let Some(&ch) = chars.peek() {
-                                if !ch.is_alphanumeric() && ch != '_' { break; }
-                                token.push(chars.next().unwrap());
-                            }
-                        
-                            let clean = token.trim_matches(|c: char| !c.is_alphanumeric() && c != '_');
-                        
-                            // Peek ahead to check for '('
-                            let mut lookahead = chars.clone().peekable();
-                            while let Some(&ch) = lookahead.peek() {
-                                if ch.is_whitespace() { lookahead.next(); } else { break; }
-                            }
-                        
-                            // Only mark as FUNCTION_COLOR if it's not a keyword
-                            if lookahead.peek() == Some(&'(')
-                                && !elk.control_flow.contains(&clean)
-                                && !elk.type_qualifiers.contains(&clean)
-                                && !elk.composite_types.contains(&clean)
-                                && !elk.storage_class.contains(&clean)
-                                && !elk.misc.contains(&clean)
-                                && !elk.data_types.contains(&clean)
-                            {
-                                color = FUNCTION_COLOR;
-                            } else {
-                                color = gts.calibrate_string_color(clean, &elk);
-                            }
-                        }
-                    }
+        'outer: for token in line_tokens {
+            for ch in token.text.chars() {
+                if char_count == cursor.xy.0 {
+                    break 'outer;
                 }
-
-                let width = measure_text(&token, Some(&gts.font), gts.font_size, 1.0).width;
-                let (sx, sy) = camera.world_to_screen(x, y + text_y_offset);
-                
-                gts.color = color;
-
-                gts.draw(&token, sx, sy);
-                
-                x += width;
+                prefix_text.push(ch);
+                char_count += 1;
             }
         }
+
+        let visual_prefix = prefix_text.replace("\t", TAB_PATTERN);
+        let text_before_cursor = measure_text(&visual_prefix, Some(&gts.font), gts.font_size, 1.0);
+
+        let logical_x = start_x + line_start_fix + text_before_cursor.width;
+        let logical_y = start_y + cursor.xy.1 as f32 * line_spacing + text_y_offset;
+
+        cursor.animate_to(logical_x, logical_y);
+        camera.follow_cursor(cursor.anim_x, cursor.anim_y);
+
+        let (sx, sy) = camera.world_to_screen(cursor.anim_x, cursor.anim_y);
+        let cursor_width = gts.font_size as f32 / 7.5;
+
+        cursor.draw_cursor_line(start_x, sy - gts.font_size as f32, gts.font_size as f32);
+        draw_rectangle(
+            sx.round(),
+            sy - gts.font_size as f32 + CURSOR_HEIGHT,
+            cursor_width,
+            gts.font_size as f32,
+            CURSOR_COLOR,
+        );
     }
 
     // Sidebar
@@ -292,7 +140,9 @@ pub fn draw_file_text(
     // Line numbers
     gts.color = CURSOR_COLOR;
     for i in first_line..=last_line {
-        let line_y_world = 1.1 * FILE_TEXT_X_MARGIN + FILE_LINE_NUMBER_Y_MARGIN + gts.font_size as f32 * i as f32 + text_y_offset;
+        let line_y_world =
+            1.1 * FILE_TEXT_X_MARGIN + FILE_LINE_NUMBER_Y_MARGIN + gts.font_size as f32 * i as f32
+                + text_y_offset;
         let screen_y = line_y_world - camera.offset_y;
         gts.draw(&i.to_string(), FILE_LINE_NUMBER_X_MARGIN, screen_y);
     }
@@ -302,13 +152,17 @@ pub fn draw_file_text(
     draw_rectangle(0.0, 0.0, screen_width(), top_bar_height + 1.0, COMPOSITE_TYPE_COLOR);
     draw_rectangle(0.0, 0.0, screen_width(), top_bar_height, BACKGROUND_COLOR);
 
-    // Draw cursor position
+    // Cursor position display
     if !console.mode {
         let cursor_idx = format!("Ln {}, Col {}", cursor.xy.1, cursor.xy.0);
         gts.color = CONSOLE_TEXT_COLOR;
         let previous_size = gts.font_size;
-        gts.font_size = 30; // Remains the same.
-        gts.draw(&cursor_idx, MODE_Y_OFFSET, MODE_FONT_SIZE + MODE_Y_MARGIN + MODE_Y_OFFSET);
+        gts.font_size = 30;
+        gts.draw(
+            &cursor_idx,
+            MODE_Y_OFFSET,
+            MODE_FONT_SIZE + MODE_Y_MARGIN + MODE_Y_OFFSET,
+        );
         gts.font_size = previous_size;
     }
 }

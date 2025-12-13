@@ -21,8 +21,9 @@ use crate::options::editor_pallete::{BACKGROUND_COLOR, COMPOSITE_TYPE_COLOR, CON
 use crate::text::editor_cursor::{CURSOR_WORD_OFFSET, EditorCursor};
 use crate::text::editor_input::record_keyboard_to_file_text;
 use crate::text::editor_language_manager::{EditorLanguageKeywords ,load_keywords_for_extension};
-use crate::text::editor_text::{CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE, MODE_Y_MARGIN, MODE_Y_OFFSET, draw_file_text};
+use crate::text::editor_text::{CURRENT_FILE_TOP_BAR_OFFSET, MODE_FONT_SIZE, MODE_Y_MARGIN, MODE_Y_OFFSET, draw};
 use crate::text::editor_text_stylizer::EditorGeneralTextStylizer;
+use crate::text::editor_token::tokenize_text;
 use crate::win::editor_win_config::window_conf;
 
 // TODO: Add Ctrl + z to undo last change.
@@ -73,8 +74,11 @@ async fn main() {
     let mut file_cursor = EditorCursor::new();
     // Console
     let mut console = EditorConsole::new();
-    // Actual file text
+    // Actual file text, to change stuff around
     let mut file_text = vec![];
+
+    // File tokens, used for rendering and colouring
+    let mut file_tokens = vec![];
     // Language support based on file, default no higlighting
     let mut elk: EditorLanguageKeywords = load_keywords_for_extension("txt"); 
 
@@ -85,10 +89,10 @@ async fn main() {
     loop {
         clear_background(BACKGROUND_COLOR);
 
-        draw_file_text(&mut file_text, &mut file_cursor, &mut file_gts, &console, &mut ec, &elk);
+        draw(&mut file_tokens, &mut file_cursor, &mut file_gts, &console, &mut ec);
 
         if !console.mode {
-            record_keyboard_to_file_text(&mut file_cursor, &mut file_text, &mut audio, &mut console,  &mut file_gts, &mut efs, &mut ops, &mut elk);
+            record_keyboard_to_file_text(&mut file_cursor, &mut file_text, &mut file_tokens, &mut audio, &mut console,  &mut file_gts, &mut efs, &mut ops, &mut elk);
 
             let mut fname = path_buffer_file_to_string(&efs.current_file);
             if efs.unsaved_changes {
@@ -117,7 +121,7 @@ async fn main() {
             
                 
         } else {
-            console.record_keyboard_to_console_text(&mut audio, &mut efs, &mut file_text, &mut file_cursor, &mut ops, &mut elk);
+            console.record_keyboard_to_console_text(&mut audio, &mut efs, &mut file_text, &mut file_cursor, &mut ops, &mut elk, &mut file_tokens, &mut file_gts);
             
             let mut fname = path_buffer_file_to_string(&efs.current_file);
             if efs.unsaved_changes {
@@ -169,6 +173,10 @@ async fn main() {
 
         // Update resize animation
         console.animate_width();
+
+        if efs.unsaved_changes { // Re-tokenize whenever needed
+            file_tokens = tokenize_text(&file_text, &elk, &file_gts);
+        }
 
         muse_next_frame().await;
     }
