@@ -137,14 +137,49 @@ pub fn draw_file_text(
                 let color: Color;
 
                 if in_block_comment {
-                    while let Some(ch) = chars.next() {
+                    while let Some(&ch) = chars.peek() {
+                        // If we hit a @thing inside a comment
+                        if ch == '@' {
+                            // draw what we have so far as comment
+                            if !token.is_empty() {
+                                let w = measure_text(&token, Some(&gts.font), gts.font_size, 1.0).width;
+                                let (sx, sy) = camera.world_to_screen(x, y + text_y_offset);
+                                gts.color = COMMENT_COLOR;
+                                gts.draw(&token, sx, sy);
+                                x += w;
+                                token.clear();
+                            }
+                
+                            chars.next(); 
+                            token.push('@');
+                            while let Some(&c) = chars.peek() {
+                                if c.is_alphanumeric() || c == '_' {
+                                    token.push(chars.next().unwrap());
+                                } else {
+                                    break;
+                                }
+                            }
+                
+                            let w = measure_text(&token, Some(&gts.font), gts.font_size, 1.0).width;
+                            let (sx, sy) = camera.world_to_screen(x, y + text_y_offset);
+                            gts.color = MACRO_COLOR;
+                            gts.draw(&token, sx, sy);
+                            x += w;
+                            token.clear();
+                            continue;
+                        }
+                
+                        // normal comment char
+                        let ch = chars.next().unwrap();
                         token.push(ch);
+                
                         if ch == '*' && chars.peek() == Some(&'/') {
                             token.push(chars.next().unwrap());
                             in_block_comment = false;
                             break;
                         }
                     }
+                
                     color = COMMENT_COLOR;
                 } else if in_string {
                     while let Some(ch) = chars.next() {
@@ -241,6 +276,7 @@ pub fn draw_file_text(
                 let (sx, sy) = camera.world_to_screen(x, y + text_y_offset);
                 
                 gts.color = color;
+
                 gts.draw(&token, sx, sy);
                 
                 x += width;
