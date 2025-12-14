@@ -266,6 +266,10 @@ pub fn execute_directive(
 
                     efs.change_current_file(param.to_string());
                     *text = efs.load_current_file().unwrap_or_default();
+                    
+                    // Load the keywords as well
+                    *elk = load_keywords_for_extension(ext);
+
                     text_tokens.clear(); // Clear and retokenize per file change
                     *text_tokens = tokenize_text(text, elk, gts);
                 } else {
