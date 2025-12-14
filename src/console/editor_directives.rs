@@ -255,7 +255,7 @@ pub fn execute_directive(
                   return ("NoDirectoryProvided <:rd>".to_string(), false);
                }
             }
-            
+
             "c" | "C" => {
                 if let Some(param) = parameter {
                     let r = efs.create_file(param);
