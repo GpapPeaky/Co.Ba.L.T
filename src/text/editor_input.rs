@@ -438,13 +438,22 @@ pub fn record_special_keys(
 
         let cursor_pos = cursor.xy.0;
 
-        if cursor_pos >= TAB_SIZE {
-            let start = char_to_byte(line, cursor_pos - TAB_SIZE);
-            let end = char_to_byte(line, cursor_pos);
-            if &line[start..end] == TAB_PATTERN {
-                line.replace_range(start..end, "");
-                cursor.xy.0 -= TAB_SIZE;
-                return true;
+        if cursor_pos > 0 {
+            let spaces = if cursor_pos % TAB_SIZE == 0 {
+                TAB_SIZE
+            } else {
+                cursor_pos % TAB_SIZE
+            };
+
+            if cursor_pos >= spaces {
+                let start = char_to_byte(line, cursor_pos - spaces);
+                let end = char_to_byte(line, cursor_pos);
+
+                if line[start..end].chars().all(|c| c == ' ') {
+                    line.replace_range(start..end, "");
+                    cursor.xy.0 -= spaces;
+                    return true;
+                }
             }
         }
 
@@ -462,10 +471,20 @@ pub fn record_special_keys(
     // Tab insertion
     if cursor.is_combo_active(KeyCode::Tab, None) {
         audio.play_space();
+    
         let line = &mut text[cursor.xy.1];
+        let col = cursor.xy.0;    
         let idx = char_to_byte(line, cursor.xy.0);
-        line.insert_str(idx, TAB_PATTERN);
-        cursor.xy.0 += TAB_SIZE;
+    
+        // We will try to add spaces to complete a TAB_SIZE when possible, else we will
+        // normally insert a tab.         
+        let spaces = TAB_SIZE - (col % TAB_SIZE);
+        let tab_str = " ".repeat(spaces);
+
+        line.insert_str(idx, &tab_str);
+        
+        cursor.xy.0 += spaces;
+        
         return true;
     }
 
