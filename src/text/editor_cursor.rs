@@ -6,7 +6,7 @@ use std::collections::{HashMap};
 use macroquad::prelude::*;
 use miniquad::date;
 
-use crate::{audio::editor_audio::*, camera::editor_camera::EditorCamera, options::editor_pallete::CURSOR_COLOR, text::editor_input::TAB_PATTERN};
+use crate::{audio::editor_audio::*, camera::editor_camera::EditorCamera, options::{editor_options::EditorOptions, editor_pallete::CURSOR_COLOR}, text::editor_input::TAB_PATTERN};
 
 pub const CURSOR_WORD_OFFSET: f32 = 600.0;
 
@@ -203,6 +203,7 @@ pub fn file_text_navigation(
     cursor: &mut EditorCursor,
     text: &mut Vec<String>,
     audio: &mut EditorAudio,
+    ops: &EditorOptions
 ) {
     if text.is_empty() {
         cursor.xy = (0, 0);
@@ -216,14 +217,14 @@ pub fn file_text_navigation(
     if cursor.is_combo_active(KeyCode::Up, None) && cursor.xy.1 > 0 {
         cursor.xy.1 -= 1;
         cursor.xy.0 = cursor.xy.0.min(text[cursor.xy.1].len());
-        audio.play_nav();
+        audio.play_nav(ops);
     }
 
     // Down
     if cursor.is_combo_active(KeyCode::Down, None) && cursor.xy.1 + 1 < text.len() {
         cursor.xy.1 += 1;
         cursor.xy.0 = cursor.xy.0.min(text[cursor.xy.1].len());
-        audio.play_nav();
+        audio.play_nav(ops);
     }
 
     // Left
@@ -234,7 +235,7 @@ pub fn file_text_navigation(
             cursor.xy.1 -= 1;
             cursor.xy.0 = text[cursor.xy.1].len();
         }
-        audio.play_nav();
+        audio.play_nav(ops);
     }
 
     // Right
@@ -245,7 +246,7 @@ pub fn file_text_navigation(
             cursor.xy.1 += 1;
             cursor.xy.0 = 0;
         }
-        audio.play_nav();
+        audio.play_nav(ops);
     }
 
     recognize_cursor_word(cursor, &text[cursor.xy.1]);
@@ -256,6 +257,7 @@ pub fn file_text_special_navigation(
     cursor: &mut EditorCursor, 
     text: &mut Vec<String>, 
     audio: &mut EditorAudio,
+    ops: &EditorOptions
 ) {
     if text.is_empty() {
         cursor.xy.0 = 0;
@@ -279,7 +281,7 @@ pub fn file_text_special_navigation(
             cursor.xy.0 = text[cursor.xy.1].len();
         }
 
-        audio.play_nav();
+        audio.play_nav(ops);
     }
 
     if cursor.is_combo_active(KeyCode::Right, None) {
@@ -290,7 +292,7 @@ pub fn file_text_special_navigation(
             cursor.xy.0 = 0;
         }
 
-        audio.play_nav();
+        audio.play_nav(ops);
     }
     
     // Vertical step
@@ -304,7 +306,7 @@ pub fn file_text_special_navigation(
             cursor.xy.1 = 0;
         }
         
-        audio.play_nav();
+        audio.play_nav(ops);
     }
 
     if cursor.is_combo_active(KeyCode::Down, None) {
@@ -315,7 +317,7 @@ pub fn file_text_special_navigation(
             cursor.xy.1 = text.len() - 1;
         }
             
-        audio.play_nav();
+        audio.play_nav(ops);
     }
 
     recognize_cursor_word(cursor, &text[cursor.xy.1]);

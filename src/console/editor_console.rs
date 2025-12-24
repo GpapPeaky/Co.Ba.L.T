@@ -133,12 +133,13 @@ impl EditorConsole {
 
     fn lshift_shortcuts(
         &mut self,
-        audio: &mut EditorAudio
+        audio: &mut EditorAudio,
+        op: &EditorOptions
     ) -> bool {
         // Left, resize console
         if is_key_down(KeyCode::Left) {
             self.resize_console(true);
-            audio.play_nav();   
+            audio.play_nav(op);   
 
             return true;
         }   
@@ -146,7 +147,7 @@ impl EditorConsole {
         // Right, resize console
         if is_key_down(KeyCode::Right) {
             self.resize_console(false);
-            audio.play_nav();   
+            audio.play_nav(op);   
 
             return true;
         }
@@ -181,7 +182,7 @@ impl EditorConsole {
             
                 self.directive.remove(byte_idx);
                 self.cursor.x -= 1;
-                audio.play_delete();
+                audio.play_delete(ops);
             }
 
             return;
@@ -195,7 +196,7 @@ impl EditorConsole {
 
         // Resizing
         if cursor.is_combo_active(KeyCode::LeftShift, None) {
-            self.lshift_shortcuts(audio);
+            self.lshift_shortcuts(audio, ops);
         }
 
         if is_key_pressed(KeyCode::Enter) {
@@ -237,9 +238,9 @@ impl EditorConsole {
             match c {
                 _ => {
                     if c != ' ' { 
-                        audio.play_insert();
+                        audio.play_insert(ops);
                     } else {
-                        audio.play_space();
+                        audio.play_space(ops);
                     }
 
                     let byte_idx = char_to_byte(&self.directive, self.cursor.x);
@@ -249,7 +250,7 @@ impl EditorConsole {
             }
         }
 
-        console_text_navigation(&mut self.cursor.x, &mut self.directive, audio);
+        console_text_navigation(&mut self.cursor.x, &mut self.directive, audio, ops);
     }
 }
 

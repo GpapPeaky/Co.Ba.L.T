@@ -65,14 +65,14 @@ pub fn lctrl_shortcuts(
 ) -> bool {
     if is_key_down(KeyCode::LeftControl) {
         if cursor.is_combo_active(KeyCode::X, None) && !text.is_empty() {
-            audio.play_delete();
+            audio.play_delete(ops);
             efs.unsaved_changes = true;
             text.remove(cursor.xy.1);
             return true;
         }
 
         if cursor.is_combo_active(KeyCode::D, None) && !text.is_empty() {
-            audio.play_insert();
+            audio.play_insert(ops);
             let line_clone = text[cursor.xy.1].clone();
             text.insert(cursor.xy.1 + 1, line_clone);
             cursor.xy.1 += 1;
@@ -180,7 +180,7 @@ pub fn lctrl_shortcuts(
                 }
             }
             
-            audio.play_delete();
+            audio.play_delete(ops);
             efs.unsaved_changes = true;
             cursor.xy.0 = left_cursor_idx; // Move back
 
@@ -394,7 +394,7 @@ pub fn lctrl_shortcuts(
             return true;
         }
 
-        file_text_special_navigation(cursor, text, audio);
+        file_text_special_navigation(cursor, text, audio, ops);
         
         return true;
     }
@@ -416,7 +416,7 @@ pub fn record_special_keys(
 ) -> bool {
     // Backspace
     if cursor.is_combo_active(KeyCode::Backspace, None) {
-        audio.play_delete();
+        audio.play_delete(ops);
         efs.unsaved_changes = true;
 
         if text.is_empty() {
@@ -470,7 +470,7 @@ pub fn record_special_keys(
 
     // Tab insertion
     if cursor.is_combo_active(KeyCode::Tab, None) {
-        audio.play_space();
+        audio.play_space(ops);
     
         let line = &mut text[cursor.xy.1];
         let col = cursor.xy.0;    
@@ -490,7 +490,7 @@ pub fn record_special_keys(
 
     // Enter key (line splitting, indentation)
     if cursor.is_combo_active(KeyCode::Enter, None) {
-        audio.play_return();
+        audio.play_return(ops);
         efs.unsaved_changes = true;
 
         let cursor_pos = cursor.xy.0;
@@ -546,7 +546,7 @@ pub fn record_special_keys(
     let is_lctrl = lctrl_shortcuts(cursor, text, text_tokens, audio, console, efs, gts, ops, elk);
 
     if !is_lctrl {
-        file_text_navigation(cursor, text, audio);
+        file_text_navigation(cursor, text, audio, ops);
     }
 
     false
@@ -655,7 +655,7 @@ pub fn record_keyboard_to_file_text(
 
         }
         
-        audio.play_insert();
+        audio.play_insert(ops);
     }
 }
 

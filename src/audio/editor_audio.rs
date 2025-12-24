@@ -5,6 +5,8 @@ use kira::{
 use rand::prelude::*;
 use std::sync::Arc;
 
+use crate::options::editor_options::EditorOptions;
+
 /// Struct holding all editor sound effects
 pub struct EditorAudio {
     pub manager: AudioManager,
@@ -55,7 +57,12 @@ impl EditorAudio {
     }
 
     /// Plays a sound with pitch and volume variation
-    fn play_static_sound(&mut self, sound: Arc<StaticSoundData>) {
+    fn play_static_sound(&mut self,
+        sound: Arc<StaticSoundData>,
+        op: &EditorOptions
+    ) {
+        if !op.audio { return; } // No Audio
+
         let mut settings = StaticSoundSettings::default();
         settings.volume = (-2.0).into();
         settings.playback_rate = Self::random_pitch().into();
@@ -64,23 +71,38 @@ impl EditorAudio {
         self.manager.play(sound_data).expect("Failed to play sound");
     }
 
-    pub fn play_insert(&mut self) {
-        self.play_static_sound(Arc::clone(&self.insert));
+    pub fn play_insert(
+        &mut self,
+        op: &EditorOptions
+    ) {
+        self.play_static_sound(Arc::clone(&self.insert), op);
     }
 
-    pub fn play_delete(&mut self) {
-        self.play_static_sound(Arc::clone(&self.delete));
+    pub fn play_delete(
+        &mut self,
+        op: &EditorOptions
+    ) {
+        self.play_static_sound(Arc::clone(&self.delete), op);
     }
 
-    pub fn play_space(&mut self) {
-        self.play_static_sound(Arc::clone(&self.space));
+    pub fn play_space(
+        &mut self,
+        op: &EditorOptions
+    ) {
+        self.play_static_sound(Arc::clone(&self.space), op);
     }
 
-    pub fn play_return(&mut self) {
-        self.play_static_sound(Arc::clone(&self.enter));
+    pub fn play_return(
+        &mut self,
+        op: &EditorOptions
+    ) {
+        self.play_static_sound(Arc::clone(&self.enter), op);
     }
 
-    pub fn play_nav(&mut self) {
-        self.play_static_sound(Arc::clone(&self.nav));
+    pub fn play_nav(
+        &mut self,
+        op: &EditorOptions
+    ) {
+        self.play_static_sound(Arc::clone(&self.nav), op);
     }
 }
