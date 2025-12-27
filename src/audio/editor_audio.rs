@@ -64,7 +64,7 @@ impl EditorAudio {
         if !op.audio { return; } // No Audio
 
         let mut settings = StaticSoundSettings::default();
-        settings.volume = (-2.0).into();
+        settings.volume = (-20.0).into();
         settings.playback_rate = Self::random_pitch().into();
 
         let sound_data = (*sound).clone().with_settings(settings);

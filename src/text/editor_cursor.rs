@@ -10,7 +10,7 @@ use crate::{audio::editor_audio::*, camera::editor_camera::EditorCamera, options
 
 pub const CURSOR_WORD_OFFSET: f32 = 600.0;
 
-pub const CURSOR_CONTINUOUS_PRESS_INITIAL_DELAY: f64 = 0.03;
+pub const CURSOR_CONTINUOUS_PRESS_INITIAL_DELAY: f64 = 0.015;
 
 pub const CURSOR_CONTINUOUS_PRESS_DELAY: f64 = 0.09;
 
@@ -154,7 +154,7 @@ impl EditorCursor {
     /// Interpolate cursor movement
     pub fn animate_to(&mut self, target_x: f32, target_y: f32) {
         let stiffness = 0.67; // sixseven :hand:
-        let damping   = 0.37; // -> train  
+        let damping   = 0.40; // -> train  
     
         let dx = target_x - self.anim_x;
         let dy = target_y - self.anim_y;

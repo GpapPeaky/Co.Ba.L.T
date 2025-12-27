@@ -6,7 +6,6 @@ pub struct EditorLanguageKeywords {
     pub composite_types: Vec<&'static str>,
     pub misc: Vec<&'static str>,
     pub data_types: Vec<&'static str>,
-    pub _file_ids: Vec<String>,
 }
 
 pub fn cpp_keywords() -> EditorLanguageKeywords {
@@ -35,7 +34,6 @@ pub fn cpp_keywords() -> EditorLanguageKeywords {
             "int", "float", "double", "char", "void",
             "short", "long", "unsigned", "bool",
         ],
-        _file_ids: vec![],
     }
 }
 
@@ -65,7 +63,6 @@ pub fn java_keywords() -> EditorLanguageKeywords {
             "int", "float", "double", "boolean", "char",
             "short", "long", "byte",
         ],
-        _file_ids: vec![],
     }
 }
 
@@ -93,7 +90,6 @@ pub fn rust_keywords() -> EditorLanguageKeywords {
             "u8","u16","u32","u64","u128","usize",
             "f32","f64","bool","char","str", "String"
         ],
-        _file_ids: vec![],
     }
 }
 
@@ -112,7 +108,6 @@ pub fn load_keywords_for_extension(
             composite_types: vec![],
             misc: vec![],
             data_types: vec![],
-            _file_ids: vec![],
         }
     }
 }
