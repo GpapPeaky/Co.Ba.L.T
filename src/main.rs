@@ -18,6 +18,7 @@ use crate::console::editor_console::{EditorConsole, console_message};
 use crate::console::editor_file_system::{EditorFileSystem, draw_dir_contents, path_buffer_file_to_string, path_buffer_to_string};
 use crate::options::editor_options::EditorOptions;
 use crate::options::editor_pallete::{BACKGROUND_COLOR, COMPOSITE_TYPE_COLOR, CONSOLE_TEXT_COLOR, FILE_COLOR, FOLDER_COLOR, PUNCTUATION_COLOR};
+use crate::text::editor_autocomplete::EditorTokenAutocomplete;
 use crate::text::editor_cursor::{CURSOR_WORD_OFFSET, EditorCursor};
 use crate::text::editor_input::record_keyboard_to_file_text;
 use crate::text::editor_language_manager::{EditorLanguageKeywords ,load_keywords_for_extension};
@@ -75,11 +76,12 @@ async fn main() {
     let mut console = EditorConsole::new();
     // Actual file text, to change stuff around
     let mut file_text = vec![];
-
     // File tokens, used for rendering and colouring
     let mut file_tokens = vec![];
     // Language support based on file, default no higlighting
     let mut elk: EditorLanguageKeywords = load_keywords_for_extension("txt"); 
+    // Autocompletor
+    let mut eta: EditorTokenAutocomplete = EditorTokenAutocomplete::new();
 
     let insert_word_w = measure_text("INSERT MODE", Some(&console_gts.font), MODE_FONT_SIZE as u16, 1.0).width;
     let select_word_w = measure_text("SELECTION MODE", Some(&console_gts.font), MODE_FONT_SIZE as u16, 1.0).width;
@@ -88,10 +90,16 @@ async fn main() {
     loop {
         clear_background(BACKGROUND_COLOR);
 
-        draw(&mut file_tokens, &mut file_cursor, &mut file_gts, &console, &mut ec, &mut file_text);
+        draw(&mut file_tokens, &mut file_cursor, &mut file_gts, &console, &mut ec, &mut file_text, &mut eta);
 
         if !console.mode {
-            record_keyboard_to_file_text(&mut file_cursor, &mut file_text, &mut file_tokens, &mut audio, &mut console,  &mut file_gts, &mut efs, &mut ops, &mut elk);
+            record_keyboard_to_file_text(&mut file_cursor, &mut file_text, &mut file_tokens, &mut audio, &mut console,  &mut file_gts, &mut efs, &mut ops, &mut elk, &mut eta);
+
+            // Only find autocompletes whenever the cursor is not in a weird space
+            if file_cursor.word != "" && file_cursor.word != " " {
+                // Find autocompletes
+                eta.matching_to_fragment = eta.find_autocompletes(&file_cursor.word, &file_tokens);
+            }
 
             let mut fname = path_buffer_file_to_string(&efs.current_file);
             if efs.unsaved_changes {
@@ -176,6 +184,8 @@ async fn main() {
         if efs.unsaved_changes { // Re-tokenize whenever needed
             file_tokens = tokenize_text(&file_text, &elk, &file_gts);
         }
+
+        muse_draw_fps();
 
         muse_next_frame().await;
     }

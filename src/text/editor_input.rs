@@ -3,6 +3,7 @@
 use macroquad::prelude::*;
 
 use crate::options::editor_options::EditorOptions;
+use crate::text::editor_autocomplete::EditorTokenAutocomplete;
 use crate::text::editor_language_manager::EditorLanguageKeywords;
 use crate::text::editor_text_stylizer::*;
 use crate::text::editor_cursor::*;
@@ -83,7 +84,7 @@ pub fn lctrl_shortcuts(
         if is_key_pressed(KeyCode::S) {
             console.directive = ":w".to_string();
             execute_directive(&mut console.directive, efs, text, text_tokens, cursor, ops, elk, gts);
-
+            
             return true;
         }
         
@@ -563,6 +564,7 @@ pub fn record_keyboard_to_file_text(
     efs: &mut EditorFileSystem,
     ops: &mut EditorOptions,
     elk: &mut EditorLanguageKeywords,
+    _eta: &mut EditorTokenAutocomplete,
 ) {
     if text.is_empty() { text.push(String::new()); }
 
@@ -606,7 +608,6 @@ pub fn record_keyboard_to_file_text(
 
                 // recognize_cursor_word(cursor, &text[cursor.xy.1]);
             }
-            
             
             '"' => {
                 if next_char_is('"', cursor, line) {
@@ -654,7 +655,7 @@ pub fn record_keyboard_to_file_text(
             }
 
         }
-        
+
         audio.play_insert(ops);
     }
 }

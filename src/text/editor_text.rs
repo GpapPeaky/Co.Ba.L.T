@@ -9,6 +9,7 @@ use macroquad::prelude::*;
 
 use crate::console::editor_console::*;
 use crate::options::editor_pallete::*;
+use crate::text::editor_autocomplete::EditorTokenAutocomplete;
 use crate::text::editor_cursor::*;
 use crate::text::editor_input::*;
 use crate::text::editor_text_stylizer::*;
@@ -51,7 +52,8 @@ pub fn draw(
     gts: &mut EditorGeneralTextStylizer,
     console: &EditorConsole,
     camera: &mut EditorCamera,
-    file_text: &mut Vec<String>
+    file_text: &mut Vec<String>,
+    eta: &mut EditorTokenAutocomplete
 ) {
     let text_y_offset = 25.0;
     let start_x = FILE_TEXT_X_MARGIN;
@@ -131,6 +133,14 @@ pub fn draw(
             gts.font_size as f32,
             CURSOR_COLOR,
         );
+
+        if cursor.word != "" && cursor.word != " " {
+            // Draw autocompletes
+            eta.draw((
+                sx.round(),
+                sy - gts.font_size as f32
+            ));
+        }
     }
 
     // Sidebar
