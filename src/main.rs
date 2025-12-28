@@ -181,7 +181,7 @@ async fn main() {
         // Update resize animation
         console.animate_width();
 
-        if efs.unsaved_changes { // Re-tokenize whenever needed
+        if efs.unsaved_changes { // Re-tokenize whenever needed, may need to tokenize with every save? this impacts the performance if the file is too big
             file_tokens = tokenize_text(&file_text, &elk, &file_gts);
         }
 
