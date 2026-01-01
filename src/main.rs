@@ -185,8 +185,6 @@ async fn main() {
             file_tokens = tokenize_text(&file_text, &elk, &file_gts);
         }
 
-        muse_draw_fps();
-
         muse_next_frame().await;
     }
 }
