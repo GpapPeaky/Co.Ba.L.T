@@ -9,14 +9,10 @@ namespace CBLT {
     
     namespace Win {
 
-        /**
-         * @brief Window initializing
-         */
+        //  Window initializing
         void Init(void);
 
-        /**
-         * @brief Window destroy
-         */
+        //  Window destroy
         void Destroy(void);
 
     } // Win
