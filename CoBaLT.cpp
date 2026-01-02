@@ -8,7 +8,7 @@ int main() {
 
             ClearBackground(WHITE);
     
-            DrawText("Hello, CoBaLT!", 0, 0, 20, BLACK);
+            DrawText("Hello, From Laptop", 0, 0, 20, BLACK);
     
         EndDrawing();
     }
