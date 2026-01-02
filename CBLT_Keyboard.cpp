@@ -17,4 +17,16 @@ namespace CBLT {
             this->m.shift = IsKeyDown(KEY_LEFT_SHIFT);
             this->m.alt = IsKeyDown(KEY_LEFT_ALT);
         }
+
+        UT::b Keyboard::CtrlActive(void) const {
+            return this->m.ctrl;
+        }
+
+        UT::b Keyboard::AltActive(void) const {
+            return this->m.alt;
+        }
+
+        UT::b Keyboard::ShiftActive(void) const {
+            return this->m.shift;
+        }
 } // CBLT

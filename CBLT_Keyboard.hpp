@@ -28,5 +28,14 @@ namespace CBLT {
 
             // Update and return a modifier struct each frame if its key was pressed
             void UpdateModifiers(void);
+
+            // Is ctrl modifier active
+            UT::b CtrlActive(void) const;
+
+            // Is alt modifier active
+            UT::b AltActive(void) const;
+
+            // Is shift modifier active
+            UT::b ShiftActive(void) const;
     }; // Keyboard class
 } // CBLT

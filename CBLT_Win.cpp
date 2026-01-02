@@ -11,6 +11,8 @@ namespace CBLT {
 
             InitWindow(screenWidth, screenHeight, Version.c_str());
 
+            SetTargetFPS(180);
+
             return;
         }
 
