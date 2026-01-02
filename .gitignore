@@ -1,4 +1,4 @@
 /target
-build/
-release/
+_build/
+_release/
 bin/
