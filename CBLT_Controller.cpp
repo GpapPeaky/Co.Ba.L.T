@@ -76,8 +76,19 @@ namespace CBLT {
             }
         }
 
+        // Tab
         if (IsKeyPressed(KEY_TAB)) {
-            for (UT::ui8 i = 0 ; i < keyboard.tabSize ; i++) {
+            UT::ui8 remainingSpace;
+            
+            if (cursor.Col() % keyboard.tabSize == 0) {
+                remainingSpace = keyboard.tabSize;
+            } else if (cursor.Col() > keyboard.tabSize) {
+                remainingSpace = cursor.Col() % keyboard.tabSize;
+            } else {
+                remainingSpace = keyboard.tabSize - cursor.Col();
+            }
+
+            for (UT::ui8 i = 0 ; i < remainingSpace ; i++) {
                 file.InsertChar(
                     cursor.Col(),
                     cursor.Line(),
