@@ -37,5 +37,8 @@ namespace CBLT {
 
             // Is shift modifier active
             UT::b ShiftActive(void) const;
+
+            // Tab size
+            UT::cui8 tabSize;
     }; // Keyboard class
 } // CBLT

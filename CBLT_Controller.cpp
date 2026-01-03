@@ -7,14 +7,29 @@ namespace CBLT {
 
     void Controller::HandleMovement(Cursor& cursor) {
         if (IsKeyPressed(KEY_LEFT)) {
-            cursor.Left();
-            ClampCursor(cursor);
+            if (cursor.Col() == 0 && cursor.Line() > 0){
+                cursor.SetAt(file.GetLineLength(cursor.Line() - 1), cursor.Line() - 1); // Move to the next line if we where at the previous one's length
+            } else {
+                cursor.Left();
+            }         
         } else if (IsKeyPressed(KEY_RIGHT)) {
-            cursor.Right();
+            if (file.GetLineLength(cursor.Line()) == cursor.Col() && file.GetLineCount() > cursor.Line()){
+                cursor.SetAt(0, cursor.Line() + 1); // Move to the next line if we where at the previous one's length
+            } else {
+                cursor.Right();
+            }
         } else if (IsKeyPressed(KEY_UP)) {
-            cursor.Up();
+            if (file.GetLineLength(cursor.Line()) == cursor.Col() && cursor.Line() > 0) {
+                cursor.SetAt(file.GetCurrentLine(cursor.Line() - 1).length(), cursor.Line() - 1);
+            } else {
+                cursor.Up();
+            }
         } else if (IsKeyPressed(KEY_DOWN)) {
-            cursor.Down();
+            if (file.GetLineLength(cursor.Line()) == cursor.Col() && cursor.Line() < file.GetLineCount()) {
+                cursor.SetAt(file.GetCurrentLine(cursor.Line() + 1).length(), cursor.Line() + 1);
+            } else {
+                cursor.Down();
+            }
         }
     }
 
@@ -58,6 +73,18 @@ namespace CBLT {
                 cursor.SetAt(0, cursor.Line() + 1);
                 
                 file.CreateLine(cursor.Line(), fragment);
+            }
+        }
+
+        if (IsKeyPressed(KEY_TAB)) {
+            for (UT::ui8 i = 0 ; i < keyboard.tabSize ; i++) {
+                file.InsertChar(
+                    cursor.Col(),
+                    cursor.Line(),
+                    ' '
+                );
+
+                cursor.Right();
             }
         }
     }

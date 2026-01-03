@@ -3,7 +3,8 @@
 namespace CBLT {
 
         Keyboard::Keyboard(void):
-            m { false, false, false } // Modifiers set to false
+            m { false, false, false }, // Modifiers set to false
+            tabSize(4)                 // Default is 4
         {}
     
         Keyboard::~Keyboard(void) {}
