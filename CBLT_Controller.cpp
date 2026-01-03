@@ -130,6 +130,15 @@ namespace CBLT {
         }
     }
 
+    void Controller::HandleShorcuts(Cursor& cursor) {
+
+
+        // IDEA: Debug
+        if (IsKeyPressed(KEY_DELETE)) {
+            file.SetDirt(!file.Dirt());
+        }
+    }
+
     void Controller::Update(void) {
         this->keyboard.UpdateModifiers(); // Update modifiers
         
@@ -146,7 +155,7 @@ namespace CBLT {
                 case CBLT::CursorMode::INSERT:
                     HandleMovement(c);
                     HandleSpecials(c);
-
+                    HandleShorcuts(c);
                     HandleInsert(c);
 
                     ClampCursor(c); // Safety check

@@ -32,7 +32,7 @@ namespace CBLT {
             void HandleSelect(void);
 
             // Handle shorcuts, based on the active keyboard modifiers and cursor mode
-            void HandleShorcuts(void);
+            void HandleShorcuts(Cursor& cursor);
 
         public:
             // Controller update, most functions are called here

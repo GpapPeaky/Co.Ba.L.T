@@ -162,4 +162,12 @@ namespace CBLT {
     std::string& File::GetCurrentLine(UT::ui32 line) {
         return lines.at(line);
     }
+
+    const UT::b File::Dirt(void) const {
+        return dirty;
+    }
+
+    void File::SetDirt(UT::b stat) {
+        dirty = stat;
+    }
 }

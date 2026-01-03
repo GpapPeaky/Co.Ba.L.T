@@ -69,9 +69,15 @@ namespace CBLT {
             // Get line at line index, mutable access
             std::string& GetCurrentLine(UT::ui32 line);
 
-            // Positioning margins
-    }; // File class
+            // Get if the file is dirty or not
+            const UT::b Dirt(void) const;
 
+            // Set the dirt to true or false
+            void SetDirt(UT::b stat);
+
+        }; // File class
+        
+    // Positioning margins
     namespace FileMargins {
         namespace Text {
             // Left margin from the window y position

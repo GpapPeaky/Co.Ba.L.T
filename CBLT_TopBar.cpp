@@ -1,6 +1,6 @@
 #include "CBLT_TopBar.hpp"
 
-void CBLT::UI::Draw(UT::ui32 col, UT::ui32 line) {
+void CBLT::UI::Draw(UT::ui32 col, UT::ui32 line, UT::ui32 lineCount, UT::b dirty) {
     // Draw top bar seperator
     DrawLine(
         0,
@@ -29,4 +29,21 @@ void CBLT::UI::Draw(UT::ui32 col, UT::ui32 line) {
         Color{0, 0, 255, 255}
     );
     
+    DrawTextEx(
+        gFont.f,
+        (std::string("lc: ") + std::to_string(lineCount)).c_str(),
+        {0, 2 * static_cast<UT::f32>(CBLT::gFont.size)},
+        CBLT::gFont.size,
+        0.0f,
+        Color{0, 0, 255, 255}
+    );
+
+    DrawTextEx(
+        gFont.f,
+        (std::string("d: ") + std::to_string(dirty)).c_str(),
+        {0, 3 * static_cast<UT::f32>(CBLT::gFont.size)},
+        CBLT::gFont.size,
+        0.0f,
+        Color{0, 0, 255, 255}
+    );
 }

@@ -23,7 +23,7 @@ int main() {
             ctrl.GetFile().Draw();
             cm.DrawCursors(ctrl.GetFile());
     
-            CBLT::UI::Draw(cm.Primary().Col(), cm.Primary().Line());
+            CBLT::UI::Draw(cm.Primary().Col(), cm.Primary().Line(), ctrl.GetFile().GetLineCount(), ctrl.GetFile().Dirt());
 
             DrawFPS(950, 0);
         EndDrawing();
