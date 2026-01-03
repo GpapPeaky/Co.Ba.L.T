@@ -1,18 +1,55 @@
 #include "CBLT_Controller.hpp"
 
 namespace CBLT {
-    Controller::Controller() {} // Field members' constructors are automatically called!
+    Controller::Controller(void) {} // Field members' constructors are automatically called!
     
-    Controller::~Controller() {}
+    Controller::~Controller(void) {}
 
-    void Controller::HandleInsert() {
-        // this
+    void Controller::HandleMovement(Cursor& cursor) {
+        if (IsKeyPressed(KEY_LEFT)) {
+            cursor.Left();
+            ClampCursor(cursor);
+        } else if (IsKeyPressed(KEY_RIGHT)) {
+            cursor.Right();
+        } else if (IsKeyPressed(KEY_UP)) {
+            cursor.Up();
+        } else if (IsKeyPressed(KEY_DOWN)) {
+            cursor.Down();
+        }
     }
 
-    void Controller::Update() {
+    void Controller::HandleSpecials(Cursor& cursor) {
+        if (IsKeyPressed(KEY_BACKSPACE)) {
+            if (cursor.Col() > 0) {
+                // FIXME: This deletes UP to that column, does not move the rest of the string one index to the left
+                // file.GetCurrentLine(cursor.Line()).erase(cursor.Col() - 1);
+                
+                cursor.Left();
+            }
+        }
+    }
+
+    void Controller::HandleInsert(Cursor& cursor) {
+        UT::i32 c = 0;
+
+        // Character recording
+        while ((c = this->keyboard.GetKey()) > 0) {
+            if (c >= 32 && c <= 126) { // Allow only ASCII
+                this->file.InsertChar(
+                    cursor.Col(),
+                    cursor.Line(),
+                    c
+                );
+
+                cursor.Right();
+            }
+        }
+    }
+
+    void Controller::Update(void) {
         this->keyboard.UpdateModifiers(); // Update modifiers
         
-        for(auto c : this->cursorManager.activeCursors) {
+        for(auto& c : this->cursorManager.activeCursors) {
             // HandleShorcuts();
             
             CBLT::CursorMode m = c.GetMode();
@@ -23,7 +60,12 @@ namespace CBLT {
 
                     break;
                 case CBLT::CursorMode::INSERT:
-                    HandleInsert();
+                    HandleMovement(c);
+                    HandleSpecials(c);
+
+                    HandleInsert(c);
+
+                    ClampCursor(c); // Safety check
                 
                     // if(this->keyboard.CtrlActive()) {
                         // DrawText("ctrl", 200, 200, 20, BLACK);
@@ -47,4 +89,28 @@ namespace CBLT {
             }
         }
     }
+
+    const File& Controller::GetFile(void) const {
+        return file;
+    }
+
+    File& Controller::GetFile(void) {
+        return file;
+    }
+
+    const CBLT::CursorManager& Controller::GetCursorManager(void) const {
+        return this->cursorManager;
+    }
+
+    CBLT::CursorManager& Controller::GetCursorManager(void) {
+        return this->cursorManager;
+    }
+
+    void Controller::ClampCursor(Cursor& c) {
+        c.SetAt(
+            std::min(c.Col(), static_cast<UT::ui32>(file.GetLineLength(c.Line()))),
+            std::min(c.Line(), static_cast<UT::ui32>(file.GetLineCount() - 1))
+        );
+    }
+
 }

@@ -1,8 +1,12 @@
 #pragma once
 
 #include "CBLT_Util.hpp" // Types
+#include "CBLT_Font.hpp" // Font size
+#include "CBLT_File.hpp" // Get current text line
 
 #include <vector>        // for std::vector<> ...
+
+#include "raylib.h"      // for MeasureText() ...
 
 namespace CBLT {
 
@@ -21,6 +25,7 @@ namespace CBLT {
             UT::ui32 line;          // Current line the cursor is at
             UT::ui32 selectColumn;  // Initial cursor column at select mode entry
             UT::ui32 selectLine;    // Initial cursor line at select mode entry
+            UT::ui32 charWidth;     // Monospaced font support ONLY!
             CursorMode m;           // Current cursor mode
         
         public:
@@ -57,8 +62,11 @@ namespace CBLT {
             // Move cursor one column right, column += 1
             void Right(void);
 
-            // Character insertion at cursor
-            void Insert(UT::i32 c);
+            // Draw cursor
+            void Draw(const std::string& lineText);
+
+            // Get cursor x in pixels 
+            UT::i32 GetCursorX(const std::string& lineText);
 
             // TODO: Selection methods, when required
     }; // Cursor class
@@ -68,16 +76,19 @@ namespace CBLT {
             std::vector<CBLT::Cursor> activeCursors; // Multiline cursor management
 
             // Constructor
-            CursorManager();
+            CursorManager(void);
 
             // Destructor
-            ~CursorManager();
+            ~CursorManager(void);
 
             // Add a cursor at a specific column and line
             void AddCursorAt(UT::ui32 col, UT::ui32 line);
 
             // Remove a cursor at a specific column and line
             void RemoveCursorAt(UT::ui32 col, UT::ui32 line);
+
+            // Draw all active cursors
+            void DrawCursors(CBLT::File& openFile);
     }; // Cursor manager class
 } // CBLT
 

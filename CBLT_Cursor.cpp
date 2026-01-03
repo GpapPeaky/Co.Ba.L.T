@@ -6,6 +6,7 @@ namespace CBLT {
         line(ln),
         selectColumn(col),
         selectLine(ln),
+        charWidth(MeasureText("A", CBLT::gFont.size)), // Measure once
         m(CursorMode::INSERT) // Default
     {}
 
@@ -52,6 +53,37 @@ namespace CBLT {
         this->column += 1;
     }
 
+    void Cursor::Draw(const std::string& lineText) {
+        int x = GetCursorX(lineText);
+        int y = line * gFont.size;
+        DrawRectangleLines(x, y, 10, gFont.size, RED);
+    }
+
+    UT::i32 Cursor::GetCursorX(const std::string& lineText){
+        UT::f32 scale = (UT::f32)gFont.size / gFont.f.baseSize;
+        UT::i32 width = 0;
+        auto cps = CBLT::gFont.Utf8ToCodepoints(lineText);
+
+        for(size_t i = 0; i < column && i < cps.size(); i++) {
+            UT::i32 cp = cps[i];
+            UT::i32 glyphIndex = -1;
+
+            for(UT::i32 g = 0; g < gFont.f.glyphCount; g++) {
+                if(gFont.f.glyphs[g].value == cp){
+                    glyphIndex = g;
+                    break;
+                }
+            }
+
+            if(glyphIndex >= 0) {
+                width += gFont.f.glyphs[glyphIndex].advanceX;
+            } else {
+                width += gFont.size / 2;
+            }
+        }
+        return (UT::i32)(width * scale);
+    }
+    
     CursorManager::CursorManager() {
         activeCursors.emplace_back(0, 0); // Initialize one cursor at 0,0
     }
@@ -67,6 +99,13 @@ namespace CBLT {
             if(activeCursors.at(i).Col() == col && activeCursors.at(i).Line() == line) {
                 activeCursors.erase(activeCursors.begin() + i); // Remove the matching cursor 
             }
+        }
+    }
+
+    void CursorManager::DrawCursors(CBLT::File& openFile) {
+        for(auto& c : activeCursors) {
+            const std::string& lineText = openFile.GetCurrentLine(c.Line());
+            c.Draw(lineText);
         }
     }
 } // CBLT
