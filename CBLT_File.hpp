@@ -66,5 +66,27 @@ namespace CBLT {
 
             // Get line at line index, mutable access
             std::string& GetCurrentLine(UT::ui32 line);
+
+            // Positioning margins
     }; // File class
+
+    namespace FileMargins {
+        namespace Text {
+            // Left margin from the window y position
+            const UT::f32 LEFT_FROM_FILE_LINES_UI = 5.0f;
+            
+            // Top margin from the top bar
+            const UT::f32 BELLOW_FROM_TOP_BAR = 50.0f; // FIXME: Add this as a TOP_BAR_WIDTH when making the UI
+        } // Text
+
+        namespace Lines {
+            // Left marging from the window y position
+            const UT::f32 LEFT_FROM_WINDOW_Y = 5.0f;
+        } // Lines
+
+        namespace UI {
+            // Left margin from the file lines
+            const UT::f32 LEFT_FROM_FILE_LINES = 50.0f;
+        } // UI
+    } // Margins
 } // CBLT

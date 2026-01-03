@@ -70,8 +70,8 @@ namespace CBLT {
     
         for(size_t i = 0 ; i < lines.size() ; i++) {
             Vector2 pos = {
-                0.0f,
-                i * lineHeight
+                CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
+                CBLT::FileMargins::Text::BELLOW_FROM_TOP_BAR + i * lineHeight
             };
     
             DrawTextEx(
@@ -80,6 +80,32 @@ namespace CBLT {
                 pos,
                 gFont.size,
                 0.0f,
+                GREEN
+            );
+
+            pos.x = CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y;
+            pos.y += gFont.size;
+
+            // Draw line count
+            DrawTextEx(
+                gFont.f,
+                std::to_string(i + 1).c_str(),
+                pos,
+                gFont.size,
+                0.0f,
+                GREEN                
+            );
+
+            // Draw Text/Line seperator
+            DrawLineV(
+                { 
+                    CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
+                    CBLT::FileMargins::Text::BELLOW_FROM_TOP_BAR + gFont.size
+                },{ 
+                    CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
+                    static_cast<UT::f32>(GetScreenHeight())
+                },
+
                 GREEN
             );
         }

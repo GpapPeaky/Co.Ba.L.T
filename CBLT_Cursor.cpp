@@ -56,7 +56,13 @@ namespace CBLT {
     void Cursor::Draw(const std::string& lineText) {
         int x = GetCursorX(lineText);
         int y = line * gFont.size;
-        DrawRectangle(x, y, 3, gFont.size, RED);
+        DrawRectangle(
+            x + CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
+            y + CBLT::FileMargins::Text::BELLOW_FROM_TOP_BAR,
+            3,
+            gFont.size,
+            RED
+        );
     }
 
     UT::i32 Cursor::GetCursorX(const std::string& lineText){
@@ -85,7 +91,7 @@ namespace CBLT {
     }
     
     CursorManager::CursorManager() {
-        activeCursors.emplace_back(0, 0); // Initialize one cursor at 0,0
+        activeCursors.emplace_back(0, 1); // Initialize one cursor at 0,1
     }
 
     CursorManager::~CursorManager() {}

@@ -6,36 +6,49 @@ namespace CBLT {
     Controller::~Controller(void) {}
 
     void Controller::HandleMovement(Cursor& cursor) {
+        const UT::ui32 line = cursor.Line();
+        const UT::ui32 col  = cursor.Col();
+    
         if (IsKeyPressed(KEY_LEFT)) {
-            if (cursor.Col() == 0 && cursor.Line() > 0){
-                cursor.SetAt(file.GetLineLength(cursor.Line() - 1), cursor.Line() - 1); // Move to the next line if we where at the previous one's length
-            } else {
+            if (col > 0) {
                 cursor.Left();
-            }         
+            } else if (line > 1) {
+                cursor.SetAt(
+                    file.GetLineLength(line - 1),
+                    line - 1
+                );
+            }
         } else if (IsKeyPressed(KEY_RIGHT)) {
-            if (file.GetLineLength(cursor.Line()) == cursor.Col() && file.GetLineCount() > cursor.Line()){
-                cursor.SetAt(0, cursor.Line() + 1); // Move to the next line if we where at the previous one's length
-            } else {
+            if (col < file.GetLineLength(line)) {
                 cursor.Right();
+            } else if (line + 1 < file.GetLineCount()) {
+                cursor.SetAt(0, line + 1);
             }
         } else if (IsKeyPressed(KEY_UP)) {
-            if (file.GetLineLength(cursor.Line()) == cursor.Col() && cursor.Line() > 0) {
-                cursor.SetAt(file.GetCurrentLine(cursor.Line() - 1).length(), cursor.Line() - 1);
-            } else {
-                cursor.Up();
+            if (line > 1) {
+                UT::ui32 newLine = line - 1;
+                UT::ui32 newCol  = std::min(
+                    col,
+                    file.GetLineLength(newLine)
+                );
+          
+                cursor.SetAt(newCol, newLine);
             }
         } else if (IsKeyPressed(KEY_DOWN)) {
-            if (file.GetLineLength(cursor.Line()) == cursor.Col() && cursor.Line() < file.GetLineCount()) {
-                cursor.SetAt(file.GetCurrentLine(cursor.Line() + 1).length(), cursor.Line() + 1);
-            } else {
-                cursor.Down();
+            if (line + 1 < file.GetLineCount()) {
+                UT::ui32 newLine = line + 1;
+                UT::ui32 newCol  = std::min(
+                    col,
+                    file.GetLineLength(newLine)
+                );
+          
+                cursor.SetAt(newCol, newLine);
             }
         }
     }
-
     void Controller::HandleSpecials(Cursor& cursor) {
         // Backspace
-        if (IsKeyPressed(KEY_BACKSPACE)) {
+        if (IsKeyPressed(KEY_BACKSPACE)) { // TODO: Auto delete spaces matching to a multiple of tab size
             if (cursor.Col() > 0) {
                 std::string& line = file.GetCurrentLine(cursor.Line());
 
