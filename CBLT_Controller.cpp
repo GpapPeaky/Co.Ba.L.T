@@ -19,6 +19,7 @@ namespace CBLT {
     }
 
     void Controller::HandleSpecials(Cursor& cursor) {
+        // Backspace
         if (IsKeyPressed(KEY_BACKSPACE)) {
             if (cursor.Col() > 0) {
                 std::string& line = file.GetCurrentLine(cursor.Line());
@@ -42,6 +43,21 @@ namespace CBLT {
                     // THEN delete the line
                     file.DeleteLine(cursor.Line() + 1);
                 }
+            }
+        }
+
+        // Return
+        if (IsKeyPressed(KEY_ENTER)) {
+            if (cursor.Col() == 0) {
+                cursor.Down();
+
+                file.CreateLine(cursor.Line() - 1); 
+            } else {
+                std::string fragment = file.SplitLine(cursor.Line(), cursor.Col());
+                
+                cursor.SetAt(0, cursor.Line() + 1);
+                
+                file.CreateLine(cursor.Line(), fragment);
             }
         }
     }

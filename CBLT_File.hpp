@@ -46,10 +46,19 @@ namespace CBLT {
             // Get column count in line
             UT::ui32 GetLineLength(UT::ui32 line) const;
 
+            // Create a line below the provided index
+            void CreateLine(UT::ui32 line);
+
+            // Create a line below the provided index, with specified content
+            void CreateLine(UT::ui32 line, std::string content);
+
+            // Splits a line into two strings from a specific column, returns the right fragment
+            std::string SplitLine(UT::ui32 line, UT::ui32 col);
+
             // Delete a line at a specific index
             void DeleteLine(UT::ui32 line);
 
-            // Moves the remaining line fragment of source line, to the end of the destination line
+            // Moves the remaining line fragment of source line, to the end of the destination line when deleting at column zero
             void PushBackLineFragment(UT::ui32 sourceLine, UT::ui32 destinationLine);
 
             // Get line at line index, read only

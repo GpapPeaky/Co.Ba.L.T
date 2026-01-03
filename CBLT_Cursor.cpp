@@ -56,7 +56,7 @@ namespace CBLT {
     void Cursor::Draw(const std::string& lineText) {
         int x = GetCursorX(lineText);
         int y = line * gFont.size;
-        DrawRectangleLines(x, y, 10, gFont.size, RED);
+        DrawRectangle(x, y, 3, gFont.size, RED);
     }
 
     UT::i32 Cursor::GetCursorX(const std::string& lineText){

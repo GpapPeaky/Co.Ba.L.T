@@ -94,6 +94,29 @@ namespace CBLT {
         return lines[line].size();
     }
 
+    void File::CreateLine(UT::ui32 line) {
+        lines.emplace(lines.begin() + line, std::string("")); // Place an empty line
+    }
+
+    void File::CreateLine(UT::ui32 line, std::string content) {
+        lines.emplace(lines.begin() + line, content); // Place the provided string
+    }
+
+    std::string File::SplitLine(UT::ui32 line, UT::ui32 col) {
+        std::string& lineToSplit = lines.at(line);
+    
+        if (col > lineToSplit.size())
+            col = lineToSplit.size();
+    
+        // Right side of the split
+        std::string fragment = lineToSplit.substr(col);
+    
+        // Left side remains
+        lineToSplit.erase(col);
+    
+        return fragment;
+    }
+
     void File::DeleteLine(UT::ui32 line) {
         lines.erase(lines.begin() + line);
     }
