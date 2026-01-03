@@ -17,13 +17,16 @@ int main() {
             ClearBackground(BLACK);
 
             ctrl.Update();
+
+            // No heap alloc, no copies, no runtime cost
             CBLT::CursorManager& cm = ctrl.GetCursorManager();
+            CBLT::Cursor& c = cm.Primary();
 
             // Draw open file
             ctrl.GetFile().Draw();
             cm.DrawCursors(ctrl.GetFile());
     
-            CBLT::UI::Draw(cm.Primary().Col(), cm.Primary().Line(), ctrl.GetFile().GetLineCount(), ctrl.GetFile().Dirt());
+            CBLT::UI::Draw(c.Col(), c.Line(), ctrl.GetFile().GetLineCount(), ctrl.GetFile().Dirt());
 
             DrawFPS(950, 0);
         EndDrawing();
