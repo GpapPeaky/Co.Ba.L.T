@@ -80,25 +80,37 @@ namespace CBLT {
                 pos,
                 gFont.size,
                 0.0f,
-                BLACK
+                GREEN
             );
         }
     }
 
-    size_t File::GetLineCount() const {
+    UT::ui32 File::GetLineCount() const {
         return lines.size();
     }
 
-    size_t File::GetLineLength(size_t line) const {
+    UT::ui32 File::GetLineLength(UT::ui32 line) const {
         if (line >= lines.size()) return 0;
         return lines[line].size();
     }
 
-    const std::string& File::GetCurrentLine(UT::i32 line) const {
+    void File::DeleteLine(UT::ui32 line) {
+        lines.erase(lines.begin() + line);
+    }
+
+    void File::PushBackLineFragment(UT::ui32 sourceLine, UT::ui32 destinationLine) {
+        if (sourceLine == destinationLine) return; // At start of file, do nothing
+
+        lines.at(destinationLine).append(lines.at(sourceLine)); // Concat the fragment line to the end of the destination line
+
+        // The line should probably be deleted afterwards
+    }
+
+    const std::string& File::GetCurrentLine(UT::ui32 line) const {
         return lines.at(line);
     }
 
-    std::string& File::GetCurrentLine(UT::i32 line) {
+    std::string& File::GetCurrentLine(UT::ui32 line) {
         return lines.at(line);
     }
 }

@@ -41,15 +41,21 @@ namespace CBLT {
             void Draw(void) const;
 
             // Get line count
-            size_t GetLineCount(void) const;
+            UT::ui32 GetLineCount(void) const;
 
             // Get column count in line
-            size_t GetLineLength(size_t line) const;
+            UT::ui32 GetLineLength(UT::ui32 line) const;
+
+            // Delete a line at a specific index
+            void DeleteLine(UT::ui32 line);
+
+            // Moves the remaining line fragment of source line, to the end of the destination line
+            void PushBackLineFragment(UT::ui32 sourceLine, UT::ui32 destinationLine);
 
             // Get line at line index, read only
-            const std::string& GetCurrentLine(UT::i32 line) const;
+            const std::string& GetCurrentLine(UT::ui32 line) const;
 
             // Get line at line index, mutable access
-            std::string& GetCurrentLine(UT::i32 line);
+            std::string& GetCurrentLine(UT::ui32 line);
     }; // File class
 } // CBLT

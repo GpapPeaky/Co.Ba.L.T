@@ -21,10 +21,27 @@ namespace CBLT {
     void Controller::HandleSpecials(Cursor& cursor) {
         if (IsKeyPressed(KEY_BACKSPACE)) {
             if (cursor.Col() > 0) {
-                // FIXME: This deletes UP to that column, does not move the rest of the string one index to the left
-                // file.GetCurrentLine(cursor.Line()).erase(cursor.Col() - 1);
+                std::string& line = file.GetCurrentLine(cursor.Line());
+
+                line.erase(cursor.Col() - 1, 1); // Erase 1 from the previous column
                 
                 cursor.Left();
+            } else if (cursor.Col() == 0 && cursor.Line() > 0) {
+                std::string& previousLine = file.GetCurrentLine(cursor.Line() - 1);
+                std::string& line = file.GetCurrentLine(cursor.Line());
+                
+                // Move one line up
+                cursor.SetAt(previousLine.length(), cursor.Line() - 1);
+                
+                if (line.empty()){
+                    file.DeleteLine(cursor.Line() + 1);
+                } else {
+                    // Move the rest of the line to the previous one
+                    file.PushBackLineFragment(cursor.Line() + 1, cursor.Line());
+
+                    // THEN delete the line
+                    file.DeleteLine(cursor.Line() + 1);
+                }
             }
         }
     }
