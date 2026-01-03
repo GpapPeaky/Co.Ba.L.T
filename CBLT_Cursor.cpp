@@ -56,10 +56,20 @@ namespace CBLT {
     void Cursor::Draw(const std::string& lineText) {
         int x = GetCursorX(lineText);
         int y = line * gFont.size;
+
+        // Draw a transparent rectangle, to show where the cursor is
+        DrawRectangle(
+            0,
+            y + CBLT::UI::TOP_BAR_HEIGHT,
+            GetScreenWidth(),
+            gFont.size,
+            Color{255, 255, 255, 45}
+        );
+
         DrawRectangle(
             x + CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
-            y + CBLT::FileMargins::Text::BELLOW_FROM_TOP_BAR,
-            3,
+            y + CBLT::UI::TOP_BAR_HEIGHT,
+            2,
             gFont.size,
             RED
         );
@@ -113,5 +123,13 @@ namespace CBLT {
             const std::string& lineText = openFile.GetCurrentLine(c.Line());
             c.Draw(lineText);
         }
+    }
+
+    Cursor& CursorManager::Primary() {
+        return activeCursors[0];
+    }
+
+    const Cursor CursorManager::Primary() const {
+        return activeCursors[0];
     }
 } // CBLT

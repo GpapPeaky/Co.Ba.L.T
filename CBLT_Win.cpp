@@ -6,20 +6,16 @@ namespace CBLT {
     namespace Win {
 
         void Init(void) {
-            const int screenWidth = 1024;
+            const int screenWidth = 1536;
             const int screenHeight = 1024;
 
             InitWindow(screenWidth, screenHeight, Version.c_str());
 
             SetTargetFPS(180);
-
-            return;
         }
 
         void Destroy(void) {
             CloseWindow();
-
-            return;
         }
 
     } // Win

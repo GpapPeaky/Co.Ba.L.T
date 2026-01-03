@@ -1,0 +1,17 @@
+#pragma once
+
+#include "CBLT_Util.hpp"
+
+#include "CBLT_Font.hpp"
+
+#include "raylib.h"
+
+namespace CBLT {
+    namespace UI {
+        // Draw top bar and all data that live inside it
+        void Draw(UT::ui32 col, UT::ui32 line);
+
+        // Top margin from the top bar, or it's width
+        const UT::f32 TOP_BAR_HEIGHT = 50.0f;
+    } // UI
+} // CBLT

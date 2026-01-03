@@ -11,6 +11,8 @@
 
 #include "CBLT_Font.hpp"        // for Font global
 
+#include "CBLT_TopBar.hpp"      // for vertical margins
+
 namespace CBLT {
     // Basic document/file class
     class File {
@@ -74,9 +76,6 @@ namespace CBLT {
         namespace Text {
             // Left margin from the window y position
             const UT::f32 LEFT_FROM_FILE_LINES_UI = 5.0f;
-            
-            // Top margin from the top bar
-            const UT::f32 BELLOW_FROM_TOP_BAR = 50.0f; // FIXME: Add this as a TOP_BAR_WIDTH when making the UI
         } // Text
 
         namespace Lines {

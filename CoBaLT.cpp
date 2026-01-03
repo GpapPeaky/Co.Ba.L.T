@@ -17,27 +17,15 @@ int main() {
             ClearBackground(BLACK);
 
             ctrl.Update();
+            CBLT::CursorManager& cm = ctrl.GetCursorManager();
 
             // Draw open file
             ctrl.GetFile().Draw();
-            ctrl.GetCursorManager().DrawCursors(ctrl.GetFile());
+            cm.DrawCursors(ctrl.GetFile());
     
+            CBLT::UI::Draw(cm.Primary().Col(), cm.Primary().Line());
+
             DrawFPS(950, 0);
-
-            DrawText(
-                (std::string("Col: ") + std::to_string(ctrl.GetCursorManager().activeCursors[0].Col())).c_str(),
-                600,
-                700,
-                CBLT::gFont.size,
-                BLUE);
-
-            DrawText(
-                (std::string("Line: ") + std::to_string(ctrl.GetCursorManager().activeCursors[0].Line())).c_str(),
-                750,
-                700,
-                CBLT::gFont.size,
-                BLUE);
-    
         EndDrawing();
     }
 

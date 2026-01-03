@@ -8,6 +8,8 @@
 
 #include "raylib.h"      // for MeasureText() ...
 
+#include "CBLT_TopBar.hpp" // for vertical margins
+
 namespace CBLT {
 
     // Cursor mode
@@ -89,6 +91,12 @@ namespace CBLT {
 
             // Draw all active cursors
             void DrawCursors(CBLT::File& openFile);
+
+            // Get primary cursor mutable access
+            Cursor& Primary();
+
+            // Get primary cursor read only
+            const Cursor Primary() const;
     }; // Cursor manager class
 } // CBLT
 
