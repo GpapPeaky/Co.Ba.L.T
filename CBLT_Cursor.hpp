@@ -19,6 +19,14 @@ namespace CBLT {
         SELECT                  // Selection mode
     }; 
 
+    // Cursor direction class
+    enum class CursorDirection {
+        LEFT,                   // Move left
+        RIGHT,                  // Move right
+        UP,                     // Move up
+        DOWN                    // Move down
+    };
+
     // Basic cursor object for both file and console
     class Cursor {
 
@@ -68,7 +76,10 @@ namespace CBLT {
             void Draw(const std::string& lineText);
 
             // Get cursor x in pixels 
-            UT::i32 GetCursorX(const std::string& lineText);
+            UT::ui32 GetCursorX(const std::string& lineText);
+
+            // Get the distance to a character in the left or right of the cursor and set the cursor there
+            void SetToWordBoundary(const std::string& lineText, const CursorDirection dir);
 
             // TODO: Selection methods, when required
     }; // Cursor class

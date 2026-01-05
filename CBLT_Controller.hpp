@@ -19,6 +19,9 @@ namespace CBLT {
             // Handle basic cursor movement
             void HandleMovement(Cursor& cursor);
 
+            // Handle special cursor movement
+            void HandleSpecialMovement(Cursor& cursor);
+
             // Handle presses like TAB, RETURN and BACKSPACE
             void HandleSpecials(Cursor& cursor);
 

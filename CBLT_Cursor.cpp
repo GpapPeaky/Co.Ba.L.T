@@ -75,9 +75,9 @@ namespace CBLT {
         );
     }
 
-    UT::i32 Cursor::GetCursorX(const std::string& lineText){
+    UT::ui32 Cursor::GetCursorX(const std::string& lineText){
         UT::f32 scale = (UT::f32)gFont.size / gFont.f.baseSize;
-        UT::i32 width = 0;
+        UT::ui32 width = 0;
         auto cps = CBLT::gFont.Utf8ToCodepoints(lineText);
 
         for(size_t i = 0; i < column && i < cps.size(); i++) {
@@ -97,7 +97,57 @@ namespace CBLT {
                 width += gFont.size / 2;
             }
         }
-        return (UT::i32)(width * scale);
+        return (UT::ui32)(width * scale);
+    }
+    
+    // FIXME: Minor offshoots by 1 index
+    void Cursor::SetToWordBoundary(const std::string& lineText, const CursorDirection dir) {
+        int col = static_cast<int>(Col());
+        int line = static_cast<int>(Line());
+        int len = static_cast<int>(lineText.length());
+    
+        switch (dir) {
+            case CursorDirection::RIGHT: {
+                // If at end of line, stay
+                if (col >= len) {
+                    SetAt(len, line);
+                    return;
+                }
+    
+                int i = col;
+    
+                // Skip the rest of the current word (non-space characters)
+                while (i < len && lineText[i] != ' ' && lineText[i] != '\n') i++;
+    
+                // Stop at first space after word OR end of line
+                SetAt(i, line);
+                return;
+            }
+    
+            case CursorDirection::LEFT: {
+                if (col == 0) {
+                    SetAt(0, line);
+                    return;
+                }
+    
+                int i = col - 1;
+    
+                // If cursor is in the middle or end of a word, stop at its start
+                // First skip any spaces to the left
+                while (i >= 0 && lineText[i] == ' ') i--;
+    
+                // Now skip backward over the word characters
+                while (i >= 0 && lineText[i] != ' ' && lineText[i] != '\n') i--;
+    
+                // i+1 is the first character of the word
+                SetAt(i + 1, line);
+                return;
+            }
+    
+            case CursorDirection::UP:
+            case CursorDirection::DOWN:
+                return;
+        }
     }
     
     CursorManager::CursorManager() {

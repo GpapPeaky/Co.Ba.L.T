@@ -5,7 +5,21 @@ namespace CBLT {
     
     Controller::~Controller(void) {}
 
+    void Controller::HandleSpecialMovement(Cursor& cursor) {
+        const UT::ui32 line = cursor.Line();
+        const UT::ui32 col  = cursor.Col();
+
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_RIGHT)) {
+            cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::RIGHT);
+        } else if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_LEFT)) {
+            cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::LEFT);
+        }
+    }
+
     void Controller::HandleMovement(Cursor& cursor) {
+        // We need to check specifics AND THEN check for general key presses
+        HandleSpecialMovement(cursor);
+        
         const UT::ui32 line = cursor.Line();
         const UT::ui32 col  = cursor.Col();
     
