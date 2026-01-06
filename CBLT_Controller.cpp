@@ -28,6 +28,7 @@ namespace CBLT {
         
         const UT::ui32 line = cursor.Line();
         const UT::ui32 col  = cursor.Col();
+        const UT::ui32 len  = file.GetLineLength(line);
     
         if (IsKeyPressed(KEY_LEFT)) {
             if (col > 0) {
@@ -45,7 +46,7 @@ namespace CBLT {
                 cursor.SetAt(0, line + 1);
             }
         } else if (IsKeyPressed(KEY_UP)) {
-            if (line > 1) {
+            if (line > 1 && col != len) {
                 UT::ui32 newLine = line - 1;
                 UT::ui32 newCol  = std::min(
                     col,
@@ -53,11 +54,27 @@ namespace CBLT {
                 );
           
                 cursor.SetAt(newCol, newLine);
+            } else if (line > 1) {
+                UT::ui32 newLine = line - 1;
+                UT::ui32 newCol  = std::max(
+                    col,
+                    file.GetLineLength(newLine)
+                );
+          
+                cursor.SetAt(newCol, newLine);
             }
         } else if (IsKeyPressed(KEY_DOWN)) {
-            if (line + 1 < file.GetLineCount()) {
+            if (line + 1 < file.GetLineCount() && col != len) {
                 UT::ui32 newLine = line + 1;
                 UT::ui32 newCol  = std::min(
+                    col,
+                    file.GetLineLength(newLine)
+                );
+          
+                cursor.SetAt(newCol, newLine);
+            } else if (line + 1 < file.GetLineCount()) {
+                UT::ui32 newLine = line + 1;
+                UT::ui32 newCol  = std::max(
                     col,
                     file.GetLineLength(newLine)
                 );
@@ -167,6 +184,9 @@ namespace CBLT {
             // HandleShorcuts();
             
             CBLT::CursorMode m = c.GetMode();
+
+            // Handling booleans
+            UT::b handledShort;
             
             switch(m) {
                 case CBLT::CursorMode::CONSOLE:
@@ -178,7 +198,7 @@ namespace CBLT {
                     HandleMovement(c);
                     // Shortcuts include letters so it makes sense that we need to omit any leftover I/O's
                     // so they won't spill over to the insert function
-                    UT::b handledShort = HandleShorcuts(c);
+                    handledShort = HandleShorcuts(c);
                     if (!handledShort) HandleInsert(c);     // Shortcut was handled, do not insert 
 
                     ClampCursor(c); // Safety check
