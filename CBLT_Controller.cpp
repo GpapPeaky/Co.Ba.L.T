@@ -83,6 +83,7 @@ namespace CBLT {
             }
         }
     }
+
     void Controller::HandleSpecials(Cursor& cursor) {
         // Backspace
         if (IsKeyPressed(KEY_BACKSPACE)) { // TODO: Auto delete spaces matching to a multiple of tab size
@@ -249,4 +250,4 @@ namespace CBLT {
         );
     }
 
-}
+} // CBLT
