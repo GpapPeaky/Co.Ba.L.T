@@ -91,62 +91,80 @@ namespace CBLT {
                 }
             }
 
-            if(glyphIndex >= 0) {
+            if (glyphIndex >= 0) {
                 width += gFont.f.glyphs[glyphIndex].advanceX;
             } else {
                 width += gFont.size / 2;
             }
         }
+        
         return (UT::ui32)(width * scale);
     }
+
+    const CharClass Cursor::Classify(UT::cui8 c) const {
+        if (c == ' ' || c == '\n') {
+            return CharClass::WHITESPACE;
+        }
+
+        if (std::isalnum(c) || c == '_') {
+            return CharClass::INWORD;
+        }
+
+        return CharClass::SYMBOL;
+    }
     
-    // FIXME: Minor offshoots by 1 index
-    void Cursor::SetToWordBoundary(const std::string& lineText, const CursorDirection dir) {
-        int col = static_cast<int>(Col());
-        int line = static_cast<int>(Line());
-        int len = static_cast<int>(lineText.length());
+    void Cursor::SetToWordBoundary(const std::string& lineText, CursorDirection dir) {
+        UT::i32 col  = static_cast<UT::i32>(Col());
+        UT::i32 line = static_cast<UT::i32>(Line());
+        UT::i32 len  = static_cast<UT::i32>(lineText.size());
     
-        switch (dir) {
-            case CursorDirection::RIGHT: {
-                // If at end of line, stay
-                if (col >= len) {
-                    SetAt(len, line);
-                    return;
-                }
+        if (dir == CursorDirection::RIGHT) {
+            if (col >= len) {
+                SetAt(len, line + 1); // UNSAFE
+                return;
+            }
+
+            while (col < len && Classify(lineText[col]) == CharClass::WHITESPACE) col++;
+
+            if (col >= len) {
+                SetAt(len, line);
+                return;
+            }
+
+            CharClass cc = Classify(lineText[col]);
+
+            // Skip current class
+            while (col < len && cc == Classify(lineText[col])) col++;
+
+            SetAt(col, line);
+            return;
+        }
     
-                int i = col;
-    
-                // Skip the rest of the current word (non-space characters)
-                while (i < len && lineText[i] != ' ' && lineText[i] != '\n') i++;
-    
-                // Stop at first space after word OR end of line
-                SetAt(i, line);
+        if (dir == CursorDirection::LEFT) {
+            if (line <= 1) { // Safety check
+                SetAt(0, 1);
+                return;
+            }
+
+            if (col <= 0) {
+                SetAt(0, line - 1);
                 return;
             }
     
-            case CursorDirection::LEFT: {
-                if (col == 0) {
-                    SetAt(0, line);
-                    return;
-                }
+            int i = col - 1;
     
-                int i = col - 1;
+            while (i >= 0 && Classify(lineText[i]) == CharClass::WHITESPACE) i--;
     
-                // If cursor is in the middle or end of a word, stop at its start
-                // First skip any spaces to the left
-                while (i >= 0 && lineText[i] == ' ') i--;
-    
-                // Now skip backward over the word characters
-                while (i >= 0 && lineText[i] != ' ' && lineText[i] != '\n') i--;
-    
-                // i+1 is the first character of the word
-                SetAt(i + 1, line);
+            if (i < 0) {
+                SetAt(0, line);
                 return;
             }
     
-            case CursorDirection::UP:
-            case CursorDirection::DOWN:
-                return;
+            CharClass cc = Classify(lineText[i]);
+            while (i >= 0 && Classify(lineText[i]) == cc) i--;
+    
+            SetAt(i + 1, line);
+            return;
         }
     }
     

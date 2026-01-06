@@ -19,8 +19,8 @@ namespace CBLT {
             // Handle basic cursor movement
             void HandleMovement(Cursor& cursor);
 
-            // Handle special cursor movement
-            void HandleSpecialMovement(Cursor& cursor);
+            // Handle special cursor movement, return true if special movement was handled
+            UT::b HandleSpecialMovement(Cursor& cursor);
 
             // Handle presses like TAB, RETURN and BACKSPACE
             void HandleSpecials(Cursor& cursor);
@@ -34,8 +34,8 @@ namespace CBLT {
             // Handle input at selection mode
             void HandleSelect(void);
 
-            // Handle shorcuts, based on the active keyboard modifiers and cursor mode
-            void HandleShorcuts(Cursor& cursor);
+            // Handle shorcuts, based on the active keyboard modifiers and cursor mode, return true if a shortcut was handled
+            UT::b HandleShorcuts(Cursor& cursor);
 
         public:
             // Controller update, most functions are called here

@@ -5,20 +5,26 @@ namespace CBLT {
     
     Controller::~Controller(void) {}
 
-    void Controller::HandleSpecialMovement(Cursor& cursor) {
+    UT::b Controller::HandleSpecialMovement(Cursor& cursor) {
         const UT::ui32 line = cursor.Line();
         const UT::ui32 col  = cursor.Col();
 
         if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_RIGHT)) {
             cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::RIGHT);
+
+            return true;
         } else if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_LEFT)) {
             cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::LEFT);
+        
+            return true;
         }
+
+        return false;
     }
 
     void Controller::HandleMovement(Cursor& cursor) {
         // We need to check specifics AND THEN check for general key presses
-        HandleSpecialMovement(cursor);
+        if (HandleSpecialMovement(cursor)) return; // Already handled movement, via LCtrl, skip applying any more movement
         
         const UT::ui32 line = cursor.Line();
         const UT::ui32 col  = cursor.Col();
@@ -144,13 +150,14 @@ namespace CBLT {
         }
     }
 
-    void Controller::HandleShorcuts(Cursor& cursor) {
-
-
-        // IDEA: Debug
+    UT::b Controller::HandleShorcuts(Cursor& cursor) {
         if (IsKeyPressed(KEY_DELETE)) {
             file.SetDirt(!file.Dirt());
+
+            return true;
         }
+
+        return false;
     }
 
     void Controller::Update(void) {
@@ -167,10 +174,12 @@ namespace CBLT {
 
                     break;
                 case CBLT::CursorMode::INSERT:
-                    HandleMovement(c);
                     HandleSpecials(c);
-                    HandleShorcuts(c);
-                    HandleInsert(c);
+                    HandleMovement(c);
+                    // Shortcuts include letters so it makes sense that we need to omit any leftover I/O's
+                    // so they won't spill over to the insert function
+                    UT::b handledShort = HandleShorcuts(c);
+                    if (!handledShort) HandleInsert(c);     // Shortcut was handled, do not insert 
 
                     ClampCursor(c); // Safety check
                 
