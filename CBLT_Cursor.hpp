@@ -95,7 +95,7 @@ namespace CBLT {
     class CursorManager {
         public:
             std::vector<CBLT::Cursor> activeCursors; // Multiline cursor management
-
+            
             // Constructor
             CursorManager(void);
 

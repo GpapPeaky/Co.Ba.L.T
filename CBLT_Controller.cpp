@@ -9,11 +9,11 @@ namespace CBLT {
         const UT::ui32 line = cursor.Line();
         const UT::ui32 col  = cursor.Col();
 
-        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_RIGHT)) {
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_RIGHT)) {
             cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::RIGHT);
 
             return true;
-        } else if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_LEFT)) {
+        } else if (keyboard.m.ctrl && IsKeyPressed(KEY_LEFT)) {
             cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::LEFT);
         
             return true;
@@ -169,19 +169,50 @@ namespace CBLT {
     }
 
     UT::b Controller::HandleShorcuts(Cursor& cursor) {
+        // DEBUG
         if (IsKeyPressed(KEY_DELETE)) {
             file.SetDirt(!file.Dirt());
 
             return true;
         }
 
+        // Left Control
+
+        // Delete current line
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_X)) {
+            file.DeleteLine(cursor.Line());
+
+            return true;
+        }
+
+        // Copy current line
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_D)) {
+            file.CreateLine(cursor.Line(), file.GetCurrentLine(cursor.Line()));
+
+            return true;
+        }
+
+        // Exit
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_E)) {
+            exit(UDef::GRACEFUL_EXIT);
+        }
+
+        // Console toggle
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_GRAVE)) {
+            // console.Toggle();
+
+            return true;
+        }
+
+
+
         return false;
     }
 
     void Controller::Update(void) {
-        this->keyboard.UpdateModifiers(); // Update modifiers
+        keyboard.UpdateModifiers(); // Update modifiers
         
-        for(auto& c : this->cursorManager.activeCursors) {
+        for(auto& c : cursorManager.activeCursors) {
             // HandleShorcuts();
             
             CBLT::CursorMode m = c.GetMode();

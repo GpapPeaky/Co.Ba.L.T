@@ -133,29 +133,13 @@ All configuration changes are saved in `user.pref`.
 
 | Shortcut                       | Action                                                       |
 | ------------------------------ | ------------------------------------------------------------ |
+| **LCtrl + ArrowKeys**          | Move cursor 5 steps. |                                               
 | **LCtrl + `X`**                | Delete current line.                                         |
-| **LCtrl + `S`**                | Save/write current file (`:w`).                              |
-| **LCtrl + `L`**                | Open console with `:l` (go to line).                         |
-| **LCtrl + `O`**                | Open current directory in system file explorer (`:O`).       |
-| **LCtrl + `N`**                | Create a new file (`:c f`) and immediately rename it (`:b`). |
-| **LCtrl + `B`**                | Rename current file (`:b`).                                  |
-| **LCtrl + `R`**                | Remove current file (`:r`).                                  |
-| **LCtrl + `M`**                | Create a new directory (`:md`).                              |
 | **LCtrl + `D`**                | Duplicate current line.                                      |
-| **LCtrl + `W`**                | Delete the word at the cursor index.                         |
-| **LCtrl + `Q`**                | Save and Quit (`:W`, then `:q`).                             |
 | **LCtrl + `E`**                | Quit/Exit (`:e`).                                            |
-| **LCtrl + `T`**                | Open virtual terminal input.  
- **LCtrl + `P`**                 | Selection mode toggle. |
- **LCtrl + `C`**                 | Selection mode copy selected text. |
- **LCtrl + `V`**                 | Paste clipboard at cursor position. |
- **LCtrl + `I`**                 | Display current open file info and metadata. |
-**LCtrl + `` ` ``**            | Switch to console mode. |                                     
-**LCtrl + `-`**                | Decrease editor font size. |                                  
-**LCtrl + `=`**                | Increase editor font size.|                                   
-**LCtrl + ArrowKeys**          | Move cursor 5 steps. |                                               
-**LShift + Up/Down**           | Move line at  cursor by one. |                                 
-**LShift + Left/Right**        | Resize the console's width.|
+| **LCtrl + `` ` ``**            | Switch to console mode. |                                     
+| **LCtrl + `-`**                | Decrease editor font size. |                                  
+| **LCtrl + `=`**                | Increase editor font size.|                                   
 ---
 
 ## License

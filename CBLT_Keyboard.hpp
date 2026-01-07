@@ -14,9 +14,9 @@ namespace CBLT {
             UT::b alt;
         } Modifiers; // Keyboard modifier struct
 
-        private:
-            CBLT::Keyboard::Modifiers m; // Active modifiers for shortcuts
         public:
+            CBLT::Keyboard::Modifiers m; // Active modifiers for shortcuts
+
             // Constructor
             Keyboard(void);
     
@@ -26,7 +26,7 @@ namespace CBLT {
             // Keycode getter
             UT::i32 GetKey(void);
 
-            // Update and return a modifier struct each frame if its key was pressed
+            // Update a modifier struct each frame if its key was pressed
             void UpdateModifiers(void);
 
             // Is ctrl modifier active

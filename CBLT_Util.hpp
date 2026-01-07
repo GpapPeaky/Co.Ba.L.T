@@ -29,6 +29,10 @@ namespace CBLT {
             void Log(std::string msg);
         } // Err
 
+        namespace Def {
+            const CBLT::Utils::Types::ui32 GRACEFUL_EXIT = 0;
+        }
+
     } // Utils
 } // CBLT
 
@@ -37,3 +41,6 @@ namespace CBLT {
 
 // Utility error logging, easier access
 #define UE CBLT::Utils::Err
+
+// Utility general use definitions, easier access
+#define UDef CBLT::Utils::Def
