@@ -110,6 +110,8 @@ namespace CBLT {
                     file.DeleteLine(cursor.Line() + 1);
                 }
             }
+
+            file.SetDirt(true);
         }
 
         // Return
@@ -125,6 +127,8 @@ namespace CBLT {
                 
                 file.CreateLine(cursor.Line(), fragment);
             }
+
+            file.SetDirt(true);
         }
 
         // Tab
@@ -148,6 +152,8 @@ namespace CBLT {
 
                 cursor.Right();
             }
+
+            file.SetDirt(true);
         }
     }
 
@@ -164,6 +170,8 @@ namespace CBLT {
                 );
 
                 cursor.Right();
+
+                file.SetDirt(true); // Mark file as dirty
             }
         }
     }
@@ -181,6 +189,7 @@ namespace CBLT {
         // Delete current line
         if (keyboard.m.ctrl && IsKeyPressed(KEY_X)) {
             file.DeleteLine(cursor.Line());
+            file.SetDirt(true);
 
             return true;
         }
@@ -188,12 +197,20 @@ namespace CBLT {
         // Copy current line
         if (keyboard.m.ctrl && IsKeyPressed(KEY_D)) {
             file.CreateLine(cursor.Line(), file.GetCurrentLine(cursor.Line()));
+            file.SetDirt(true);
 
             return true;
         }
 
         // Exit
         if (keyboard.m.ctrl && IsKeyPressed(KEY_E)) {
+            exit(UDef::GRACEFUL_EXIT);
+        }
+
+        // Save and Exit
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_Q)) {
+            file.Save();
+
             exit(UDef::GRACEFUL_EXIT);
         }
 
@@ -204,7 +221,12 @@ namespace CBLT {
             return true;
         }
 
+        // Save file contents
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_S)) {
+            file.Save(); // Automatically cleans the "dirt"
 
+            return true;
+        }
 
         return false;
     }

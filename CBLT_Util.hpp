@@ -8,6 +8,8 @@ namespace CBLT {
     namespace Utils {
         namespace Types {
             typedef unsigned int ui32; // 32 bit unsigned
+            typedef long unsigned int lui32; // long unsigned
+            typedef long long unsigned int llui32; // long long unsigned
             typedef const ui32 cui32; // Constant 32 bit unsigned
             typedef int i32; // 32 bit signed
             typedef const i32 ci32; // Constant 32 bit signed

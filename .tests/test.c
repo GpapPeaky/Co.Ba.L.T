@@ -1,11 +1,9 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
 // Demonstrating C keywords, types, and constructs
 int main(void) {
-
     // **Data types**
     int integerVar = 10;
     char charVar = 'A';

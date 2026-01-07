@@ -35,8 +35,8 @@ namespace CBLT {
         if(!file.is_open())
             return false;
     
-        for(const auto& line : lines) {
-            file << line << '\n';
+        for (UT::llui32 i = 1 ; i < lines.size() ; i++) {
+            file << lines[i] << '\n';
         }
     
         dirty = false;
