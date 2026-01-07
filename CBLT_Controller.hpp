@@ -1,10 +1,11 @@
 #pragma once
 
-#include "CBLT_Cursor.hpp"    // Cursor manager
-#include "CBLT_Keyboard.hpp"  // Keyboard for input
-#include "CBLT_File.hpp"      // Document/File type
+#include "CBLT_Cursor.hpp"          // Cursor manager
+#include "CBLT_Keyboard.hpp"        // Keyboard for input
+#include "CBLT_File.hpp"            // Document/File type
+#include "CBLT_Console.hpp"         // Console for directives
 
-#include <cmath>              // min() ..
+#include <cmath>                    // min()/max() ...
 
 namespace CBLT {
     // Basic controller and input handling
@@ -13,6 +14,7 @@ namespace CBLT {
             CBLT::CursorManager cursorManager;     // Cursor manager
             CBLT::Keyboard keyboard;               // Keyboard
             CBLT::File file;                       // Current open document
+            CBLT::Console console;                 // Console
 
             // TODO: Finish the handling
 
@@ -46,6 +48,12 @@ namespace CBLT {
 
             // Get the current open file, mutable access
             File& GetFile(void);
+
+            // Get the console, read only
+            const Console& GetConsole(void) const;
+
+            // Get the console, mutable access
+            Console& GetConsole(void);
 
             // Get the cursor manager, read only
             const CBLT::CursorManager& GetCursorManager(void) const;

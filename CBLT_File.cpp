@@ -170,4 +170,8 @@ namespace CBLT {
     void File::SetDirt(UT::b stat) {
         dirty = stat;
     }
+
+    const std::string& File::Name(void) const {
+        return path;        
+    }
 }

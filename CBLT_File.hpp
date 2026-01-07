@@ -75,6 +75,9 @@ namespace CBLT {
             // Set the dirt to true or false
             void SetDirt(UT::b stat);
 
+            // Return the name of the file
+            const std::string& Name(void) const;
+
         }; // File class
         
     // Positioning margins

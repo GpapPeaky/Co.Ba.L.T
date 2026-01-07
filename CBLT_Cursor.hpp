@@ -14,7 +14,6 @@ namespace CBLT {
 
     // Cursor mode
     enum class CursorMode {
-        CONSOLE,                // Console mode
         INSERT,                 // Insertion mode
         SELECT                  // Selection mode
     }; 

@@ -21,12 +21,17 @@ int main() {
             // No heap alloc, no copies, no runtime cost
             CBLT::CursorManager& cm = ctrl.GetCursorManager();
             CBLT::Cursor& c = cm.Primary();
+            CBLT::Console& cnsl = ctrl.GetConsole();
 
             // Draw open file
             ctrl.GetFile().Draw();
             cm.DrawCursors(ctrl.GetFile());
-    
+
             CBLT::UI::Draw(c.Col(), c.Line(), ctrl.GetFile().GetLineCount(), ctrl.GetFile().Dirt());
+
+            if (cnsl.IsOpen()) {
+                cnsl.Draw(ctrl.GetFile().Name());
+            }
 
             DrawFPS(950, 0);
         EndDrawing();

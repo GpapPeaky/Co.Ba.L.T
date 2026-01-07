@@ -161,9 +161,9 @@ namespace CBLT {
         UT::i32 c = 0;
 
         // Character recording
-        while ((c = this->keyboard.GetKey()) > 0) {
+        while ((c = keyboard.GetKey()) > 0) {
             if (c >= 32 && c <= 126) { // Allow only ASCII
-                this->file.InsertChar(
+                file.InsertChar(
                     cursor.Col(),
                     cursor.Line(),
                     c
@@ -216,7 +216,7 @@ namespace CBLT {
 
         // Console toggle
         if (keyboard.m.ctrl && IsKeyPressed(KEY_GRAVE)) {
-            // console.Toggle();
+            console.Toggle();
 
             return true;
         }
@@ -233,20 +233,29 @@ namespace CBLT {
 
     void Controller::Update(void) {
         keyboard.UpdateModifiers(); // Update modifiers
+
+        // Console handling
+        if (console.IsOpen()) {
+            // HandleConsole();
+
+            // Console toggle to get out
+            if (keyboard.m.ctrl && IsKeyPressed(KEY_GRAVE)) {
+                console.Toggle();
+            }
+
+            DrawText("Yo", 0, 0, 20, ORANGE);
+
+            return;
+        }
         
         for(auto& c : cursorManager.activeCursors) {
             // HandleShorcuts();
-            
             CBLT::CursorMode m = c.GetMode();
-
+            
             // Handling booleans
             UT::b handledShort;
             
             switch(m) {
-                case CBLT::CursorMode::CONSOLE:
-                    // HandleConsole();
-
-                    break;
                 case CBLT::CursorMode::INSERT:
                     HandleSpecials(c);
                     HandleMovement(c);
@@ -257,11 +266,11 @@ namespace CBLT {
 
                     ClampCursor(c); // Safety check
                 
-                    // if(this->keyboard.CtrlActive()) {
+                    // if(keyboard.CtrlActive()) {
                         // DrawText("ctrl", 200, 200, 20, BLACK);
-                    // }else if(this->keyboard.ShiftActive()) {
+                    // }else if(keyboard.ShiftActive()) {
                         // DrawText("shift", 200, 200, 20, BLACK);
-                    // }else if(this->keyboard.AltActive()) {
+                    // }else if(keyboard.AltActive()) {
                         // DrawText("alt", 200, 200, 20, BLACK);
                     // }else{
                         // DrawText("nomod", 200, 200, 20, BLACK);
@@ -288,12 +297,20 @@ namespace CBLT {
         return file;
     }
 
+    const Console& Controller::GetConsole(void) const {
+        return console;
+    }
+
+    Console& Controller::GetConsole(void) {
+        return console;
+    }
+
     const CBLT::CursorManager& Controller::GetCursorManager(void) const {
-        return this->cursorManager;
+        return cursorManager;
     }
 
     CBLT::CursorManager& Controller::GetCursorManager(void) {
-        return this->cursorManager;
+        return cursorManager;
     }
 
     void Controller::ClampCursor(Cursor& c) {
