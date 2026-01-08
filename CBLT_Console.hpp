@@ -3,6 +3,7 @@
 #include <string>
 
 #include "CBLT_Directive.hpp"
+#include "CBLT_Interpolator.hpp"
 
 namespace CBLT {
     // Different type of messages the console can display
@@ -24,7 +25,7 @@ namespace CBLT {
         private:
             Directive directive;        // Directive to execute
             UT::b toggled;              // Console is on or off
-            UT::ui32 width;             // Console mutable width
+            UT::f32 width;             // Console mutable width
             CursorManager cursor;       // Cursor position inside the directive
         public:
             // Constructor
@@ -33,8 +34,13 @@ namespace CBLT {
             // Destructor
             ~Console();
 
+            Interpolator interpolator; // Interpolator for animating
+
             // Toggle the console on or off
             void Toggle(void);
+
+            // Console general updates
+            void Update(void);
 
             // Check if the console is on or off
             UT::b IsOpen(void);
@@ -49,13 +55,13 @@ namespace CBLT {
             Directive& ConsoleDirective(void);
 
             // Resize console window
-            void Move(UT::i32 offset);
+            void Move(UT::f32 offset);
 
             // Get the console cursor
             Cursor& ConsoleCursor(void);
 
             // Console width
-            UT::ui32 Width(void);
+            UT::f32 Width(void);
     }; // Console class
 } // CBLT
 

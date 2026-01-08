@@ -97,15 +97,27 @@ namespace CBLT {
         return directive;
     }
 
-    void Console::Move(UT::i32 offset) {
-        width += offset;
+    void Console::Update() {
+        if (interpolator.IsActive()) {
+            auto [newWidth, _] = interpolator.Update();
+            width = static_cast<UT::f32>(newWidth);
+        }
+    }
+
+    void Console::Move(UT::f32 offset) {
+        UT::f32 newTarget = width + offset;
+        interpolator.Start(
+            width, 0, // fromX, fromY (Y not used)
+            newTarget, 0,                   // targetX, targetY
+            0.12f                           // speed, tweak as needed
+        );
     }
 
     Cursor& Console::ConsoleCursor(void) {
         return cursor.Primary();
     }
 
-    UT::ui32 Console::Width(void) {
+    UT::f32 Console::Width(void) {
         return width;
     }
 } // CBLT

@@ -297,6 +297,7 @@ namespace CBLT {
 
     void Controller::Update(void) {
         keyboard.UpdateModifiers(); // Update modifiers
+        console.Update();           // Update console
 
         // Console handling
         if (console.IsOpen()) {
@@ -327,12 +328,12 @@ namespace CBLT {
 
             // Resize console
             if (keyboard.m.shift && (IsKeyPressedRepeat(KEY_LEFT) || IsKeyPressed(KEY_LEFT))) {
-                if (console.Width() < static_cast<UT::ui32>(GetScreenWidth() / 2)) console.Move(10);
+                if (console.Width() < static_cast<UT::ui32>(GetScreenWidth() / 2)) console.Move(10.0f);
             }
 
             // Resize console
             if (keyboard.m.shift && (IsKeyPressedRepeat(KEY_RIGHT) || IsKeyPressed(KEY_RIGHT))) {
-                if (console.Width() > 20) console.Move(-10);
+                if (console.Width() > 20) console.Move(-10.0f);
             }
 
             return;
