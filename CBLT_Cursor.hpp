@@ -79,7 +79,7 @@ namespace CBLT {
             void Right(void);
 
             // Draw cursor
-            void Draw(const std::string& lineText);
+            void Draw(const std::string& lineText, UT::llui32 cursorId);
 
             // Get cursor x in pixels 
             UT::ui32 GetCursorX(const std::string& lineText);
@@ -92,6 +92,11 @@ namespace CBLT {
     }; // Cursor class
 
     class CursorManager {
+        private:
+            UT::b requestReset;             // Request cursors reset
+            UT::b requestTrail;             // Request cursor up
+            UT::b requestLead;              // Request cursor down
+
         public:
             std::vector<CBLT::Cursor> activeCursors; // Multiline cursor management
             
@@ -107,8 +112,23 @@ namespace CBLT {
             // Remove a cursor at a specific column and line
             void RemoveCursorAt(UT::ui32 col, UT::ui32 line);
 
+            // Non primary cursors are removed
+            void RemoveSecondaries(void);
+
             // Draw all active cursors
             void DrawCursors(CBLT::File& openFile);
+
+            // Request cursor reset
+            void RequestReset(void);
+
+            // Request a trailling cursor
+            void RequestTrail(void);
+            
+            // Request a leading cursor
+            void RequestLead(void);
+
+            // Apply pending requests, and reset any flags/counters
+            void HandlePendingRequests(File& f);
 
             // Get primary cursor mutable access
             Cursor& Primary();

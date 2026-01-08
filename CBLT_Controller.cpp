@@ -184,34 +184,43 @@ namespace CBLT {
         }
     }
 
-    void Controller::HandleInsert(Cursor& cursor) {
-        UT::i32 c = 0;
+    void Controller::HandleInsert(Cursor& cursor, std::vector<char>& keyQueue) {        
+        // Insert the queued input
+        for (UT::c32 typed : keyQueue) {
+            file.InsertChar(
+                cursor.Col(),
+                cursor.Line(),
+                typed
+            );
 
-        // Character recording
-        while ((c = keyboard.GetKey()) > 0) {
-            if (c >= 32 && c <= 126) { // Allow only ASCII
-                file.InsertChar(
-                    cursor.Col(),
-                    cursor.Line(),
-                    c
-                );
+            cursor.Right();
 
-                cursor.Right();
-
-                file.SetDirt(true); // Mark file as dirty
-            }
+            file.SetDirt(true); // Mark file as dirty
         }
     }
 
     UT::b Controller::HandleShorcuts(Cursor& cursor) {
-        // DEBUG
-        if (IsKeyPressed(KEY_DELETE)) {
-            file.SetDirt(!file.Dirt());
+        // LCTRL + LALT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        // Create cursors down
+        if (keyboard.m.ctrl && keyboard.m.alt && IsKeyPressed(KEY_DOWN)) {
+            cursorManager.RequestLead();
 
             return true;
         }
 
-        // Left Control
+        // Create cursors up
+        if (keyboard.m.ctrl && keyboard.m.alt && IsKeyPressed(KEY_UP)) {
+            cursorManager.RequestTrail();
+
+            return true;
+        }
+
+        // LCTRl ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         // Delete current line
         if (keyboard.m.ctrl && IsKeyPressed(KEY_X)) {
@@ -255,6 +264,13 @@ namespace CBLT {
             return true;
         }
 
+        // Reset to primary cursor
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_R)) {
+            cursorManager.RequestReset();
+
+            return true;
+        }
+
         return false;
     }
 
@@ -280,11 +296,14 @@ namespace CBLT {
                 if (console.Width() > 20) console.Move(-10);
             }
 
-            DrawText("Yo", 0, 0, 20, ORANGE);
-
             return;
         }
         
+        // Get pressed keys
+        std::vector<char> keyQueue = GetKeyQueue();
+
+        cursorManager.HandlePendingRequests(file);
+
         for(auto& c : cursorManager.activeCursors) {
             // HandleShorcuts();
             CBLT::CursorMode m = c.GetMode();
@@ -294,12 +313,14 @@ namespace CBLT {
             
             switch(m) {
                 case CBLT::CursorMode::INSERT:
+                    handledShort = HandleShorcuts(c);
                     HandleSpecials(c);
-                    HandleMovement(c);
+
+                    // Shortcuts include ctrl + arrow key presses so we need to omit movement
+                    if (!handledShort) HandleMovement(c);
                     // Shortcuts include letters so it makes sense that we need to omit any leftover I/O's
                     // so they won't spill over to the insert function
-                    handledShort = HandleShorcuts(c);
-                    if (!handledShort) HandleInsert(c);     // Shortcut was handled, do not insert 
+                    if (!handledShort) HandleInsert(c, keyQueue);     // Shortcut was handled, do not insert 
 
                     ClampCursor(c); // Safety check
                 
@@ -355,6 +376,21 @@ namespace CBLT {
             std::min(c.Col(), static_cast<UT::ui32>(file.GetLineLength(c.Line()))),
             std::min(c.Line(), static_cast<UT::ui32>(file.GetLineCount() - 1))
         );
+    }
+
+    std::vector<char> Controller::GetKeyQueue(void) {
+        std::vector<char> typedChars; // Typed char, in order to save the queue to apply to the other cursors
+        UT::i32 c = 0;                // Consumed instantly by the primary cursor 
+
+        // Character recording
+        while ((c = keyboard.GetKey()) > 0) {
+            if (c >= 32 && c <= 126) { // Allow only ASCII
+                typedChars.push_back(static_cast<char>(c)); // Save typed characters
+            }
+        }
+
+
+        return typedChars;
     }
 
 } // CBLT

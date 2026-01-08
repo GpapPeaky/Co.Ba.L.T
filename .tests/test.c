@@ -2,7 +2,13 @@
 #include <string.h>
 #include <stdbool.h>
 
-// Demonstrating C keywords, types, and constructs
+// Globals
+int p1 = 0.5f;
+int p2 = 0.5f;
+int p3 = 0.5f;
+int p4 = 0.5f;
+int p5 = 0.5f;
+
 int main(void) {
     // **Data types**
     int integerVar = 10;

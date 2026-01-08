@@ -53,7 +53,7 @@ namespace CBLT {
         this->column += 1;
     }
 
-    void Cursor::Draw(const std::string& lineText) {
+    void Cursor::Draw(const std::string& lineText, UT::llui32 cursorId) {
         int x = GetCursorX(lineText);
         int y = line * gFont.size;
 
@@ -66,13 +66,23 @@ namespace CBLT {
             Color{255, 255, 255, 45}
         );
 
-        DrawRectangle(
-            x + CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
-            y + CBLT::UI::TOP_BAR_HEIGHT,
-            2,
-            gFont.size,
-            RED
-        );
+        if (cursorId == 0) { // Primary is a vibrant red
+            DrawRectangle(
+                x + CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
+                y + CBLT::UI::TOP_BAR_HEIGHT,
+                2,
+                gFont.size,
+                Color{255, 0, 0, 255}
+            );
+        } else { // else a more relaxed red
+            DrawRectangle(
+                x + CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
+                y + CBLT::UI::TOP_BAR_HEIGHT,
+                2,
+                gFont.size,
+                Color{128, 0, 0, 255}
+            );
+        }
     }
 
     UT::ui32 Cursor::GetCursorX(const std::string& lineText){
@@ -170,6 +180,11 @@ namespace CBLT {
     
     CursorManager::CursorManager() {
         activeCursors.emplace_back(0, 1); // Initialize one cursor at 0,1
+        
+        // Requests
+        requestLead = 0;
+        requestTrail = 0;
+        requestReset = false;
     }
 
     CursorManager::~CursorManager() {}
@@ -186,10 +201,67 @@ namespace CBLT {
         }
     }
 
+    void CursorManager::RemoveSecondaries(void) {
+        if (activeCursors.size() > 1) {
+            activeCursors.erase(
+                activeCursors.begin() + 1,
+                activeCursors.end()
+            );
+        }
+    }
+
     void CursorManager::DrawCursors(CBLT::File& openFile) {
-        for(auto& c : activeCursors) {
-            const std::string& lineText = openFile.GetCurrentLine(c.Line());
-            c.Draw(lineText);
+        for (UT::llui32 i = 0 ; i < activeCursors.size() ; i++) {
+            const std::string& lineText = openFile.GetCurrentLine(activeCursors[i].Line());
+            activeCursors[i].Draw(lineText, i);
+        }
+    }
+
+    void CursorManager::RequestReset(void) {
+        requestReset = true;
+    }
+
+    void CursorManager::RequestTrail(void) {
+        requestTrail = true;
+    }
+            
+    void CursorManager::RequestLead(void) {
+        requestLead = true;
+    }
+
+    void CursorManager::HandlePendingRequests(File& file) {
+        // Reset
+        if (requestReset) {
+            RemoveSecondaries();
+            requestReset = false;
+        }
+    
+        // Add cursors down (lead)
+        if (requestLead) {
+            Cursor base = activeCursors[0];
+            for (auto& c : activeCursors)
+                if (c.Line() > base.Line())
+                    base = c;
+        
+            if (base.Line() + 1 < file.GetLineCount())
+                AddCursorAt(base.Col(), base.Line() + 1);
+        
+            requestLead = false;
+        }
+    
+        // Add cursors up (trail)
+        if (requestTrail) {
+            Cursor base = activeCursors[0];
+            for (auto& c : activeCursors) {
+                if (c.Line() < base.Line())
+                    base = c;
+            }
+    
+            if (base.Line() > 0) {
+                AddCursorAt(base.Col(), base.Line() - 1);
+            }
+
+            requestTrail = false;
         }
     }
 

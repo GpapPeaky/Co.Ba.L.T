@@ -28,7 +28,7 @@ namespace CBLT {
             void HandleSpecials(Cursor& cursor);
 
             // Handle input at insert mode
-            void HandleInsert(Cursor& cursor);
+            void HandleInsert(Cursor& cursor, std::vector<char>& keyQueue);
 
             // Handle input at console mode
             void HandleConsole(void);
@@ -63,6 +63,9 @@ namespace CBLT {
 
             // Check line and file lengths to limit cursor movement
             void ClampCursor(Cursor& cursor);
+
+            // Get pressed key queue so as to not consume instantly anything
+            std::vector<char> GetKeyQueue(void);
 
             // Constructor
             Controller(void);
