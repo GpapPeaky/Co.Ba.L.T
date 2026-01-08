@@ -22,15 +22,16 @@ int main() {
             CBLT::CursorManager& cm = ctrl.GetCursorManager();
             CBLT::Cursor& c = cm.Primary();
             CBLT::Console& cnsl = ctrl.GetConsole();
+            CBLT::File& f = ctrl.GetFile();
 
             // Draw open file
-            ctrl.GetFile().Draw();
-            cm.DrawCursors(ctrl.GetFile());
+            f.Draw();
+            cm.DrawCursors(f);
 
-            CBLT::UI::Draw(c.Col(), c.Line(), ctrl.GetFile().GetLineCount(), ctrl.GetFile().Dirt());
+            CBLT::UI::Draw(c.Col(), c.Line(), f.GetLineCount(), f.Dirt(), f.Name(), f.CWD());
 
             if (cnsl.IsOpen()) {
-                cnsl.Draw(ctrl.GetFile().Name());
+                cnsl.Draw(f.Name());
             }
 
             DrawFPS(950, 0);

@@ -5,6 +5,8 @@
 
 #include <fstream>              // File stream
 
+#include <filesystem>           // For CWD
+
 #include "raylib.h"             // for rendering
 
 #include "CBLT_Util.hpp"        // for types
@@ -19,6 +21,7 @@ namespace CBLT {
         private:
             std::vector<std::string> lines;  // Most elemental storage class of a file/document
             std::string path;                // File path, will include its name
+            std::string cwd;                 // Current working directory
             UT::b dirty;                     // File's original contents have been changed and have not been saved
         public:
             // Constructor
@@ -77,6 +80,9 @@ namespace CBLT {
 
             // Return the name of the file
             const std::string& Name(void) const;
+
+            // Return the current working directory
+            const std::string& CWD(void) const;
 
         }; // File class
         

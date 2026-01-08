@@ -44,6 +44,12 @@ namespace CBLT {
 
             // Draw console window, and CWD contents
             void Draw(std::string cwd);
+
+            // Resize console window
+            void Move(UT::i32 offset);
+
+            // Console width
+            UT::ui32 Width(void);
     }; // Console class
 } // CBLT
 

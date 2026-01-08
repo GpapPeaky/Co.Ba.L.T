@@ -69,4 +69,11 @@ namespace CBLT {
         );
     }
 
+    void Console::Move(UT::i32 offset) {
+        width += offset;
+    }
+
+    UT::ui32 Console::Width(void) {
+        return width;
+    }
 } // CBLT

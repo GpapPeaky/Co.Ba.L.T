@@ -86,13 +86,40 @@ namespace CBLT {
 
     void Controller::HandleSpecials(Cursor& cursor) {
         // Backspace
-        if (IsKeyPressed(KEY_BACKSPACE)) { // TODO: Auto delete spaces matching to a multiple of tab size
+        if (IsKeyPressed(KEY_BACKSPACE)) {
             if (cursor.Col() > 0) {
                 std::string& line = file.GetCurrentLine(cursor.Line());
-
-                line.erase(cursor.Col() - 1, 1); // Erase 1 from the previous column
-                
-                cursor.Left();
+                int col = cursor.Col();
+                int tabSize = keyboard.tabSize;
+        
+                // If previous char is space → delete indentation block
+                if (line[col - 1] == ' ') {
+                    int deleteCount = 0;
+                    int startCol = col;
+        
+                    // Walk left while:
+                    // still spaces
+                    // not past column 0
+                    // not past a tab stop
+                    while (startCol > 0 &&
+                        line[startCol - 1] == ' ' &&
+                        ((startCol - 1) % tabSize != 0)) {
+                        startCol--;
+                        deleteCount++;
+                    }
+        
+                    // Always delete at least one space
+                    if (deleteCount == 0) {
+                        startCol--;
+                        deleteCount = 1;
+                    }
+        
+                    line.erase(startCol, deleteCount);
+                    cursor.SetAt(startCol, cursor.Line());
+                } else { // Normal character delete
+                    line.erase(col - 1, 1);
+                    cursor.Left();
+                }
             } else if (cursor.Col() == 0 && cursor.Line() > 0) {
                 std::string& previousLine = file.GetCurrentLine(cursor.Line() - 1);
                 std::string& line = file.GetCurrentLine(cursor.Line());
@@ -241,6 +268,16 @@ namespace CBLT {
             // Console toggle to get out
             if (keyboard.m.ctrl && IsKeyPressed(KEY_GRAVE)) {
                 console.Toggle();
+            }
+
+            // Resize console
+            if (keyboard.m.shift && IsKeyPressedRepeat(KEY_LEFT)) {
+                if (console.Width() < static_cast<UT::ui32>(GetScreenWidth() / 2)) console.Move(10);
+            }
+
+            // Resize console
+            if (keyboard.m.shift && IsKeyPressedRepeat(KEY_RIGHT)) {
+                if (console.Width() > 20) console.Move(-10);
             }
 
             DrawText("Yo", 0, 0, 20, ORANGE);

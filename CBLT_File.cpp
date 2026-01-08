@@ -6,12 +6,18 @@ namespace CBLT {
     }
         
     UT::b File::Load(const std::string& fpath) {
+        namespace fs = std::filesystem;
+
         std::ifstream file(fpath);
         if(!file.is_open())
             return false;
+
+        fs::path absPath = fs::absolute(fpath);
     
         Clear(); // Clear the previous open file
+        
         path = fpath;
+        cwd = absPath.parent_path().string(); 
     
         std::string line;
 
@@ -173,5 +179,9 @@ namespace CBLT {
 
     const std::string& File::Name(void) const {
         return path;        
+    }
+
+    const std::string& File::CWD(void) const {
+        return cwd;
     }
 }
