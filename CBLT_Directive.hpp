@@ -3,13 +3,15 @@
 #include "CBLT_Util.hpp"
 #include "CBLT_Cursor.hpp"
 
+#include "CBLT_File.hpp"
+
 #include <string>
 
 namespace CBLT {
     // Directives to execute in the console
     class Directive {
         private:
-            std::string str;                // Directive to execute, one line per directive
+            File f;                // Directive to execute, one line per directive
         public:
             // Constructor
             Directive();
@@ -24,10 +26,10 @@ namespace CBLT {
             void Draw(UT::ui32 x, UT::ui32 y);
 
             // Get directive string, read only 
-            const std::string& GetString(void) const;
+            const File& DirectiveFile(void) const;
 
             // Get directive string, mutable access
-            std::string& GetString(void);
+            File& DirectiveFile(void);
 
     }; // Directive class
 

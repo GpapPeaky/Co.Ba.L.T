@@ -23,9 +23,9 @@ namespace CBLT {
     class Console {
         private:
             Directive directive;        // Directive to execute
-            CursorManager cursor;       // Cursor position inside the directive
             UT::b toggled;              // Console is on or off
             UT::ui32 width;             // Console mutable width
+            CursorManager cursor;       // Cursor position inside the directive
         public:
             // Constructor
             Console();
@@ -45,8 +45,14 @@ namespace CBLT {
             // Draw console window, and CWD contents
             void Draw(std::string cwd);
 
+            // Console directive
+            Directive& ConsoleDirective(void);
+
             // Resize console window
             void Move(UT::i32 offset);
+
+            // Get the console cursor
+            Cursor& ConsoleCursor(void);
 
             // Console width
             UT::ui32 Width(void);

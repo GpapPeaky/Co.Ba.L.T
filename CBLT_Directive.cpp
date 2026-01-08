@@ -1,29 +1,34 @@
 #include "CBLT_Directive.hpp"
 
 namespace CBLT {
-    Directive::Directive() { str =  std::string(""); }
+    Directive::Directive() {
+        f.CreateLine(0);
+        f.CreateLine(1);
+    }
 
     Directive::~Directive() {}
 
     void Directive::Clear(void) {
-        str.clear();
+        f.GetCurrentLine(1).clear();
     }
 
     void Directive::Draw(UT::ui32 x, UT::ui32 y) {
-        DrawText(
-            str.c_str(),
-            x + DirectiveMargins::directiveMarginFromConsoleX,
-            y + DirectiveMargins::directiveMarginFromConsoleY,
+        DrawTextEx(
+            gFont.f,
+            f.GetCurrentLine(1).c_str(), // Only one line reserved for commands
+            { (UT::f32)x + DirectiveMargins::directiveMarginFromConsoleX,
+            (UT::f32)y + DirectiveMargins::directiveMarginFromConsoleY }, 
             UI::directiveFontSize,                                         // Make it remain as is for now
+            0.0f,
             Color{255, 255, 255, 255}            
         );
     }
 
-    const std::string& Directive::GetString(void) const {
-        return str;
+    const File& Directive::DirectiveFile(void) const {
+        return f;
     }
 
-    std::string& Directive::GetString(void) {
-        return str;
+    File& Directive::DirectiveFile(void) {
+        return f;
     }
 } // CBLT 

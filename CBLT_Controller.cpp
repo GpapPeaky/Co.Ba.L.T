@@ -9,11 +9,11 @@ namespace CBLT {
         const UT::ui32 line = cursor.Line();
         const UT::ui32 col  = cursor.Col();
 
-        if (keyboard.m.ctrl && IsKeyPressed(KEY_RIGHT)) {
+        if (keyboard.m.ctrl && (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT))) {
             cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::RIGHT);
 
             return true;
-        } else if (keyboard.m.ctrl && IsKeyPressed(KEY_LEFT)) {
+        } else if (keyboard.m.ctrl && (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT))) {
             cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::LEFT);
         
             return true;
@@ -30,7 +30,7 @@ namespace CBLT {
         const UT::ui32 col  = cursor.Col();
         const UT::ui32 len  = file.GetLineLength(line);
     
-        if (IsKeyPressed(KEY_LEFT)) {
+        if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT)) {
             if (col > 0) {
                 cursor.Left();
             } else if (line > 1) {
@@ -39,13 +39,13 @@ namespace CBLT {
                     line - 1
                 );
             }
-        } else if (IsKeyPressed(KEY_RIGHT)) {
+        } else if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT)) {
             if (col < file.GetLineLength(line)) {
                 cursor.Right();
             } else if (line + 1 < file.GetLineCount()) {
                 cursor.SetAt(0, line + 1);
             }
-        } else if (IsKeyPressed(KEY_UP)) {
+        } else if (IsKeyPressed(KEY_UP) || IsKeyPressedRepeat(KEY_UP)) {
             if (line > 1 && col != len) {
                 UT::ui32 newLine = line - 1;
                 UT::ui32 newCol  = std::min(
@@ -63,7 +63,7 @@ namespace CBLT {
           
                 cursor.SetAt(newCol, newLine);
             }
-        } else if (IsKeyPressed(KEY_DOWN)) {
+        } else if (IsKeyPressed(KEY_DOWN) || IsKeyPressedRepeat(KEY_DOWN)) {
             if (line + 1 < file.GetLineCount() && col != len) {
                 UT::ui32 newLine = line + 1;
                 UT::ui32 newCol  = std::min(
@@ -86,7 +86,7 @@ namespace CBLT {
 
     void Controller::HandleSpecials(Cursor& cursor) {
         // Backspace
-        if (IsKeyPressed(KEY_BACKSPACE)) {
+        if (IsKeyPressedRepeat(KEY_BACKSPACE) || IsKeyPressed(KEY_BACKSPACE)) {
             if (cursor.Col() > 0) {
                 std::string& line = file.GetCurrentLine(cursor.Line());
                 int col = cursor.Col();
@@ -142,7 +142,7 @@ namespace CBLT {
         }
 
         // Return
-        if (IsKeyPressed(KEY_ENTER)) {
+        if (IsKeyPressedRepeat(KEY_ENTER) || IsKeyPressed(KEY_ENTER)) {
             if (cursor.Col() == 0) {
                 cursor.Down();
 
@@ -159,7 +159,7 @@ namespace CBLT {
         }
 
         // Tab
-        if (IsKeyPressed(KEY_TAB)) {
+        if (IsKeyPressedRepeat(KEY_TAB) || IsKeyPressed(KEY_TAB)) {
             UT::ui8 remainingSpace;
             
             if (cursor.Col() % keyboard.tabSize == 0) {
@@ -223,7 +223,7 @@ namespace CBLT {
         // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         // Delete current line
-        if (keyboard.m.ctrl && IsKeyPressed(KEY_X)) {
+        if (keyboard.m.ctrl && (IsKeyPressed(KEY_X) || IsKeyPressedRepeat(KEY_X))) {
             file.DeleteLine(cursor.Line());
             file.SetDirt(true);
 
@@ -231,7 +231,7 @@ namespace CBLT {
         }
 
         // Copy current line
-        if (keyboard.m.ctrl && IsKeyPressed(KEY_D)) {
+        if (keyboard.m.ctrl && (IsKeyPressed(KEY_D) || IsKeyPressedRepeat(KEY_D))) {
             file.CreateLine(cursor.Line(), file.GetCurrentLine(cursor.Line()));
             file.SetDirt(true);
 
@@ -274,12 +274,47 @@ namespace CBLT {
         return false;
     }
 
+    UT::b Controller::HandleConsole(void) {
+        // Directive file
+        File& df = console.ConsoleDirective().DirectiveFile();
+        
+        // Console cursor
+        Cursor& cc = console.ConsoleCursor();
+
+        UT::i32 c = 0;                // Consumed instantly by the primary cursor 
+        
+        // Character recording
+        while ((c = keyboard.GetKey()) > 0) {
+            if (c >= 32 && c <= 126) { // Allow only ASCII
+                df.InsertChar(cc.Col(), cc.Line(), c);
+
+                cc.Right(); // Move cursor forward after inserting
+            }
+        }
+
+        return false;
+    }
+
     void Controller::Update(void) {
         keyboard.UpdateModifiers(); // Update modifiers
 
         // Console handling
         if (console.IsOpen()) {
-            // HandleConsole();
+            UT::b handleConsole = HandleConsole(); // Input
+
+            if (handleConsole) return; // Input handled, return
+
+            HandleMovement(console.ConsoleCursor());
+
+            // Execute written directive
+            if (IsKeyPressed(KEY_ENTER)) {
+                console.Execute();
+            }
+
+            // Delete
+            if (IsKeyPressedRepeat(KEY_BACKSPACE)) {
+
+            }
 
             // Console toggle to get out
             if (keyboard.m.ctrl && IsKeyPressed(KEY_GRAVE)) {

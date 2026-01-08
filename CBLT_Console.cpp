@@ -5,6 +5,8 @@ namespace CBLT {
         width = 200;
         toggled = false;
         cursor.AddCursorAt(0, 1); // Same logic as in the CBLT_Controller.hpp/cpp
+    
+        directive = Directive();
     }
     
     Console::~Console(void) {}
@@ -20,13 +22,16 @@ namespace CBLT {
     DirectiveResult Console::Execute(void) {
         DirectiveResult dr = { "", ConsoleMessage::NONE };
 
-        if (directive.GetString().empty()) return dr; // Nothing to show
-
-        if (directive.GetString()[0] == ':') { // Directive mode
-            
-        } else { // File switch mode
-            // TODO
-        }
+        
+        // if (directive.DirectiveFile.empty()) return dr; // Nothing to show
+        
+        // if (directive.DirectiveFile[0] == ':') { // Directive mode
+        
+        // } else { // File switch mode
+        //     // TODO
+        // }
+        
+        // directive.Clear();
 
         return dr;
     }    
@@ -69,8 +74,16 @@ namespace CBLT {
         );
     }
 
+    Directive& Console::ConsoleDirective(void) {
+        return directive;
+    }
+
     void Console::Move(UT::i32 offset) {
         width += offset;
+    }
+
+    Cursor& Console::ConsoleCursor(void) {
+        return cursor.Primary();
     }
 
     UT::ui32 Console::Width(void) {
