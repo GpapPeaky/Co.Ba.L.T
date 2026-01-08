@@ -17,7 +17,7 @@ void CBLT::UI::Draw(UT::ui32 col, UT::ui32 line, UT::ui32 lineCount, UT::b dirty
         dirtyColour = {255, 255, 0, 255};
     } else {
         dirtyFile = std::string("clean");
-        dirtyColour = {0, 255, 255, 255};
+        dirtyColour = {0, 255, 128, 255};
     }
     
     // Seperators
@@ -47,7 +47,7 @@ void CBLT::UI::Draw(UT::ui32 col, UT::ui32 line, UT::ui32 lineCount, UT::b dirty
         {topBarInfoHorizontalShift, 0},
         topBarFontSize,
         0.0f,
-        Color{0, 0, 255, 255}
+        Color{0, 255, 255, 255}
     );
     
     DrawTextEx(
@@ -56,7 +56,7 @@ void CBLT::UI::Draw(UT::ui32 col, UT::ui32 line, UT::ui32 lineCount, UT::b dirty
         {topBarInfoHorizontalShift, static_cast<UT::f32>(topBarFontSize) + topBarInfoVerticalShift},
         topBarFontSize,
         0.0f,
-        Color{0, 0, 255, 255}
+        Color{0, 255, 255, 255}
     );
     
     DrawTextEx(
@@ -65,7 +65,7 @@ void CBLT::UI::Draw(UT::ui32 col, UT::ui32 line, UT::ui32 lineCount, UT::b dirty
         {topBarInfoHorizontalShift + topBarSecondColumnX, 0},
         topBarFontSize,
         0.0f,
-        Color{0, 0, 255, 255}
+        Color{0, 255, 255, 255}
     );
 
     DrawTextEx(
