@@ -312,8 +312,12 @@ namespace CBLT {
             }
 
             // Delete
-            if (IsKeyPressedRepeat(KEY_BACKSPACE)) {
+            if (IsKeyPressed(KEY_BACKSPACE) || IsKeyPressedRepeat(KEY_BACKSPACE)) {
+                if (console.ConsoleCursor().Col() > 0) {
+                    console.ConsoleDirective().DirectiveFile().GetCurrentLine(1).erase(console.ConsoleCursor().Col() - 1, 1);
 
+                    console.ConsoleCursor().Left();
+                }
             }
 
             // Console toggle to get out
@@ -322,12 +326,12 @@ namespace CBLT {
             }
 
             // Resize console
-            if (keyboard.m.shift && IsKeyPressedRepeat(KEY_LEFT)) {
+            if (keyboard.m.shift && (IsKeyPressedRepeat(KEY_LEFT) || IsKeyPressed(KEY_LEFT))) {
                 if (console.Width() < static_cast<UT::ui32>(GetScreenWidth() / 2)) console.Move(10);
             }
 
             // Resize console
-            if (keyboard.m.shift && IsKeyPressedRepeat(KEY_RIGHT)) {
+            if (keyboard.m.shift && (IsKeyPressedRepeat(KEY_RIGHT) || IsKeyPressed(KEY_RIGHT))) {
                 if (console.Width() > 20) console.Move(-10);
             }
 

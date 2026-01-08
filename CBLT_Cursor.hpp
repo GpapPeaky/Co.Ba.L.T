@@ -82,7 +82,7 @@ namespace CBLT {
             void Draw(const std::string& lineText, UT::llui32 cursorId);
 
             // Get cursor x in pixels 
-            UT::ui32 GetCursorX(const std::string& lineText);
+            UT::ui32 GetCursorX(const std::string& lineText, UT::ui32 fontSize);
 
             // Classify character class
             const CharClass Classify(UT::cui8 c) const;

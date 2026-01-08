@@ -54,7 +54,7 @@ namespace CBLT {
     }
 
     void Cursor::Draw(const std::string& lineText, UT::llui32 cursorId) {
-        int x = GetCursorX(lineText);
+        int x = GetCursorX(lineText, gFont.size);
         int y = line * gFont.size;
 
         // Draw a transparent rectangle, to show where the cursor is
@@ -85,8 +85,8 @@ namespace CBLT {
         }
     }
 
-    UT::ui32 Cursor::GetCursorX(const std::string& lineText){
-        UT::f32 scale = (UT::f32)gFont.size / gFont.f.baseSize;
+    UT::ui32 Cursor::GetCursorX(const std::string& lineText, UT::ui32 fontSize){
+        UT::f32 scale = (UT::f32)fontSize / gFont.f.baseSize;
         UT::ui32 width = 0;
         auto cps = CBLT::gFont.Utf8ToCodepoints(lineText);
 
@@ -104,7 +104,7 @@ namespace CBLT {
             if (glyphIndex >= 0) {
                 width += gFont.f.glyphs[glyphIndex].advanceX;
             } else {
-                width += gFont.size / 2;
+                width += fontSize / 2;
             }
         }
         
