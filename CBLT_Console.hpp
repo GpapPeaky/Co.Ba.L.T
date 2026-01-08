@@ -34,6 +34,7 @@ namespace CBLT {
             // Destructor
             ~Console();
 
+            // FIXME: Crash when reducing console width
             Interpolator interpolator; // Interpolator for animating
 
             // Toggle the console on or off
@@ -43,7 +44,7 @@ namespace CBLT {
             void Update(void);
 
             // Check if the console is on or off
-            UT::b IsOpen(void);
+            UT::b IsOpen(void) const ;
 
             // Execute the current directive
             DirectiveResult Execute(void);
@@ -61,7 +62,7 @@ namespace CBLT {
             Cursor& ConsoleCursor(void);
 
             // Console width
-            UT::f32 Width(void);
+            UT::f32 Width(void) const ;
     }; // Console class
 } // CBLT
 

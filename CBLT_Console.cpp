@@ -15,7 +15,7 @@ namespace CBLT {
         toggled = !toggled;
     }
 
-    UT::b Console::IsOpen(void) {
+    UT::b Console::IsOpen(void) const {
         return toggled;
     }
 
@@ -107,7 +107,7 @@ namespace CBLT {
     void Console::Move(UT::f32 offset) {
         UT::f32 newTarget = width + offset;
         interpolator.Start(
-            width, 0, // fromX, fromY (Y not used)
+            width, 0,                       // fromX, fromY (Y not used)
             newTarget, 0,                   // targetX, targetY
             0.12f                           // speed, tweak as needed
         );
@@ -117,7 +117,7 @@ namespace CBLT {
         return cursor.Primary();
     }
 
-    UT::f32 Console::Width(void) {
+    UT::f32 Console::Width(void) const {
         return width;
     }
 } // CBLT
