@@ -37,20 +37,6 @@ int main(void) {
             printf("Default case\n");
     }
 
-    // integers
-    int p1          = 1;
-    int p2          = 1;
-    int p3          = 1;
-    int p4          = 1;
-    int p5          = 1;
-    int p7          = 1;
-    int p9          = 1;
-    int p10         = 1;
-    int p11         = 1;
-    int p12         = 1;
-    int p13         = 1;
-    int p14         = 1;
-
     // Loops
     for (int i = 0; i < 3; i++) {
         printf("For loop iteration %d\n", i);

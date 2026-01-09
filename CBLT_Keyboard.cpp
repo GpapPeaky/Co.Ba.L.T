@@ -5,7 +5,11 @@ namespace CBLT {
         Keyboard::Keyboard(void):
             m { false, false, false }, // Modifiers set to false
             tabSize(4)                 // Default is 4
-        {}
+        {
+            for (UT::llui32 i = 0 ; i < tabSize ; i++) {
+                tab.append(" ");
+            } 
+        }
     
         Keyboard::~Keyboard(void) {}
 

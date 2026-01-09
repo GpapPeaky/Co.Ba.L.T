@@ -86,6 +86,26 @@ namespace CBLT {
         }
     }
 
+    UT::b Controller::HandleIndentation(File& file, Cursor& cursor) { // FIXME
+        if (cursor.Col() == 0) {
+            return false;
+        }
+
+        const std::string& line = file.GetCurrentLine(cursor.Line());
+
+        if (line[cursor.Col()] == '}' && line[cursor.Col() - 1] == '{') {
+            file.CreateLine(cursor.Line(), keyboard.tab);
+
+            cursor.SetAt(keyboard.tabSize - 1, cursor.Line() + 1);
+
+            file.CreateLine(cursor.Line() + 1, "}");
+
+            return true;
+        }
+
+        return false;
+    }
+
     void Controller::HandleSpecials(Cursor& cursor) {
         // Backspace
         if (IsKeyPressedRepeat(KEY_BACKSPACE) || IsKeyPressed(KEY_BACKSPACE)) {
@@ -152,6 +172,11 @@ namespace CBLT {
             } else {
                 std::string fragment = file.SplitLine(cursor.Line(), cursor.Col());
                 
+                // Check for indentation
+                UT::b indentationHandle = HandleIndentation(file, cursor);
+
+                if (indentationHandle) return;
+
                 cursor.SetAt(0, cursor.Line() + 1);
                 
                 file.CreateLine(cursor.Line(), fragment);

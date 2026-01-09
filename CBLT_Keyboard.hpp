@@ -40,5 +40,8 @@ namespace CBLT {
 
             // Tab size
             UT::cui8 tabSize;
+
+            // Tab string
+            std::string tab;
     }; // Keyboard class
 } // CBLT
