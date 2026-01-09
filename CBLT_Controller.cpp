@@ -22,27 +22,29 @@ namespace CBLT {
         return false;
     }
 
-    void Controller::HandleMovement(Cursor& cursor) {
+    void Controller::HandleMovement(Cursor& cursor, File* fileOverride) {
+        File& f = fileOverride ? *fileOverride : file; // Override if required
+
         // We need to check specifics AND THEN check for general key presses
         if (HandleSpecialMovement(cursor)) return; // Already handled movement, via LCtrl, skip applying any more movement
         
         const UT::ui32 line = cursor.Line();
         const UT::ui32 col  = cursor.Col();
-        const UT::ui32 len  = file.GetLineLength(line);
+        const UT::ui32 len  = f.GetLineLength(line);
     
         if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT)) {
             if (col > 0) {
                 cursor.Left();
             } else if (line > 1) {
                 cursor.SetAt(
-                    file.GetLineLength(line - 1),
+                    f.GetLineLength(line - 1),
                     line - 1
                 );
             }
         } else if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT)) {
-            if (col < file.GetLineLength(line)) {
+            if (col < f.GetLineLength(line)) {
                 cursor.Right();
-            } else if (line + 1 < file.GetLineCount()) {
+            } else if (line + 1 < f.GetLineCount()) {
                 cursor.SetAt(0, line + 1);
             }
         } else if (IsKeyPressed(KEY_UP) || IsKeyPressedRepeat(KEY_UP)) {
@@ -50,7 +52,7 @@ namespace CBLT {
                 UT::ui32 newLine = line - 1;
                 UT::ui32 newCol  = std::min(
                     col,
-                    file.GetLineLength(newLine)
+                    f.GetLineLength(newLine)
                 );
           
                 cursor.SetAt(newCol, newLine);
@@ -58,25 +60,25 @@ namespace CBLT {
                 UT::ui32 newLine = line - 1;
                 UT::ui32 newCol  = std::max(
                     col,
-                    file.GetLineLength(newLine)
+                    f.GetLineLength(newLine)
                 );
           
                 cursor.SetAt(newCol, newLine);
             }
         } else if (IsKeyPressed(KEY_DOWN) || IsKeyPressedRepeat(KEY_DOWN)) {
-            if (line + 1 < file.GetLineCount() && col != len) {
+            if (line + 1 < f.GetLineCount() && col != len) {
                 UT::ui32 newLine = line + 1;
                 UT::ui32 newCol  = std::min(
                     col,
-                    file.GetLineLength(newLine)
+                    f.GetLineLength(newLine)
                 );
           
                 cursor.SetAt(newCol, newLine);
-            } else if (line + 1 < file.GetLineCount()) {
+            } else if (line + 1 < f.GetLineCount()) {
                 UT::ui32 newLine = line + 1;
                 UT::ui32 newCol  = std::max(
                     col,
-                    file.GetLineLength(newLine)
+                    f.GetLineLength(newLine)
                 );
           
                 cursor.SetAt(newCol, newLine);
@@ -305,7 +307,8 @@ namespace CBLT {
 
             if (handleConsole) return; // Input handled, return
 
-            HandleMovement(console.ConsoleCursor());
+            // Overide the file to handle movement at, since without any specifications it will try to write at the current open user file
+            HandleMovement(console.ConsoleCursor(), &console.ConsoleDirective().DirectiveFile());
 
             // Execute written directive
             if (IsKeyPressed(KEY_ENTER)) {
@@ -334,7 +337,6 @@ namespace CBLT {
             if (keyboard.m.shift && (IsKeyPressed(KEY_RIGHT))) {
                 console.Move(-50.0f);
             }
-
 
             return;
         }

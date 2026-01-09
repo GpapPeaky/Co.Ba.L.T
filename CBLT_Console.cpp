@@ -27,7 +27,7 @@ namespace CBLT {
         if (directiveLine.empty()) return dr; // Nothing to show
         
         if (directiveLine[0] == ':') { // Directive mode
-            std::string drctv = U::TrimSemiColon(directiveLine); // Trim
+            std::string drctv = U::TrimColon(directiveLine); // Trim
 
             // Match the remainder
 
@@ -37,14 +37,17 @@ namespace CBLT {
             }
 
             // Save and exit
-            if (drctv == "q") {
+            else if (drctv == "q") {
                 f.Save();
 
                 exit(EXIT_SUCCESS);
             }
 
-            if (drctv == "w") {
+            else if (drctv == "w") {
                 f.Save();
+            } else { // Invalid directive given fallback
+                dr.message = "Unkown directive :" + drctv;
+                dr.messageType = ConsoleMessage::ERROR;
             }
 
         } else { // File switch mode
@@ -52,7 +55,7 @@ namespace CBLT {
         }
         
         directive.Clear();
-        
+
         cursor.Primary().SetAt(0, DIRECTIVE_FILE_LINE); // Reset the cursor
 
         return dr;

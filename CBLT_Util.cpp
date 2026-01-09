@@ -8,11 +8,11 @@ namespace CBLT {
             }
         } // Err
 
-        std::string& TrimSemiColon(std::string& str) {
-            while (!str.empty() && str.back() == ';') {
+        std::string& TrimColon(std::string& str) {
+            while (!str.empty() && str.back() == ':') {
                 str.pop_back();
             }
-            
+
             return str;
         }
     } // Utils

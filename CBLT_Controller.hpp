@@ -19,7 +19,7 @@ namespace CBLT {
             // TODO: Finish the handling
 
             // Handle basic cursor movement
-            void HandleMovement(Cursor& cursor);
+            void HandleMovement(Cursor& cursor, File* fileOverride = nullptr);
 
             // Handle special cursor movement, return true if special movement was handled
             UT::b HandleSpecialMovement(Cursor& cursor);
