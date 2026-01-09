@@ -6,10 +6,10 @@ namespace CBLT {
 
     // Animation line for interpolation
     typedef struct AnimationLine {
-        UT::i32 targetX;            // Where to go at x
-        UT::i32 targetY;            // Where to go at y
-        UT::i32 sourceX;            // Where from at x
-        UT::i32 sourceY;            // Where from at y            
+        UT::f32 targetX;            // Where to go at x
+        UT::f32 targetY;            // Where to go at y
+        UT::f32 sourceX;            // Where from at x
+        UT::f32 sourceY;            // Where from at y            
     } AnimationLine;
 
     class Interpolator {
@@ -24,10 +24,10 @@ namespace CBLT {
             Interpolator(void);
 
             // Start a new interpolation
-            void Start(UT::i32 fromX, UT::i32 fromY, UT::i32 toX, UT::i32 toY, UT::f32 speedPerFrame = 0.1f);
+            void Start(UT::f32 fromX, UT::f32 fromY, UT::f32 toX, UT::f32 toY, UT::f32 speedPerFrame = 0.1f);
     
             // Update interpolation and return current position
-            std::pair<UT::i32, UT::i32> Update(void);
+            std::pair<UT::f32, UT::f32> Update(void);
     
             // Check if interpolation is active
             UT::b IsActive(void) const;

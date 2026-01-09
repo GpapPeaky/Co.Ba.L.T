@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <algorithm>
 
 #include "CBLT_Directive.hpp"
 #include "CBLT_Interpolator.hpp"
@@ -19,6 +20,11 @@ namespace CBLT {
         std::string message;            // Message to return
         ConsoleMessage messageType;     // The type of message
     } DirectiveResult;
+
+    namespace ConsoleWidth {
+        const UT::f32 WIDTH_MIN = 20.0f;            // Width min
+        const UT::f32 WIDTH_MAX_RATIO = 0.5f;       // Max width ratio relative to screen
+    } // Console
 
     // Console class for executing directives
     class Console {

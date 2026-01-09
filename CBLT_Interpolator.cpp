@@ -3,7 +3,7 @@
 namespace CBLT {
     Interpolator::Interpolator() : progress(0.0f), speed(0.1f), active(false) {}
 
-    void Interpolator::Start(UT::i32 fromX, UT::i32 fromY, UT::i32 toX, UT::i32 toY, UT::f32 speedPerFrame) {
+    void Interpolator::Start(UT::f32 fromX, UT::f32 fromY, UT::f32 toX, UT::f32 toY, UT::f32 speedPerFrame) {
         al.sourceX = fromX;
         al.sourceY = fromY;
         al.targetX = toX;
@@ -13,7 +13,7 @@ namespace CBLT {
         active = true;
     }
 
-    std::pair<UT::i32, UT::i32> Interpolator::Update() {
+    std::pair<UT::f32, UT::f32> Interpolator::Update() {
         if (!active) return {al.targetX, al.targetY};
 
         progress += speed;
@@ -22,8 +22,8 @@ namespace CBLT {
             active = false;
         }
 
-        UT::i32 x = static_cast<UT::i32>(al.sourceX + (al.targetX - al.sourceX) * progress);
-        UT::i32 y = static_cast<UT::i32>(al.sourceY + (al.targetY - al.sourceY) * progress);
+        UT::f32 x = al.sourceX + (al.targetX - al.sourceX) * progress;
+        UT::f32 y = al.sourceY + (al.targetY - al.sourceY) * progress;
 
         return {x, y};
     }

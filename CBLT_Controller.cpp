@@ -327,14 +327,14 @@ namespace CBLT {
             }
 
             // Resize console
-            if (keyboard.m.shift && (IsKeyPressedRepeat(KEY_LEFT) || IsKeyPressed(KEY_LEFT))) {
-                if (console.Width() < static_cast<UT::ui32>(GetScreenWidth() / 2)) console.Move(10.0f);
+            if (keyboard.m.shift && (IsKeyPressed(KEY_LEFT))) {
+                console.Move(+50.0f);                
+            }
+            
+            if (keyboard.m.shift && (IsKeyPressed(KEY_RIGHT))) {
+                console.Move(-50.0f);
             }
 
-            // Resize console
-            if (keyboard.m.shift && (IsKeyPressedRepeat(KEY_RIGHT) || IsKeyPressed(KEY_RIGHT))) {
-                if (console.Width() > 20) console.Move(-10.0f);
-            }
 
             return;
         }

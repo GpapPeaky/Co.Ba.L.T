@@ -7,6 +7,8 @@ namespace CBLT {
         cursor.AddCursorAt(0, 1); // Same logic as in the CBLT_Controller.hpp/cpp
     
         directive = Directive();
+
+        interpolator = Interpolator();
     }
     
     Console::~Console(void) {}
@@ -100,18 +102,22 @@ namespace CBLT {
     void Console::Update() {
         if (interpolator.IsActive()) {
             auto [newWidth, _] = interpolator.Update();
-            width = static_cast<UT::f32>(newWidth);
+    
+            UT::f32 maxWidth = GetScreenWidth() * 0.5f;
+            width = std::clamp(newWidth, 20.0f, maxWidth);
         }
     }
 
     void Console::Move(UT::f32 offset) {
-        UT::f32 newTarget = width + offset;
-        interpolator.Start(
-            width, 0,                       // fromX, fromY (Y not used)
-            newTarget, 0,                   // targetX, targetY
-            0.12f                           // speed, tweak as needed
-        );
+        if (interpolator.IsActive())
+            return;
+    
+        UT::f32 maxWidth = GetScreenWidth() * ConsoleWidth::WIDTH_MAX_RATIO;
+        UT::f32 target = std::clamp(width + offset, ConsoleWidth::WIDTH_MIN, maxWidth);
+    
+        interpolator.Start(width, 0.0f, target, 0.0f, 0.12f);
     }
+
 
     Cursor& Console::ConsoleCursor(void) {
         return cursor.Primary();
