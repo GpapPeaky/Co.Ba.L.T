@@ -33,18 +33,12 @@ namespace CBLT {
             UT::b toggled;              // Console is on or off
             UT::f32 width;             // Console mutable width
             CursorManager cursor;       // Cursor position inside the directive
-
-            // Interpolation stuff
-            UT::f32 openFactor; // For interpolation
         public:
             // Constructor
             Console();
             
             // Destructor
             ~Console();
-
-            Interpolator widthInterpolator;     // Interpolator for animating width
-            Interpolator toggleInterpolator;    // Interpolator for animating toggle
 
             // Toggle the console on or off
             void Toggle(void);
@@ -56,7 +50,7 @@ namespace CBLT {
             UT::b IsOpen(void) const ;
 
             // Execute the current directive
-            DirectiveResult Execute(void);
+            DirectiveResult Execute(File& f);
 
             // Draw console window, and CWD contents
             void Draw(std::string cwd);

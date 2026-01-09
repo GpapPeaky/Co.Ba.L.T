@@ -7,5 +7,13 @@ namespace CBLT {
                 std::cerr << "CBLT_ERR: " << msg << "\n";
             }
         } // Err
+
+        std::string& TrimSemiColon(std::string& str) {
+            while (!str.empty() && str.back() == ';') {
+                str.pop_back();
+            }
+            
+            return str;
+        }
     } // Utils
 } // CBLT

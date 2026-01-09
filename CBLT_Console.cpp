@@ -2,57 +2,54 @@
 
 namespace CBLT {
     Console::Console(void) {
-        width = 450;
+        width = 500;
         toggled = false;
         cursor.AddCursorAt(0, 1); // Same logic as in the CBLT_Controller.hpp/cpp
 
-        openFactor = 0.0f;
-    
         directive = Directive();
-
-        widthInterpolator = Interpolator();
-        toggleInterpolator = Interpolator();
     }
     
     Console::~Console(void) {}
 
     void Console::Toggle(void) {
         toggled = !toggled;
-    
-        if (toggleInterpolator.IsActive())
-            toggleInterpolator.Stop();
-    
-        if (toggled) {
-            // Open
-            toggleInterpolator.Start(
-                openFactor, 0.0f,
-                1.0f, 0.0f,
-                0.01f
-            );
-        } else {
-            // Close
-            toggleInterpolator.Start(
-                openFactor, 0.0f,
-                0.0f, 0.0f,
-                0.01f
-            );
-        }
     }
 
     UT::b Console::IsOpen(void) const {
-        return openFactor > 0.01f;
+        return toggled;
     }
 
-    DirectiveResult Console::Execute(void) {
-        DirectiveResult dr = { "", ConsoleMessage::NONE };
+    DirectiveResult Console::Execute(File& f) {
+        DirectiveResult dr = { "", ConsoleMessage::NONE }; // Write here for any messages that need to be displayed, info, error, guide or none if all's well
+
+        std::string directiveLine = directive.DirectiveFile().GetCurrentLine(1);
         
-        // if (directive.DirectiveFile.empty()) return dr; // Nothing to show
-        // 
-        // if (directive.DirectiveFile[0] == ':') { // Directive mode
-        // 
-        // } else { // File switch mode
-            // TODO
-        // }
+        if (directiveLine.empty()) return dr; // Nothing to show
+        
+        if (directiveLine[0] == ':') { // Directive mode
+            std::string drctv = U::TrimSemiColon(directiveLine); // Trim
+
+            // Match the remainder
+
+            // Exi
+            if (drctv == "e") {
+                exit(EXIT_SUCCESS);
+            }
+
+            // Save and exit
+            if (drctv == "q") {
+                f.Save();
+
+                exit(EXIT_SUCCESS);
+            }
+
+            if (drctv == "w") {
+                f.Save();
+            }
+
+        } else { // File switch mode
+            
+        }
         
         directive.Clear();
 
@@ -63,29 +60,27 @@ namespace CBLT {
         const UT::ui32 directiveFontSize = 20;
         const UT::ui32 directiveBottomMargin = CBLT::DirectiveMargins::directiveMarginFromConsoleY + 5; // 5 + 5 see CBLT_Directive.hpp
         
-        UT::f32 visibleWidth = width * openFactor;
-
         // Background rectangle
         DrawRectangle(
-            GetScreenWidth() - visibleWidth,
+            GetScreenWidth() - width,
             0,
-            visibleWidth + 1,
+            width + 1,
             GetScreenHeight(),
             Color{0, 255, 0, 255}
         );
 
         // Foreground rectangle
         DrawRectangle(
-            GetScreenWidth() - visibleWidth + 1,
+            GetScreenWidth() - width + 1,
             0,
-            visibleWidth,
+            width,
             GetScreenHeight(),
             Color{0, 0, 0, 255}
         );
 
         // Directive/CWD contents seperator
         DrawLine(
-            GetScreenWidth() - visibleWidth,
+            GetScreenWidth() - width,
             directiveFontSize + directiveBottomMargin,
             GetScreenWidth(),
             directiveFontSize + directiveBottomMargin,
@@ -94,7 +89,7 @@ namespace CBLT {
 
         // Draw directive contents
         directive.Draw(
-            GetScreenWidth() - visibleWidth,
+            GetScreenWidth() - width,
             0
         );
 
@@ -107,7 +102,7 @@ namespace CBLT {
         UT::i32 cursorY = DirectiveMargins::directiveMarginFromConsoleY;
         
         // Offset for the console's left edge + margins
-        cursorX += GetScreenWidth() - visibleWidth + DirectiveMargins::directiveMarginFromConsoleX;
+        cursorX += GetScreenWidth() - width + DirectiveMargins::directiveMarginFromConsoleX;
         
         // Draw cursor rectangle
         DrawRectangle(
@@ -124,27 +119,12 @@ namespace CBLT {
     }
 
     void Console::Update() {
-        if (toggleInterpolator.IsActive()) {
-            auto [x, _] = toggleInterpolator.Update();
-            openFactor = x;
-        }
-
-        if (widthInterpolator.IsActive()) {
-            auto [newWidth, _] = widthInterpolator.Update();
-    
-            UT::f32 maxWidth = GetScreenWidth() * 0.5f;
-            width = std::clamp(newWidth, 20.0f, maxWidth);
-        }
+        
     }
 
     void Console::Move(UT::f32 offset) {
-        if (widthInterpolator.IsActive())
-            return;
-    
         UT::f32 maxWidth = GetScreenWidth() * ConsoleWidth::WIDTH_MAX_RATIO;
-        UT::f32 target = std::clamp(width + offset, ConsoleWidth::WIDTH_MIN, maxWidth);
-    
-        widthInterpolator.Start(width, 0.0f, target, 0.0f, 0.075f);
+        width = std::clamp(width + offset, ConsoleWidth::WIDTH_MIN, maxWidth);
     }
 
 

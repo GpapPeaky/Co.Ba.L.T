@@ -4,6 +4,8 @@
 
 namespace CBLT {
 
+    // FIXME: This crashes sometimes
+
     // Animation line for interpolation
     typedef struct AnimationLine {
         UT::f32 targetX;            // Where to go at x
@@ -18,7 +20,7 @@ namespace CBLT {
             UT::f32 progress;   // 0.0 at source -> 1.0 at target
             UT::f32 speed;      // How fast the interpolation is moving
             UT::b active;       // Interpolation ongoing
-            
+
         public:
             // Constructor
             Interpolator(void);
