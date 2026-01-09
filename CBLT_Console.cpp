@@ -5,20 +5,42 @@ namespace CBLT {
         width = 450;
         toggled = false;
         cursor.AddCursorAt(0, 1); // Same logic as in the CBLT_Controller.hpp/cpp
+
+        openFactor = 0.0f;
     
         directive = Directive();
 
-        interpolator = Interpolator();
+        widthInterpolator = Interpolator();
+        toggleInterpolator = Interpolator();
     }
     
     Console::~Console(void) {}
 
     void Console::Toggle(void) {
         toggled = !toggled;
+    
+        if (toggleInterpolator.IsActive())
+            toggleInterpolator.Stop();
+    
+        if (toggled) {
+            // Open
+            toggleInterpolator.Start(
+                openFactor, 0.0f,
+                1.0f, 0.0f,
+                0.01f
+            );
+        } else {
+            // Close
+            toggleInterpolator.Start(
+                openFactor, 0.0f,
+                0.0f, 0.0f,
+                0.01f
+            );
+        }
     }
 
     UT::b Console::IsOpen(void) const {
-        return toggled;
+        return openFactor > 0.01f;
     }
 
     DirectiveResult Console::Execute(void) {
@@ -41,27 +63,29 @@ namespace CBLT {
         const UT::ui32 directiveFontSize = 20;
         const UT::ui32 directiveBottomMargin = CBLT::DirectiveMargins::directiveMarginFromConsoleY + 5; // 5 + 5 see CBLT_Directive.hpp
         
+        UT::f32 visibleWidth = width * openFactor;
+
         // Background rectangle
         DrawRectangle(
-            GetScreenWidth() - width,
+            GetScreenWidth() - visibleWidth,
             0,
-            width + 1,
+            visibleWidth + 1,
             GetScreenHeight(),
             Color{0, 255, 0, 255}
         );
 
         // Foreground rectangle
         DrawRectangle(
-            GetScreenWidth() - width + 1,
+            GetScreenWidth() - visibleWidth + 1,
             0,
-            width,
+            visibleWidth,
             GetScreenHeight(),
             Color{0, 0, 0, 255}
         );
 
         // Directive/CWD contents seperator
         DrawLine(
-            GetScreenWidth() - width,
+            GetScreenWidth() - visibleWidth,
             directiveFontSize + directiveBottomMargin,
             GetScreenWidth(),
             directiveFontSize + directiveBottomMargin,
@@ -70,7 +94,7 @@ namespace CBLT {
 
         // Draw directive contents
         directive.Draw(
-            GetScreenWidth() - width,
+            GetScreenWidth() - visibleWidth,
             0
         );
 
@@ -83,7 +107,7 @@ namespace CBLT {
         UT::i32 cursorY = DirectiveMargins::directiveMarginFromConsoleY;
         
         // Offset for the console's left edge + margins
-        cursorX += GetScreenWidth() - width + DirectiveMargins::directiveMarginFromConsoleX;
+        cursorX += GetScreenWidth() - visibleWidth + DirectiveMargins::directiveMarginFromConsoleX;
         
         // Draw cursor rectangle
         DrawRectangle(
@@ -100,8 +124,13 @@ namespace CBLT {
     }
 
     void Console::Update() {
-        if (interpolator.IsActive()) {
-            auto [newWidth, _] = interpolator.Update();
+        if (toggleInterpolator.IsActive()) {
+            auto [x, _] = toggleInterpolator.Update();
+            openFactor = x;
+        }
+
+        if (widthInterpolator.IsActive()) {
+            auto [newWidth, _] = widthInterpolator.Update();
     
             UT::f32 maxWidth = GetScreenWidth() * 0.5f;
             width = std::clamp(newWidth, 20.0f, maxWidth);
@@ -109,13 +138,13 @@ namespace CBLT {
     }
 
     void Console::Move(UT::f32 offset) {
-        if (interpolator.IsActive())
+        if (widthInterpolator.IsActive())
             return;
     
         UT::f32 maxWidth = GetScreenWidth() * ConsoleWidth::WIDTH_MAX_RATIO;
         UT::f32 target = std::clamp(width + offset, ConsoleWidth::WIDTH_MIN, maxWidth);
     
-        interpolator.Start(width, 0.0f, target, 0.0f, 0.12f);
+        widthInterpolator.Start(width, 0.0f, target, 0.0f, 0.075f);
     }
 
 

@@ -33,6 +33,9 @@ namespace CBLT {
             UT::b toggled;              // Console is on or off
             UT::f32 width;             // Console mutable width
             CursorManager cursor;       // Cursor position inside the directive
+
+            // Interpolation stuff
+            UT::f32 openFactor; // For interpolation
         public:
             // Constructor
             Console();
@@ -40,8 +43,8 @@ namespace CBLT {
             // Destructor
             ~Console();
 
-            // FIXME: Crash when reducing console width
-            Interpolator interpolator; // Interpolator for animating
+            Interpolator widthInterpolator;     // Interpolator for animating width
+            Interpolator toggleInterpolator;    // Interpolator for animating toggle
 
             // Toggle the console on or off
             void Toggle(void);
