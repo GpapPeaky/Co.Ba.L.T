@@ -2,13 +2,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-// Globals
-int gP1 = 0.5f;
-int gP2 = 0.5f;
-int gP3 = 0.5f;
-int gP4 = 0.5f;
-int gP5 = 0.5f;
-
 int main(void) {
     // **Data types**
     int integerVar = 10;
@@ -17,17 +10,6 @@ int main(void) {
     double doubleVar = 3.1415926535;
     _Bool boolVar = 1; // Using <stdbool.h> we can also use true/false
     void *ptr = NULL;
-
-    // Other shit.
-    int* p1 = 35.0f;
-    int* p2 = 35.0f;
-    int* p3 = 35.0f;
-    int* p4 = 35.0f;
-    int* p5 = 35.0f;
-    int* p6 = 35.0f;
-    int* p7 = 35.0f;
-    int* p8 = 35.0f;
-    int* p9 = 35.0f;
 
     // **Storage class specifiers**
     static int staticVar = 5;

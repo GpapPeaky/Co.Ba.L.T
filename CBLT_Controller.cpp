@@ -205,14 +205,14 @@ namespace CBLT {
         // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         // Create cursors down
-        if (keyboard.m.ctrl && keyboard.m.alt && IsKeyPressed(KEY_DOWN)) {
+        if (keyboard.m.ctrl && keyboard.m.alt && (IsKeyPressed(KEY_DOWN) || IsKeyPressedRepeat(KEY_DOWN))) {
             cursorManager.RequestLead();
 
             return true;
         }
 
         // Create cursors up
-        if (keyboard.m.ctrl && keyboard.m.alt && IsKeyPressed(KEY_UP)) {
+        if (keyboard.m.ctrl && keyboard.m.alt && (IsKeyPressed(KEY_UP) || IsKeyPressedRepeat(KEY_UP))) {
             cursorManager.RequestTrail();
 
             return true;
