@@ -3,13 +3,13 @@
 namespace CBLT {
     Directive::Directive() {
         f.CreateLine(0);
-        f.CreateLine(1);
+        f.CreateLine(DIRECTIVE_FILE_LINE);
     }
 
     Directive::~Directive() {}
 
     void Directive::Clear(void) {
-        f.GetCurrentLine(1).clear();
+        f.GetCurrentLine(DIRECTIVE_FILE_LINE).clear();
     }
 
     void Directive::Draw(UT::ui32 x, UT::ui32 y) {

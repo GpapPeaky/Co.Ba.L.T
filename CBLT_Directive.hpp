@@ -9,6 +9,9 @@
 
 namespace CBLT {
     // Directives to execute in the console
+
+    const UT::ui8 DIRECTIVE_FILE_LINE = 1; // Line index of directive file
+
     class Directive {
         private:
             File f;                // Directive to execute, one line per directive

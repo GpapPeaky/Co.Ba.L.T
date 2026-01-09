@@ -22,7 +22,7 @@ namespace CBLT {
     DirectiveResult Console::Execute(File& f) {
         DirectiveResult dr = { "", ConsoleMessage::NONE }; // Write here for any messages that need to be displayed, info, error, guide or none if all's well
 
-        std::string directiveLine = directive.DirectiveFile().GetCurrentLine(1);
+        std::string directiveLine = directive.DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE);
         
         if (directiveLine.empty()) return dr; // Nothing to show
         
@@ -52,6 +52,8 @@ namespace CBLT {
         }
         
         directive.Clear();
+        
+        cursor.Primary().SetAt(0, DIRECTIVE_FILE_LINE); // Reset the cursor
 
         return dr;
     }    

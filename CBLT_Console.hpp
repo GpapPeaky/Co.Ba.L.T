@@ -31,8 +31,8 @@ namespace CBLT {
         private:
             Directive directive;        // Directive to execute
             UT::b toggled;              // Console is on or off
-            UT::f32 width;             // Console mutable width
-            CursorManager cursor;       // Cursor position inside the directive
+            UT::f32 width;              // Console mutable width
+            CursorManager cursor;       // Cursor position inside the directive, only a primary
         public:
             // Constructor
             Console();

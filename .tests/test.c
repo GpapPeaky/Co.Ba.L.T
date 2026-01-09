@@ -2,8 +2,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-// sdssd
-
 int main(void) {
     // **Data types**
     int integerVar = 10;
