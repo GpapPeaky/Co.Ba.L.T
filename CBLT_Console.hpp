@@ -30,6 +30,7 @@ namespace CBLT {
     class Console {
         private:
             Directive directive;        // Directive to execute
+            DirectiveResult dirRes;     // Directive result
             UT::b toggled;              // Console is on or off
             UT::f32 width;              // Console mutable width
             CursorManager cursor;       // Cursor position inside the directive, only a primary
@@ -50,16 +51,22 @@ namespace CBLT {
             UT::b IsOpen(void) const ;
 
             // Execute the current directive
-            DirectiveResult Execute(File& f);
+            void Execute(File& f);
 
             // Draw console window, and CWD contents
             void Draw(std::string cwd);
+
+            // Draw message returned by the console
+            void DrawMessage(void);
 
             // Console directive
             Directive& ConsoleDirective(void);
 
             // Resize console window
             void Move(UT::f32 offset);
+
+            // Get directive result
+            DirectiveResult& Message(void);
 
             // Get the console cursor
             Cursor& ConsoleCursor(void);

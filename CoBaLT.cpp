@@ -28,10 +28,12 @@ int main() {
             f.Draw();
             cm.DrawCursors(f);
             CBLT::UI::Draw(c.Col(), c.Line(), f.GetLineCount(), f.Dirt(), f.Name(), f.CWD());
-
+            
             if (cnsl.IsOpen()) {
                 cnsl.Draw(f.Name());
             }
+            
+            cnsl.DrawMessage();
 
             DrawFPS(950, 0);
         EndDrawing();

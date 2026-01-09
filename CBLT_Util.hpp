@@ -36,7 +36,7 @@ namespace CBLT {
         }
 
         // Trim the semi colon from a string, used in the console to execute ':' commands
-        std::string& TrimColon(std::string& str); 
+        std::string TrimLeadingColon(std::string& str); 
 
     } // Utils
 } // CBLT

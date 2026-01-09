@@ -338,6 +338,10 @@ namespace CBLT {
                 console.Move(-50.0f);
             }
 
+            if (IsKeyPressed(KEY_ESCAPE) && console.Message().messageType != ConsoleMessage::NONE) {
+                console.Message().messageType = ConsoleMessage::NONE;
+            } 
+
             return;
         }
         

@@ -7,6 +7,9 @@ namespace CBLT {
         cursor.AddCursorAt(0, 1); // Same logic as in the CBLT_Controller.hpp/cpp
 
         directive = Directive();
+
+        dirRes.message = ""; 
+        dirRes.messageType = ConsoleMessage::NONE; 
     }
     
     Console::~Console(void) {}
@@ -19,15 +22,19 @@ namespace CBLT {
         return toggled;
     }
 
-    DirectiveResult Console::Execute(File& f) {
+    void Console::Execute(File& f) {
         DirectiveResult dr = { "", ConsoleMessage::NONE }; // Write here for any messages that need to be displayed, info, error, guide or none if all's well
 
         std::string directiveLine = directive.DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE);
         
-        if (directiveLine.empty()) return dr; // Nothing to show
+        if (directiveLine.empty()){
+            dirRes = dr;
+         
+            return; // Nothing to show
+        }
         
         if (directiveLine[0] == ':') { // Directive mode
-            std::string drctv = U::TrimColon(directiveLine); // Trim
+            std::string drctv = U::TrimLeadingColon(directiveLine); // Trim
 
             // Match the remainder
 
@@ -46,7 +53,7 @@ namespace CBLT {
             else if (drctv == "w") {
                 f.Save();
             } else { // Invalid directive given fallback
-                dr.message = "Unkown directive :" + drctv;
+                dr.message = "CBLT_ERR: unkown directive :" + drctv;
                 dr.messageType = ConsoleMessage::ERROR;
             }
 
@@ -58,7 +65,7 @@ namespace CBLT {
 
         cursor.Primary().SetAt(0, DIRECTIVE_FILE_LINE); // Reset the cursor
 
-        return dr;
+        dirRes = dr;
     }    
 
     void Console::Draw(std::string cwd) {
@@ -117,6 +124,56 @@ namespace CBLT {
             UI::directiveFontSize,
             Color{255, 0, 0, 255}
         );
+    };
+
+    void Console::DrawMessage(void) {
+        // Draw any console messages if any
+        if (dirRes.messageType == ConsoleMessage::NONE) return;
+        
+        const UT::ui32 directiveFontSize = 20;
+
+        const UT::i32 messageTextHorizontalMargins = 10;
+        const UT::i32 messageTextVerticalMargins = 10;
+        const UT::i32 messageWidth = MeasureText(dirRes.message.c_str(), directiveFontSize);
+
+        const UT::i32 msgX = (GetScreenWidth() / 2) - (messageWidth / 2);
+        const UT::i32 msgY = (GetScreenHeight() / 2) - (directiveFontSize / 2);
+        const UT::i32 msgW = messageWidth + messageTextHorizontalMargins;
+        const UT::i32 msgH = directiveFontSize + messageTextVerticalMargins;
+
+        // Background
+        DrawRectangle(
+            msgX,
+            msgY,
+            msgW,
+            msgH,
+            Color{0, 255, 0, 255}
+        );
+
+        // Foreground
+        DrawRectangle(
+            msgX + 1,
+            msgY + 1,
+            msgW - 2,
+            msgH - 2,
+            Color{0, 0, 0, 255}
+        );
+
+        const UT::f32 textX = msgX + (msgW - messageWidth) / 2.0f;
+        const UT::f32 textY = msgY + (msgH - directiveFontSize) / 2.0f;
+
+        // Message
+        DrawTextEx(
+            gFont.f,
+            dirRes.message.c_str(),
+            {
+                textX,
+                textY
+            },
+            directiveFontSize,
+            0.0f,
+            Color{255, 0, 128, 255}
+        );
     }
 
     Directive& Console::ConsoleDirective(void) {
@@ -132,6 +189,9 @@ namespace CBLT {
         width = std::clamp(width + offset, ConsoleWidth::WIDTH_MIN, maxWidth);
     }
 
+    DirectiveResult& Console::Message(void) {
+        return dirRes;
+    }
 
     Cursor& Console::ConsoleCursor(void) {
         return cursor.Primary();

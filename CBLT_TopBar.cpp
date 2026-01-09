@@ -14,7 +14,7 @@ void CBLT::UI::Draw(UT::ui32 col, UT::ui32 line, UT::ui32 lineCount, UT::b dirty
     Color dirtyColour;
     if (dirty) {
         dirtyFile = std::string("dirty");
-        dirtyColour = {255, 255, 0, 255};
+        dirtyColour = {255, 128, 0, 255};
     } else {
         dirtyFile = std::string("clean");
         dirtyColour = {0, 255, 128, 255};

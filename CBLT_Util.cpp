@@ -8,12 +8,10 @@ namespace CBLT {
             }
         } // Err
 
-        std::string& TrimColon(std::string& str) {
-            while (!str.empty() && str.back() == ':') {
-                str.pop_back();
-            }
-
+        std::string TrimLeadingColon(std::string& str) {
+            if (!str.empty() && str[0] == ':') return str.substr(1);
             return str;
         }
+
     } // Utils
 } // CBLT
