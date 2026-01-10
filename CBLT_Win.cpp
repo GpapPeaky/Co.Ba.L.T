@@ -8,8 +8,8 @@ namespace CBLT {
         void Init(void) {
             Image icon = LoadImage("assets/icon/muse.png");
             
-            const int screenWidth = 1536;
-            const int screenHeight = 1024;
+            const int screenWidth = 1720;
+            const int screenHeight = 920;
             
             InitWindow(screenWidth, screenHeight, Version.c_str());
             

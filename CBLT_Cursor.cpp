@@ -7,7 +7,9 @@ namespace CBLT {
         selectColumn(col),
         selectLine(ln),
         charWidth(MeasureText("A", CBLT::gFont.size)), // Measure once
-        m(CursorMode::INSERT) // Default
+        m(CursorMode::INSERT), // Default
+        fragment(""),
+        cursorSymbol(CursorChar::BRACKET)
     {}
 
    Cursor::~Cursor(void) {}
@@ -66,21 +68,33 @@ namespace CBLT {
             Color{255, 255, 255, 45}
         );
 
-        if (cursorId == 0) { // Primary is a vibrant red
-            DrawRectangle(
-                x + CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
-                y + CBLT::UI::TOP_BAR_HEIGHT,
-                2,
+        const int horizontalFix = 5;
+
+        // Primary cursor is vibrant
+        if (cursorId == 0) {
+            DrawTextEx(
+                gFont.f,
+                std::string(1, static_cast<char>(cursorSymbol)).c_str(),
+                {
+
+                    x + CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES - horizontalFix,
+                    y + CBLT::UI::TOP_BAR_HEIGHT
+                },
                 gFont.size,
-                Color{255, 0, 0, 255}
+                0.0f,
+                Color{255, 0, 128, 255}
             );
-        } else { // else a more relaxed red
-            DrawRectangle(
-                x + CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
-                y + CBLT::UI::TOP_BAR_HEIGHT,
-                2,
+        } else { // Secondary cursors are dimmer
+            DrawTextEx(
+                gFont.f,
+                std::string(1, static_cast<char>(cursorSymbol)).c_str(),
+                {
+                    x + CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES - horizontalFix,
+                    y + CBLT::UI::TOP_BAR_HEIGHT
+                },
                 gFont.size,
-                Color{128, 0, 0, 255}
+                0.0f,
+                Color{255, 128, 128, 255}
             );
         }
     }

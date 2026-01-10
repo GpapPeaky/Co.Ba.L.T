@@ -292,8 +292,51 @@ namespace CBLT {
         }
 
         // Reset to primary cursor
-        if (keyboard.m.ctrl && IsKeyPressed(KEY_R)) {
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_P)) {
             cursorManager.RequestReset();
+
+            return true;
+        }
+
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_K)) {
+                        
+
+            return true;
+        }
+
+        // Comment out/in line
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_SLASH)) {
+            std::string& line = file.GetCurrentLine(cursor.Line()); 
+
+            UT::llui32 idx = line.find("//");
+            
+            if (line.empty()) {
+                line.append("//");
+
+                cursor.SetAt(2, cursor.Line());
+            } else if (idx != std::string::npos) {
+                line.erase(idx, 2);
+
+                cursor.SetAt(std::max(0U, cursor.Col() - 2), cursor.Line());
+            } else if (idx == std::string::npos) {
+                line.insert(0, "//");
+
+                cursor.SetAt(cursor.Col() + 2, cursor.Line());
+            }
+
+            return true;
+        }
+
+        // Go to next file
+        // TODO: multi file support
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_PERIOD)) {
+
+            return true;
+        }
+
+        // Go to previous file
+        // TODO: multi file support
+        if (keyboard.m.ctrl && IsKeyPressed(KEY_COMMA)) {
 
             return true;
         }
@@ -301,7 +344,7 @@ namespace CBLT {
         return false;
     }
 
-    UT::b Controller::HandleConsole(void) {
+    UT::b Controller::HandleConsole(void) { // FIXME: Remove control character input, since it crashes
         // Directive file
         File& df = console.ConsoleDirective().DirectiveFile();
         

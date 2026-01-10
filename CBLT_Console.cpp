@@ -108,21 +108,25 @@ namespace CBLT {
         // Draw console cursor
         Cursor& cc = cursor.Primary();
         const std::string& lineText = directive.DirectiveFile().GetCurrentLine(cc.Line());
-        
+
         // Compute cursor position inside console
-        UT::i32 cursorX = cc.GetCursorX(lineText, directiveFontSize);
-        UT::i32 cursorY = DirectiveMargins::directiveMarginFromConsoleY;
+        UT::f32 cursorX = cc.GetCursorX(lineText, directiveFontSize);
+        UT::f32 cursorY = DirectiveMargins::directiveMarginFromConsoleY;
         
         // Offset for the console's left edge + margins
         cursorX += GetScreenWidth() - width + DirectiveMargins::directiveMarginFromConsoleX;
         
         // Draw cursor rectangle
-        DrawRectangle(
-            cursorX,
-            cursorY,
-            2,
-            UI::directiveFontSize,
-            Color{255, 0, 0, 255}
+        DrawTextEx(
+            gFont.f,
+            std::string(1, static_cast<char>(cc.cursorSymbol)).c_str(),
+            {
+                cursorX,
+                cursorY
+            },
+            directiveFontSize,
+            0.0f,
+            Color{0, 255, 255, 255}
         );
     };
 
