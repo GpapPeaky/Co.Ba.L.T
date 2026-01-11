@@ -1,10 +1,7 @@
 #include "CBLT_Directive.hpp"
 
 namespace CBLT {
-    Directive::Directive() {
-        f.CreateLine(0);
-        f.CreateLine(DIRECTIVE_FILE_LINE);
-    }
+    Directive::Directive() {}
 
     Directive::~Directive() {}
 
@@ -15,9 +12,11 @@ namespace CBLT {
     void Directive::Draw(UT::ui32 x, UT::ui32 y) {
         DrawTextEx(
             gFont.f,
-            f.GetCurrentLine(1).c_str(), // Only one line reserved for commands
-            { (UT::f32)x + DirectiveMargins::directiveMarginFromConsoleX,
-            (UT::f32)y + DirectiveMargins::directiveMarginFromConsoleY }, 
+            f.GetCurrentLine(DIRECTIVE_FILE_LINE).c_str(), // Only one line reserved for commands
+            {
+                (UT::f32)x + DirectiveMargins::directiveMarginFromConsoleX,
+                (UT::f32)y + DirectiveMargins::directiveMarginFromConsoleY 
+            }, 
             UI::directiveFontSize,                                         // Make it remain as is for now
             0.0f,
             Color{255, 255, 255, 255}            

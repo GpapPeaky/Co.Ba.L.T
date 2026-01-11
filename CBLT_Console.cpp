@@ -4,7 +4,7 @@ namespace CBLT {
     Console::Console(void) {
         width = 500;
         toggled = false;
-        cursor.AddCursorAt(0, 1); // Same logic as in the CBLT_Controller.hpp/cpp
+        cursor.AddCursorAt(0, 0);
 
         directive = Directive();
 

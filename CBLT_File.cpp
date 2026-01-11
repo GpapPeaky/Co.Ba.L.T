@@ -41,7 +41,7 @@ namespace CBLT {
         if(!file.is_open())
             return false;
     
-        for (UT::llui32 i = 1 ; i < lines.size() ; i++) {
+        for (UT::llui32 i = 0 ; i < lines.size() ; i++) {
             file << lines[i] << '\n';
         }
     
@@ -74,10 +74,10 @@ namespace CBLT {
     void File::Draw(void) const {
         float lineHeight = gFont.size;
     
-        for(size_t i = 0 ; i < lines.size() ; i++) {
+        for(size_t i = 0; i < lines.size(); i++) {
             Vector2 pos = {
                 CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
-                CBLT::UI::TOP_BAR_HEIGHT + i * lineHeight
+                CBLT::UI::TOP_BAR_HEIGHT + i * lineHeight + lineHeight
             };
     
             DrawTextEx(
@@ -90,12 +90,12 @@ namespace CBLT {
             );
 
             pos.x = CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y;
-            pos.y += gFont.size;
+            pos.y = CBLT::UI::TOP_BAR_HEIGHT + i * lineHeight + lineHeight;
 
-            // Draw line count
+            // Draw line count (display as 1-based for users)
             DrawTextEx(
                 gFont.f,
-                std::to_string(i + 1).c_str(),
+                std::to_string(i).c_str(),
                 pos,
                 gFont.size,
                 0.0f,
@@ -106,7 +106,7 @@ namespace CBLT {
             DrawLineV(
                 { 
                     CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
-                    CBLT::UI::TOP_BAR_HEIGHT + gFont.size
+                    CBLT::UI::TOP_BAR_HEIGHT + gFont.size - 6
                 },{ 
                     CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES,
                     static_cast<UT::f32>(GetScreenHeight())
@@ -150,7 +150,9 @@ namespace CBLT {
     }
 
     void File::DeleteLine(UT::ui32 line) {
-        lines.erase(lines.begin() + line);
+        if (lines.size() > 1) {
+            lines.erase(lines.begin() + line);
+        }
     }
 
     void File::PushBackLineFragment(UT::ui32 sourceLine, UT::ui32 destinationLine) {

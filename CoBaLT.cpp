@@ -9,7 +9,7 @@ int main() {
     // CBLT::Controller ctrl; // Automatically calls the constructor
     // CBLT::Controller ctrl(fields...); // Automatically calls the constructor
     CBLT::Controller ctrl; // Program controller
-    ctrl.GetFile().Load(".tests/test.c");
+    ctrl.GetFile().Load(".tests/new.c");
 
     while(!WindowShouldClose()) {
         BeginDrawing();

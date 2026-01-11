@@ -62,7 +62,7 @@ namespace CBLT {
         // Draw a transparent rectangle, to show where the cursor is
         DrawRectangle(
             0,
-            y + CBLT::UI::TOP_BAR_HEIGHT,
+            y + CBLT::UI::TOP_BAR_HEIGHT + gFont.size,
             GetScreenWidth(),
             gFont.size,
             Color{255, 255, 255, 45}
@@ -78,7 +78,7 @@ namespace CBLT {
                 {
 
                     x + CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES - horizontalFix,
-                    y + CBLT::UI::TOP_BAR_HEIGHT
+                    y + CBLT::UI::TOP_BAR_HEIGHT + gFont.size
                 },
                 gFont.size,
                 0.0f,
@@ -90,7 +90,7 @@ namespace CBLT {
                 std::string(1, static_cast<char>(cursorSymbol)).c_str(),
                 {
                     x + CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + CBLT::FileMargins::Lines::LEFT_FROM_WINDOW_Y + CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES - horizontalFix,
-                    y + CBLT::UI::TOP_BAR_HEIGHT
+                    y + CBLT::UI::TOP_BAR_HEIGHT + gFont.size
                 },
                 gFont.size,
                 0.0f,
@@ -193,7 +193,7 @@ namespace CBLT {
     }
     
     CursorManager::CursorManager() {
-        activeCursors.emplace_back(0, 1); // Initialize one cursor at 0,1
+        activeCursors.emplace_back(0, 0); // Initialize one cursor at 0,1
         
         // Requests
         requestLead = 0;

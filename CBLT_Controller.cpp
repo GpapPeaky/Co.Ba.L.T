@@ -7,7 +7,6 @@ namespace CBLT {
 
     UT::b Controller::HandleSpecialMovement(Cursor& cursor) {
         const UT::ui32 line = cursor.Line();
-        const UT::ui32 col  = cursor.Col();
 
         if (keyboard.m.ctrl && (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT))) {
             cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::RIGHT);
@@ -35,7 +34,7 @@ namespace CBLT {
         if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT)) {
             if (col > 0) {
                 cursor.Left();
-            } else if (line > 1) {
+            } else if (line > 0) {
                 cursor.SetAt(
                     f.GetLineLength(line - 1),
                     line - 1
@@ -48,7 +47,7 @@ namespace CBLT {
                 cursor.SetAt(0, line + 1);
             }
         } else if (IsKeyPressed(KEY_UP) || IsKeyPressedRepeat(KEY_UP)) {
-            if (line > 1 && col != len) {
+            if (line > 0 && col != len + 1) {
                 UT::ui32 newLine = line - 1;
                 UT::ui32 newCol  = std::min(
                     col,
@@ -56,7 +55,7 @@ namespace CBLT {
                 );
           
                 cursor.SetAt(newCol, newLine);
-            } else if (line > 1) {
+            } else if (line > 0) {
                 UT::ui32 newLine = line - 1;
                 UT::ui32 newCol  = std::max(
                     col,
@@ -66,7 +65,7 @@ namespace CBLT {
                 cursor.SetAt(newCol, newLine);
             }
         } else if (IsKeyPressed(KEY_DOWN) || IsKeyPressedRepeat(KEY_DOWN)) {
-            if (line + 1 < f.GetLineCount() && col != len) {
+            if (line + 1 < f.GetLineCount() && col != len + 1) {
                 UT::ui32 newLine = line + 1;
                 UT::ui32 newCol  = std::min(
                     col,
@@ -87,12 +86,10 @@ namespace CBLT {
     }
 
     UT::b Controller::HandleIndentation(File& file, Cursor& cursor) { // FIXME
-        if (cursor.Col() == 0) {
-            return false;
-        }
+        if (cursor.Col() == 0) return false; // No identation to check
 
         const std::string& line = file.GetCurrentLine(cursor.Line());
-
+        
         if (line[cursor.Col() - 1] == '{') {
             file.CreateLine(cursor.Line() + 1, keyboard.tab);
 
@@ -166,9 +163,9 @@ namespace CBLT {
         // Return
         if (IsKeyPressedRepeat(KEY_ENTER) || IsKeyPressed(KEY_ENTER)) {
             if (cursor.Col() == 0) {
+                file.CreateLine(cursor.Line()); 
+                
                 cursor.Down();
-
-                file.CreateLine(cursor.Line() - 1); 
             } else {
                 std::string fragment = file.SplitLine(cursor.Line(), cursor.Col());
                 
@@ -213,7 +210,6 @@ namespace CBLT {
 
     void Controller::HandleInsert(Cursor& cursor, std::vector<char>& keyQueue) {        
         std::string& line = file.GetCurrentLine(cursor.Line());
-        UT::i32 previousCol = cursor.Col() - 1;
         
         // Insert the queued input
         for (UT::c32 typed : keyQueue) {
@@ -227,7 +223,7 @@ namespace CBLT {
                 
                 cursor.Right();
 
-                return;
+                continue;
             }
 
             else if (typed == ']') {
@@ -238,7 +234,7 @@ namespace CBLT {
                 
                 cursor.Right();
 
-                return;
+                continue;
             }
 
             else if (typed == ')') {
@@ -249,9 +245,8 @@ namespace CBLT {
 
                 cursor.Right();
 
-                return;
+                continue;
             }
-
 
             // Openers/closers
             if (typed == '{') {
@@ -300,6 +295,17 @@ namespace CBLT {
                     cursor.Line(),
                     ']'
                 );
+            } 
+            
+            // Normal insert
+            else {
+                file.InsertChar(
+                    cursor.Col(),
+                    cursor.Line(),
+                    typed
+                );
+
+                cursor.Right();
             }
 
             file.SetDirt(true); // Mark file as dirty
@@ -424,7 +430,7 @@ namespace CBLT {
         return false;
     }
 
-    UT::b Controller::HandleConsole(void) { // FIXME: Remove control character input, since it crashes
+    UT::b Controller::HandleConsole(void) {
         // Directive file
         File& df = console.ConsoleDirective().DirectiveFile();
         
@@ -466,9 +472,13 @@ namespace CBLT {
             // Delete
             if (IsKeyPressed(KEY_BACKSPACE) || IsKeyPressedRepeat(KEY_BACKSPACE)) {
                 if (console.ConsoleCursor().Col() > 0) {
-                    console.ConsoleDirective().DirectiveFile().GetCurrentLine(1).erase(console.ConsoleCursor().Col() - 1, 1);
-
-                    console.ConsoleCursor().Left();
+                    File& df = console.ConsoleDirective().DirectiveFile();
+                    std::string& line = df.GetCurrentLine(DIRECTIVE_FILE_LINE);
+                    
+                    if (!line.empty() && console.ConsoleCursor().Col() <= line.size()) {
+                        line.erase(console.ConsoleCursor().Col() - 1, 1);
+                        console.ConsoleCursor().Left();
+                    }
                 }
             }
 
@@ -582,7 +592,6 @@ namespace CBLT {
                 typedChars.push_back(static_cast<char>(c)); // Save typed characters
             }
         }
-
 
         return typedChars;
     }
