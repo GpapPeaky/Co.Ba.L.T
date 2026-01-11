@@ -165,7 +165,7 @@ namespace CBLT {
         }
     
         if (dir == CursorDirection::LEFT) {
-            if (line <= 1) { // Safety check
+            if (line < 1) { // Safety check
                 SetAt(0, 1);
                 return;
             }

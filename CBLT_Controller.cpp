@@ -93,7 +93,7 @@ namespace CBLT {
 
         const std::string& line = file.GetCurrentLine(cursor.Line());
 
-        if (line[cursor.Col()] == '}' && line[cursor.Col() - 1] == '{') {
+        if (line[cursor.Col() - 1] == '{') {
             file.CreateLine(cursor.Line(), keyboard.tab);
 
             cursor.SetAt(keyboard.tabSize - 1, cursor.Line() + 1);
@@ -212,15 +212,95 @@ namespace CBLT {
     }
 
     void Controller::HandleInsert(Cursor& cursor, std::vector<char>& keyQueue) {        
+        std::string& line = file.GetCurrentLine(cursor.Line());
+        UT::i32 previousCol = cursor.Col() - 1;
+        
         // Insert the queued input
         for (UT::c32 typed : keyQueue) {
-            file.InsertChar(
-                cursor.Col(),
-                cursor.Line(),
-                typed
-            );
+            
+            // Closers omit
+            if (typed == '}') {
+                if (cursor.Col() >= line.length() || line[cursor.Col()] != '}') {
+                    file.InsertChar(cursor.Col(), cursor.Line(), '}');
+                    file.SetDirt(true);
+                }
+                
+                cursor.Right();
 
-            cursor.Right();
+                return;
+            }
+
+            else if (typed == ']') {
+                if (cursor.Col() >= line.length() || line[cursor.Col()] != ']') {
+                    file.InsertChar(cursor.Col(), cursor.Line(), ']');
+                    file.SetDirt(true);
+                }
+                
+                cursor.Right();
+
+                return;
+            }
+
+            else if (typed == ')') {
+                if (cursor.Col() >= line.length() || line[cursor.Col()] != ')') {
+                    file.InsertChar(cursor.Col(), cursor.Line(), ')');
+                    file.SetDirt(true);
+                }
+
+                cursor.Right();
+
+                return;
+            }
+
+
+            // Openers/closers
+            if (typed == '{') {
+                file.InsertChar(
+                    cursor.Col(),
+                    cursor.Line(),
+                    typed
+                );
+
+                cursor.Right();
+
+                file.InsertChar(
+                    cursor.Col(),
+                    cursor.Line(),
+                    '}'
+                );
+            }
+
+            else if (typed == '(') {
+                file.InsertChar(
+                    cursor.Col(),
+                    cursor.Line(),
+                    typed
+                );
+
+                cursor.Right();
+
+                file.InsertChar(
+                    cursor.Col(),
+                    cursor.Line(),
+                    ')'
+                );
+            }
+
+            else if (typed == '[') {
+                file.InsertChar(
+                    cursor.Col(),
+                    cursor.Line(),
+                    typed
+                );
+
+                cursor.Right();
+
+                file.InsertChar(
+                    cursor.Col(),
+                    cursor.Line(),
+                    ']'
+                );
+            }
 
             file.SetDirt(true); // Mark file as dirty
         }

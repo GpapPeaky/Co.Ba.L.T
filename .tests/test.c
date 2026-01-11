@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-int main(void) {
+int main(void){
     // **Data types**
     int integerVar = 10;
     char charVar = 'A';
