@@ -85,7 +85,7 @@ namespace CBLT {
         }
     }
 
-    UT::b Controller::HandleIndentation(File& file, Cursor& cursor) { // FIXME: minor issue at line 0 and 1, indent lags behind by one level
+    UT::b Controller::HandleIndentation(File& file, Cursor& cursor) {
         if (cursor.Col() == 0) return false; // No identation to check
 
         const std::string& line = file.GetCurrentLine(cursor.Line());
@@ -177,12 +177,12 @@ namespace CBLT {
         }
 
         // Return
-        if (IsKeyPressedRepeat(KEY_ENTER) || IsKeyPressed(KEY_ENTER)) {
+        if (IsKeyPressedRepeat(KEY_ENTER) || IsKeyPressed(KEY_ENTER)) { // FIXME: Multi-cursor indentation is problematic
             if (cursor.Col() == 0) {
                 file.CreateLine(cursor.Line()); 
                 
                 cursor.Down();
-            } else {
+            } else if (cursor.Col()){
                 std::string fragment = file.SplitLine(cursor.Line(), cursor.Col());
                 
                 // Check for indentation
@@ -198,7 +198,6 @@ namespace CBLT {
                 file.CreateLine(cursor.Line(), indentedFragment);
                 
                 cursor.SetAt(indentString.size(), cursor.Line() + 1);
-                
             }
 
             file.SetDirt(true);
@@ -358,8 +357,15 @@ namespace CBLT {
         // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         // Delete current line
-        if (keyboard.m.ctrl && (IsKeyPressed(KEY_X) || IsKeyPressedRepeat(KEY_X))) {
+        if (keyboard.m.ctrl && (IsKeyPressed(KEY_X) || IsKeyPressedRepeat(KEY_X))) { // FIXME: Multi-cursor delete at the end of the file, crashes
             file.DeleteLine(cursor.Line());
+
+            if (cursor.Line() > 0) {
+                cursor.SetAt(cursor.Col(), cursor.Line() - 1);
+            } else {
+                cursor.SetAt(0, 0);
+            }
+
             file.SetDirt(true);
 
             return true;
@@ -621,7 +627,7 @@ namespace CBLT {
     UT::ui32 Controller::GetIndentation(UT::ui32 line) {
         UT::ui32 depth = 0;
     
-        for (UT::ui32 i = 1; i < line; ++i) {
+        for (UT::ui32 i = 0 ; i < line ; ++i) {
             const std::string& l = file.GetCurrentLine(i);
     
             for (char c : l) {
