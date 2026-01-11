@@ -50,9 +50,12 @@ namespace CBLT {
                 exit(EXIT_SUCCESS);
             }
 
+            // Write to file
             else if (drctv == "w") {
                 f.Save();
-            } else { // Invalid directive given fallback
+            } 
+            
+            else { // Invalid directive given fallback
                 dr.message = "CBLT_ERR: unkown directive :" + drctv;
                 dr.messageType = ConsoleMessage::ERROR;
             }

@@ -90,7 +90,7 @@ namespace CBLT {
 
         const std::string& line = file.GetCurrentLine(cursor.Line());
         
-        if (line.at(cursor.Col() - 1) == '{') {
+        if (line.at(cursor.Col() - 1) == '{') { // FIXME: Might need to add the closer in this check, it crashes when done though?
             UT::ui32 currentIndent = GetIndentation(cursor.Line());
             UT::ui32 innerIndent = currentIndent + 1;
             UT::ui32 closerIndent = currentIndent;
@@ -177,7 +177,6 @@ namespace CBLT {
         }
 
         // FIXME: Multi-cursor indentation is problematic
-        // FIXME: When the cursor is right after a closer, indentation still triggers
         // Return
         if (IsKeyPressedRepeat(KEY_ENTER) || IsKeyPressed(KEY_ENTER)) {
             if (cursor.Col() == 0) {
@@ -193,6 +192,10 @@ namespace CBLT {
                 if (indentationHandle) return;
 
                 UT::ui32 indent = GetIndentation(cursor.Line());
+
+                if (file.GetCurrentLine(cursor.Line()).at(cursor.Col() - 1) == '}') {
+                    indent--; // Suppress it if the cursor is right after a closer
+                }
 
                 std::string indentString(indent * keyboard.tabSize, ' ');
                 std::string indentedFragment = indentString + fragment;
