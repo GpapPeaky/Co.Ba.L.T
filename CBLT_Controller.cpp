@@ -85,17 +85,33 @@ namespace CBLT {
         }
     }
 
-    UT::b Controller::HandleIndentation(File& file, Cursor& cursor) { // FIXME
+    UT::b Controller::HandleIndentation(File& file, Cursor& cursor) { // FIXME: minor issue at line 0 and 1, indent lags behind by one level
         if (cursor.Col() == 0) return false; // No identation to check
 
         const std::string& line = file.GetCurrentLine(cursor.Line());
         
-        if (line[cursor.Col() - 1] == '{') {
-            file.CreateLine(cursor.Line() + 1, keyboard.tab);
+        if (line.at(cursor.Col() - 1) == '{') {
+            UT::ui32 currentIndent = GetIndentation(cursor.Line());
+            UT::ui32 innerIndent = currentIndent + 1;
+            UT::ui32 closerIndent = currentIndent;
 
-            cursor.SetAt(keyboard.tabSize - 1, cursor.Line() + 1);
+            // Inner line
+            std::string inner(innerIndent * keyboard.tabSize, ' ');
+    
+            // Closing line
+            std::string closer(closerIndent * keyboard.tabSize, ' ');
+            closer += '}';
 
-            file.CreateLine(cursor.Line() + 1, "}");
+            UT::ui32 innerLine = cursor.Line() + 1;
+
+            // Insert inner indented line
+            file.CreateLine(innerLine, inner);
+
+            // Set cursor at the inner line
+            cursor.SetAt(inner.size(), innerLine);
+
+            // Closer after the inner line
+            file.CreateLine(innerLine + 1, closer);
 
             return true;
         }
@@ -112,7 +128,7 @@ namespace CBLT {
                 int tabSize = keyboard.tabSize;
         
                 // If previous char is space → delete indentation block
-                if (line[col - 1] == ' ') {
+                if (line.at(col - 1) == ' ') {
                     int deleteCount = 0;
                     int startCol = col;
         
@@ -121,7 +137,7 @@ namespace CBLT {
                     // not past column 0
                     // not past a tab stop
                     while (startCol > 0 &&
-                        line[startCol - 1] == ' ' &&
+                        line.at(startCol - 1) == ' ' &&
                         ((startCol - 1) % tabSize != 0)) {
                         startCol--;
                         deleteCount++;
@@ -174,9 +190,15 @@ namespace CBLT {
 
                 if (indentationHandle) return;
 
-                cursor.SetAt(0, cursor.Line() + 1);
+                UT::ui32 indent = GetIndentation(cursor.Line());
+
+                std::string indentString(indent * keyboard.tabSize, ' ');
+                std::string indentedFragment = indentString + fragment;
                 
-                file.CreateLine(cursor.Line(), fragment);
+                file.CreateLine(cursor.Line(), indentedFragment);
+                
+                cursor.SetAt(indentString.size(), cursor.Line() + 1);
+                
             }
 
             file.SetDirt(true);
@@ -216,7 +238,7 @@ namespace CBLT {
             
             // Closers omit
             if (typed == '}') {
-                if (cursor.Col() >= line.length() || line[cursor.Col()] != '}') {
+                if (cursor.Col() >= line.length() || line.at(cursor.Col()) != '}') {
                     file.InsertChar(cursor.Col(), cursor.Line(), '}');
                     file.SetDirt(true);
                 }
@@ -227,7 +249,7 @@ namespace CBLT {
             }
 
             else if (typed == ']') {
-                if (cursor.Col() >= line.length() || line[cursor.Col()] != ']') {
+                if (cursor.Col() >= line.length() || line.at(cursor.Col()) != ']') {
                     file.InsertChar(cursor.Col(), cursor.Line(), ']');
                     file.SetDirt(true);
                 }
@@ -238,7 +260,7 @@ namespace CBLT {
             }
 
             else if (typed == ')') {
-                if (cursor.Col() >= line.length() || line[cursor.Col()] != ')') {
+                if (cursor.Col() >= line.length() || line.at(cursor.Col()) != ')') {
                     file.InsertChar(cursor.Col(), cursor.Line(), ')');
                     file.SetDirt(true);
                 }
@@ -578,7 +600,7 @@ namespace CBLT {
     void Controller::ClampCursor(Cursor& c) {
         c.SetAt(
             std::min(c.Col(), static_cast<UT::ui32>(file.GetLineLength(c.Line()))),
-            std::min(c.Line(), static_cast<UT::ui32>(file.GetLineCount() - 1))
+            std::min(c.Line(), static_cast<UT::ui32>(file.GetLineCount()))
         );
     }
 
@@ -594,6 +616,21 @@ namespace CBLT {
         }
 
         return typedChars;
+    }
+
+    UT::ui32 Controller::GetIndentation(UT::ui32 line) {
+        UT::ui32 depth = 0;
+    
+        for (UT::ui32 i = 1; i < line; ++i) {
+            const std::string& l = file.GetCurrentLine(i);
+    
+            for (char c : l) {
+                if (c == '{') ++depth;
+                else if (c == '}' && depth > 0) --depth;
+            }
+        }
+    
+        return depth;
     }
 
 } // CBLT

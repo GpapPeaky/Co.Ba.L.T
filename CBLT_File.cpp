@@ -42,7 +42,7 @@ namespace CBLT {
             return false;
     
         for (UT::llui32 i = 0 ; i < lines.size() ; i++) {
-            file << lines[i] << '\n';
+            file << lines.at(i) << '\n';
         }
     
         dirty = false;
@@ -60,7 +60,7 @@ namespace CBLT {
     void File::InsertChar(UT::ui32 col, UT::ui32 line, UT::i32 c) {
         if (line >= lines.size()) return;
     
-        auto& ln = lines[line];
+        auto& ln = lines.at(line);
     
         if (col > ln.size()) col = ln.size();
     
@@ -82,7 +82,7 @@ namespace CBLT {
     
             DrawTextEx(
                 gFont.f,
-                lines[i].c_str(),
+                lines.at(i).c_str(),
                 pos,
                 gFont.size,
                 0.0f,
@@ -123,7 +123,7 @@ namespace CBLT {
 
     UT::ui32 File::GetLineLength(UT::ui32 line) const {
         if (line >= lines.size()) return 0;
-        return lines[line].size();
+        return lines.at(line).size();
     }
 
     void File::CreateLine(UT::ui32 line) {
@@ -152,6 +152,8 @@ namespace CBLT {
     void File::DeleteLine(UT::ui32 line) {
         if (lines.size() > 1) {
             lines.erase(lines.begin() + line);
+        } else {
+            lines.at(0).clear();
         }
     }
 

@@ -6,15 +6,16 @@
 #include "CBLT_Console.hpp"         // Console for directives
 
 #include <cmath>                    // min()/max() ...
+#include <vector>
 
 namespace CBLT {
     // Basic controller and input handling
     class Controller {
         private:
-            CBLT::CursorManager cursorManager;     // Cursor manager
-            CBLT::Keyboard keyboard;               // Keyboard
-            CBLT::File file;                       // Current open document
-            CBLT::Console console;                 // Console
+            CBLT::CursorManager cursorManager;            // Cursor manager
+            CBLT::Keyboard keyboard;                      // Keyboard
+            CBLT::File file;                              // Current open document
+            CBLT::Console console;                        // Console
 
             // TODO: Finish the handling
 
@@ -69,6 +70,9 @@ namespace CBLT {
 
             // Get pressed key queue so as to not consume instantly anything
             std::vector<char> GetKeyQueue(void);
+
+            // Get identation depth, check for unmatched '{' before the cursor
+            UT::ui32 GetIndentation(UT::ui32 line);
 
             // Constructor
             Controller(void);
