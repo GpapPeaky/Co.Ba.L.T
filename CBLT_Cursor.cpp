@@ -137,14 +137,19 @@ namespace CBLT {
         return CharClass::SYMBOL;
     }
     
-    void Cursor::SetToWordBoundary(const std::string& lineText, CursorDirection dir) {
-        UT::i32 col  = static_cast<UT::i32>(Col());
-        UT::i32 line = static_cast<UT::i32>(Line());
-        UT::i32 len  = static_cast<UT::i32>(lineText.size());
+    void Cursor::SetToWordBoundary(const std::string& lineText, CursorDirection dir, File f) {
+        UT::ui32 col  = static_cast<UT::ui32>(Col());
+        UT::ui32 line = static_cast<UT::ui32>(Line());
+        UT::ui32 len  = static_cast<UT::ui32>(lineText.size());
     
         if (dir == CursorDirection::RIGHT) {
             if (col >= len) {
-                SetAt(len, line + 1); // UNSAFE
+                if (line == f.GetLineCount() - 1) {
+                    SetAt(len, line);
+                } else {
+                    SetAt(len, line + 1);
+                }
+
                 return;
             }
 
@@ -166,7 +171,7 @@ namespace CBLT {
     
         if (dir == CursorDirection::LEFT) {
             if (line < 1) { // Safety check
-                SetAt(0, 1);
+                SetAt(0, 0);
                 return;
             }
 

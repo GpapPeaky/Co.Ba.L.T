@@ -42,7 +42,8 @@ namespace CBLT {
             return false;
     
         for (UT::llui32 i = 0 ; i < lines.size() ; i++) {
-            file << lines.at(i) << '\n';
+            file << lines.at(i);
+            if (i + 1 < lines.size()) file << '\n';
         }
     
         dirty = false;
@@ -52,7 +53,8 @@ namespace CBLT {
 
     UT::b File::Clear(void) {
         lines.clear();
-        lines.emplace_back("");
+
+        // Might need to emplace a new empty line here?
 
         return true;
     }

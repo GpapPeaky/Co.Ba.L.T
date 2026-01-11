@@ -96,13 +96,11 @@ namespace CBLT {
             // Get cursor x in pixels 
             UT::ui32 GetCursorX(const std::string& lineText, UT::ui32 fontSize);
 
-            
-
             // Classify character class
             const CharClass Classify(UT::cui8 c) const;
 
             // Get the distance to a character in the left or right of the cursor and set the cursor there
-            void SetToWordBoundary(const std::string& lineText, const CursorDirection dir);
+            void SetToWordBoundary(const std::string& lineText, const CursorDirection dir, File f);
     }; // Cursor class
 
     class CursorManager {

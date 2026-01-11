@@ -9,11 +9,11 @@ namespace CBLT {
         const UT::ui32 line = cursor.Line();
 
         if (keyboard.m.ctrl && (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT))) {
-            cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::RIGHT);
+            cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::RIGHT, file);
 
             return true;
         } else if (keyboard.m.ctrl && (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT))) {
-            cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::LEFT);
+            cursor.SetToWordBoundary(file.GetCurrentLine(line), CursorDirection::LEFT, file);
         
             return true;
         }
@@ -176,8 +176,10 @@ namespace CBLT {
             file.SetDirt(true);
         }
 
+        // FIXME: Multi-cursor indentation is problematic
+        // FIXME: When the cursor is right after a closer, indentation still triggers
         // Return
-        if (IsKeyPressedRepeat(KEY_ENTER) || IsKeyPressed(KEY_ENTER)) { // FIXME: Multi-cursor indentation is problematic
+        if (IsKeyPressedRepeat(KEY_ENTER) || IsKeyPressed(KEY_ENTER)) {
             if (cursor.Col() == 0) {
                 file.CreateLine(cursor.Line()); 
                 
@@ -195,9 +197,9 @@ namespace CBLT {
                 std::string indentString(indent * keyboard.tabSize, ' ');
                 std::string indentedFragment = indentString + fragment;
                 
-                file.CreateLine(cursor.Line(), indentedFragment);
-                
                 cursor.SetAt(indentString.size(), cursor.Line() + 1);
+                
+                file.CreateLine(cursor.Line(), indentedFragment);
             }
 
             file.SetDirt(true);
@@ -360,7 +362,9 @@ namespace CBLT {
         if (keyboard.m.ctrl && (IsKeyPressed(KEY_X) || IsKeyPressedRepeat(KEY_X))) { // FIXME: Multi-cursor delete at the end of the file, crashes
             file.DeleteLine(cursor.Line());
 
-            if (cursor.Line() > 0) {
+            if (cursor.Line() > 0 && cursor.Line() < file.GetLineCount()) {
+                cursor.SetAt(cursor.Col(), cursor.Line());
+            } else if (cursor.Line() == file.GetLineCount()) {
                 cursor.SetAt(cursor.Col(), cursor.Line() - 1);
             } else {
                 cursor.SetAt(0, 0);
