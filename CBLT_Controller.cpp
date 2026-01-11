@@ -94,7 +94,7 @@ namespace CBLT {
         const std::string& line = file.GetCurrentLine(cursor.Line());
 
         if (line[cursor.Col() - 1] == '{') {
-            file.CreateLine(cursor.Line(), keyboard.tab);
+            file.CreateLine(cursor.Line() + 1, keyboard.tab);
 
             cursor.SetAt(keyboard.tabSize - 1, cursor.Line() + 1);
 
