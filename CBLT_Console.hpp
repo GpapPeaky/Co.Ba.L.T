@@ -110,6 +110,9 @@ namespace CBLT {
             // Return the best matching CWD strings
             std::string Autocomplete(void) const ;
 
+            // Update camera margins
+            void CameraUpdate(void);
+
             // Scroll the CWD content camera by a specific offset, only in the y axis
             void Scroll(UT::i32 dy);
 

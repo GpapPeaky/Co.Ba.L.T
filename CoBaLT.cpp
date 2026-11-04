@@ -79,12 +79,14 @@ UT::i32 main(int argc, char** argv) {
                 currentFileLangConfName     = f.LangConf();
 
                 ctrl.GetConsole().GetCWDContents(ctrl.CWD());
-                f.Cam().SetHeight(GetScreenHeight());
-                f.Cam().SetWidth(GetScreenWidth());
-                cnsl.Cam().SetHeight(GetScreenHeight() - CBLT::gConsoleFont.size - 10);
-
+                f.Cam().SetHeight(GetRenderHeight());
+                f.Cam().SetWidth(GetRenderWidth());
+                
                 CBLT::DrawInfo(c, currentFileLineCount, currentFileDirt, currentFileName, ctrl.CWD(), currentFileLangConfName);
             }
+            
+            // Update console camera margins
+            cnsl.CameraUpdate();
 
             // Draw guide BEFORE the console, to not overlap with it
             if (fq.Size() == 0) cnsl.DrawGuide();

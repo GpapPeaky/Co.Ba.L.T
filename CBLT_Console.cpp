@@ -11,7 +11,7 @@ namespace CBLT {
         dirRes.messageType = ConsoleMessage::NONE;
         
         camera = Camera();
-        camera.SetHeight(GetScreenHeight() - gConsoleFont.size - 10);
+        camera.SetHeight(GetRenderHeight() + gConsoleFont.size + 10);
         camera.SetWidth(width);
         camera.SetOrigin(GetScreenWidth() - width, gConsoleFont.size + 10);
         
@@ -1102,6 +1102,19 @@ namespace CBLT {
                 return;
             }
 
+            // Entry count at cwd
+            else if (dir == "ec") {
+                dr.message = "CBLT_LOG: ENTRY COUNT IN CWD " + std::to_string(cwdContents.size());
+                dr.messageType = ConsoleMessage::INFO;
+
+                dirRes = dr;
+                CBLT::Utils::Err::Log("DIRECTIVE: ENTRYCOUNT");
+
+                this->directive.Clear();
+
+                return;
+            }
+
             // UNKOWN
             else {
                 dr.message = "CBLT_ERR: UNKOWN DIRECTIVE " + directiveLine;
@@ -1132,7 +1145,6 @@ namespace CBLT {
 
                     // Console cursor manager
                     cursor.Primary().SetAt(0, DIRECTIVE_FILE_LINE, directive.DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE)); // Reset the cursor
-                    
 
                     CBLT::Utils::Err::Log("DIRECTIVE: NQ " + directiveLine);
 
@@ -1370,8 +1382,8 @@ namespace CBLT {
         const UT::i32 messageTextVerticalMargins = 10;
         const UT::i32 messageWidth = (UT::i32)MeasureTextEx(gConsoleFont.f, dirRes.message.c_str(), directiveFontSize, 0.0f).x;
 
-        const UT::i32 msgX = (GetScreenWidth() / 2) - (messageWidth / 2);
-        const UT::i32 msgY = (GetScreenHeight() / 2) - (directiveFontSize / 2);
+        const UT::i32 msgX = (GetRenderWidth() / 2) - (messageWidth / 2);
+        const UT::i32 msgY = (GetRenderHeight() / 2) - (directiveFontSize / 2);
         const UT::i32 msgW = messageWidth + messageTextHorizontalMargins;
         const UT::i32 msgH = directiveFontSize + messageTextVerticalMargins;
 
@@ -1424,8 +1436,8 @@ namespace CBLT {
             case ConsoleMessage::GUIDE: {
                 const UT::i32 guideMargin = 57;
             
-                const UT::i32 guideW = GetScreenWidth()  - guideMargin * 2;
-                const UT::i32 guideH = GetScreenHeight() - guideMargin * 2;
+                const UT::i32 guideW = GetRenderWidth()  - guideMargin * 2;
+                const UT::i32 guideH = GetRenderHeight() - guideMargin * 2;
             
                 const UT::i32 guideX = guideMargin;
                 const UT::i32 guideY = guideMargin;
@@ -1480,8 +1492,8 @@ namespace CBLT {
                 const UT::i32 infoW = messageWidth + infoPadding * 2;
                 const UT::i32 infoH = textBlockHeight + infoPadding * 2;
             
-                const UT::i32 infoX = (GetScreenWidth()  - infoW) / 2;
-                const UT::i32 infoY = (GetScreenHeight() - infoH) / 2;
+                const UT::i32 infoX = (GetRenderWidth()  - infoW) / 2;
+                const UT::i32 infoY = (GetRenderHeight() - infoH) / 2;
             
                 // Background
                 DrawRectangle(
@@ -1625,25 +1637,41 @@ namespace CBLT {
         return "";
     }   
 
+    void Console::CameraUpdate(void) {
+        camera.SetHeight(GetRenderHeight() + gConsoleFont.size + 10);
+        camera.SetWidth(width);
+        camera.SetOrigin(
+            GetScreenWidth() - width,
+            gConsoleFont.size + 10
+        );
+    }
+
     void Console::Scroll(UT::i32 dy) {
         const float lineHeight =
-            gConsoleFont.size + DirectiveMargins::directiveMarginFromConsoleY;
+            gConsoleFont.size +
+            DirectiveMargins::directiveMarginFromConsoleY;
     
-        const float contentHeight = lineHeight * cwdContents.size();
-        const float cameraHeight  = camera.Height();
+        const float firstEntryY =
+            gConsoleFont.size +
+            DirectiveMargins::directiveMarginFromConsoleY + 5 +
+            DirectiveMargins::directiveMarginFromConsoleY + 5 + 5;
     
-        // If content fits entirely don't scroll
-        if (contentHeight <= cameraHeight) {
-            cameraOffset.y = 0;
-            return;
-        }
+        const float lastEntryBottom =
+            firstEntryY +
+            (cwdContents.size()) * lineHeight +
+            gConsoleFont.size;
     
-        const float minOffset = -(contentHeight - cameraHeight);
+        const float scissorBottom =
+            camera.Origin().y + camera.Height();
     
-        cameraOffset.y += dy;
+        const float minOffset =
+            scissorBottom - camera.Origin().y - lastEntryBottom;
     
-        // Clamp between bounds
-        cameraOffset.y = std::clamp(cameraOffset.y, minOffset, 0.0f);
+        cameraOffset.y = std::clamp(
+            cameraOffset.y + dy,
+            std::min(minOffset, 0.0f),
+            0.0f
+        );
     }
 
     Camera& Console::Cam(void) {

@@ -255,7 +255,7 @@ namespace CBLT {
             if (!cam.Contains(pos.x, pos.y, (UT::f32)gFont.size, lineHeight))
             continue;
 
-            im.Draw((UT::ui32)pos.x, (UT::ui32)pos.y, 40); // Kind of shit, might be better for files to OWN their cursors?
+            im.Draw((UT::ui32)pos.x, (UT::ui32)pos.y, 40);
         }
 
         // CLIPPING INFILE MARKS

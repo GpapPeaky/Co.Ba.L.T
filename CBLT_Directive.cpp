@@ -35,7 +35,8 @@ namespace CBLT {
                     ":set  - Open the settings file         |                \n"
                     ":log  - Open the log file              |                \n"
                     ":rst  - Reload the settings file       |                \n"
-                    ":msg  - Display an info message        |                \n";
+                    ":msg  - Display an info message        |                \n"
+                    ":ec   - Entry count in cwd             |                \n";
 
     Directive::Directive(void) {}
 
