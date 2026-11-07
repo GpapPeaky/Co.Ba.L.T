@@ -89,22 +89,22 @@ namespace CBLT {
             void PushBackLineFragment(UT::ui32 sourceLine, UT::ui32 destinationLine);
 
             // Get line at line index, read only
-            const std::string& GetCurrentLine(UT::ui32 line) const;
+            const std::string& GetCurrentLine(UT::ui32 line) const ;
 
             // Get line at line index, mutable access
             std::string& GetCurrentLine(UT::ui32 line);
 
             // Get if the file is dirty or not
-            UT::b Dirt(void) const;
+            UT::b Dirt(void) const ;
 
             // Set the dirt to true or false
             void SetDirt(UT::b stat);
 
             // Return the name of the file
-            const std::string& Name(void) const;
+            const std::string& Name(void) const ;
 
             // Return a string of info relative to the file
-            const std::string Info(void) const;
+            const std::string Info(void) const ;
 
             // Set the file name to something else
             void SetName(std::string name);
