@@ -368,10 +368,20 @@ namespace CBLT {
     }
 
     void Cursor::ClampToCamera(Camera& cam, std::string currentLine, Offset& off) {
-        const UT::i32 camTop = cam.Origin().y + cam.MarginY();
-        const UT::i32 camBottom = cam.Origin().y + cam.Height() - cam.MarginY();
-        const UT::i32 camLeft = cam.Origin().x + cam.MarginX();
-        const UT::i32 camRight = cam.Origin().x + cam.Width() - cam.MarginX();
+        // Space taken by the file queue bar at the bottom (matches FileQueue::Draw: fontSize + 7)
+        const UT::i32 fileQueueHeight = gFileQueueFont.size + 7;
+    
+        // Extra breathing room so the last line can scroll fully into view
+        const UT::i32 extraBottomScroll = 10;
+    
+        const UT::i32 camTop    = cam.Origin().y + cam.MarginY();
+        const UT::i32 camBottom = std::min(
+            cam.Origin().y + cam.Height() - cam.MarginY(),
+            GetScreenHeight() - fileQueueHeight
+        )\
+            - extraBottomScroll;
+        const UT::i32 camLeft   = cam.Origin().x + cam.MarginX();
+        const UT::i32 camRight  = cam.Origin().x + cam.Width() - cam.MarginX();
         
         const UT::f32 lineHeight = gFont.size;
         
@@ -394,6 +404,7 @@ namespace CBLT {
         if (cursorScreenY < camTop) {
             off.y += camTop - cursorScreenY;
         }
+
         else if (cursorScreenY + charHeight > camBottom) {
             off.y -= (cursorScreenY + charHeight) - camBottom;
         }
