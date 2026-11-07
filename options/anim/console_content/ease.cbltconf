@@ -16,8 +16,8 @@
 
 %anim 
     ease        : EASE_IN
-    speed       : 0.20
-    overshoot   : 2000.00
-    stiffness   : 0.50
+    speed       : 0.10
+    overshoot   : 0.00
+    stiffness   : 1.50
     damping     : 0.75
 %anim

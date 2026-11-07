@@ -11,16 +11,19 @@ namespace CBLT {
 
     void Animator::MoveTo(UT::f32 toX, UT::f32 toY) {
         if (anim == nullptr || !init) {
-            tx = toX;
-            ty = toY;
+            tx = goalX = toX;
+            ty = goalY = toY;
             init = true;
             return;
         }
 
-        if (tx == toX && ty == toY) return;
+        // Same destination as the animation already in flight: don't restart it
+        if (goalX == toX && goalY == toY) return;
+    
+        goalX = toX;
+        goalY = toY;
 
-        const AnimationProfile& profile = *anim;
-        interp.Start(tx, ty, toX, toY, profile.speed);
+        interp.Start(tx, ty, toX, toY, anim->speed);
     }
 
     void Animator::Update(void) {
@@ -28,7 +31,11 @@ namespace CBLT {
 
         interp.Update();
 
-        if (!interp.IsActive()) return;
+        if (!interp.IsActive()) {
+            tx = interp.TargetX(); // Land exactly on the target
+            ty = interp.TargetY();
+            return;
+        }
 
         const AnimationProfile& profile = *anim;
         UT::f32 p = interp.Progress();
@@ -74,9 +81,10 @@ namespace CBLT {
     }
 
     void Animator::Snap(UT::f32 toX, UT::f32 toY) {
-        tx = toX;
-        ty = toY;
+        tx = goalX = toX;
+        ty = goalY = toY;
         init = true;
+        interp.Stop();
     }
 
     AnimationProfile ReadAnimationFile(const std::string& path) {

@@ -28,6 +28,8 @@ namespace CBLT {
         public: 
             UT::f32 tx = 0.0f;       // X position translate
             UT::f32 ty = 0.0f;       // Y position translate
+            UT::f32 goalX = 0.0f;    // Last requested target
+            UT::f32 goalY = 0.0f;    //        -||-
             UT::b init = false;      // Initialised position
             Interpolator interp;     // Interpolator tied to animation line
             AnimationProfile* anim;  // Animator profile pointer, always read from settings global

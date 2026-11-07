@@ -1237,18 +1237,17 @@ namespace CBLT {
 
         // Draw console cursor
         Cursor& cc = cursor.Primary();
-        // cc.animator.Update();
+        cc.animator.Update(); // The console doesn't reach the Cursor.Draw function where the update happens,
+                              // since we draw manually here
         
         const UT::i32 minorHorizotalFix = 2;
-        const std::string& lineText = directive.DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE);
 
         // Compute cursor position inside console
-        UT::f32 cursorX = cc.GetCursorX(lineText, directiveFontSize, gConsoleFont) + minorHorizotalFix;
+        UT::f32 cursorX = cc.animator.tx + minorHorizotalFix
+                + GetScreenWidth() - width
+                + DirectiveMargins::directiveMarginFromConsoleX;
         UT::f32 cursorY = DirectiveMargins::directiveMarginFromConsoleY;
         
-        // Offset for the console's left edge + margins
-        cursorX += GetScreenWidth() - width + DirectiveMargins::directiveMarginFromConsoleX;
-
         const UT::i32 horizontalFix = 2;
 
         // Hash on the symbol
