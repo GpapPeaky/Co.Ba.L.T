@@ -1799,7 +1799,7 @@ namespace CBLT {
     
         const UT::f32 lastEntryBottom =
             firstEntryY +
-            (cwdContents.size()) * lineHeight +
+            (cwdContents.size() + 1) * lineHeight + // Minor adjustment (+1) for the size
             gConsoleFont.size;
     
         const UT::f32 scissorBottom =
