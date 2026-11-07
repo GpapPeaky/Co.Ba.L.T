@@ -26,6 +26,7 @@
     msg_err : [255, 64, 64]
     msg_guide : [64, 255, 64]
     msg_info : [64, 64, 255]
+    msg_file_marks : [64, 255, 255]
 
     ! file q entry
     file_q_entry : [64, 64, 64]

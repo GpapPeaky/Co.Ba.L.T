@@ -30,6 +30,7 @@
     msg_err : [255, 110, 100]
     msg_guide : [190, 140, 200]
     msg_info : [255, 160, 120]
+    msg_file_marks: [255, 100, 120]
 
     file_q_entry : [60, 36, 52]
     current_file_entry : [90, 54, 80]

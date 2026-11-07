@@ -50,6 +50,8 @@
 
     msg_info : [0, 128, 255]
 
+    msg_file_marks : [0, 255, 255]
+
     ! file q entry
 
     file_q_entry : [96, 96, 96]

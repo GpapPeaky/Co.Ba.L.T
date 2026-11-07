@@ -37,7 +37,8 @@
 
     msg_err : [255, 50, 90]         
     msg_guide : [255, 0, 200]       
-    msg_info : [0, 255, 255]        
+    msg_info : [0, 255, 255]
+    msg_file_marks : [255, 0, 0]   
 
 
     ! file queue entry

@@ -1020,11 +1020,19 @@ namespace CBLT {
 
             // Move camera offsets
             else if (keyboard.m.shift && (IsKeyPressed(KEY_DOWN) || IsKeyPressedRepeat(KEY_DOWN))) {
-                console.Scroll(-gConsoleFont.size); // Scroll by line height
+                if(console.Message().messageType != ConsoleMessage::NONE) {
+                    console.MessageScroll(-gConsoleFont.size);
+                } else {
+                    console.Scroll(-gConsoleFont.size); // Scroll by line height
+                }
             }
             
             else if (keyboard.m.shift && (IsKeyPressed(KEY_UP) || IsKeyPressedRepeat(KEY_UP))) {
-                console.Scroll(+gConsoleFont.size);
+                if(console.Message().messageType != ConsoleMessage::NONE) {
+                    console.MessageScroll(+gConsoleFont.size);
+                } else {
+                    console.Scroll(+gConsoleFont.size); // Scroll by line height
+                }
             }
             
             // Access console directive history
@@ -1412,11 +1420,19 @@ namespace CBLT {
     void Controller::HandleConsoleMouseWheel(void) {
         UT::i32 scroll = (UT::i32)GetMouseWheelMove();
 
-        // Move camera offsets
-        if (scroll < 0) {
-            console.Scroll(-gConsoleFont.size); // Scroll by line height
-        } else if (scroll > 0) {
-            console.Scroll(+gConsoleFont.size);
+        // Console message scroll
+        if (console.Message().messageType != ConsoleMessage::NONE) {
+            if (scroll < 0) {
+                console.MessageScroll(-gConsoleFont.size);
+            } else if (scroll > 0) {
+                console.MessageScroll(+gConsoleFont.size);
+            }
+        } else { // Move camera offsets of console entries
+            if (scroll < 0) {
+                console.Scroll(-gConsoleFont.size); // Scroll by line height
+            } else if (scroll > 0) {
+                console.Scroll(+gConsoleFont.size);
+            }
         }
     }
 

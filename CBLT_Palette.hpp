@@ -36,6 +36,7 @@ namespace CBLT {
             Color msgErr;               // Error msg colour
             Color msgGuide;             // Gude msg colour
             Color msgInfo;              // Info msg colour
+            Color msgFileMarks;         // File marks msg colour
             Color fileQueueEntry;       // File in queue display colour
             Color currentFile;          // Current file in queue display colour
             Color fileQueueColour;      // File queue background colour

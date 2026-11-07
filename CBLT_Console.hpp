@@ -32,8 +32,10 @@ namespace CBLT {
 
     // Results a directive can return
     typedef struct DirectiveResult {
-        std::string message;            // Message to return
-        ConsoleMessage messageType;     // The type of message
+        std::string message;                             // Message to return
+        ConsoleMessage messageType;                      // The type of message
+        Offset scrollOffsets = {0.0f, 0.0f};             // Message scroll
+        Rectangle msgWinView = {0.0f, 0.0f, 0.0f, 0.0f}; // Message window view
     } DirectiveResult;
 
     namespace ConsoleWidth {
@@ -112,6 +114,9 @@ namespace CBLT {
 
             // Update camera margins
             void CameraUpdate(void);
+
+            // Scrollable message, used for infile marks display, check offsets inside the DirectiveResult type
+            void MessageScroll(UT::i32 dy);
 
             // Scroll the CWD content camera by a specific offset, only in the y axis
             void Scroll(UT::i32 dy);

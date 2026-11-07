@@ -1373,6 +1373,9 @@ namespace CBLT {
     };
 
     void Console::DrawMessage(void) {
+        // Although kind of bad in practice, we will update directive result message window margins
+        // inside here since we already calculate the render margins
+
         // Draw any console messages if any
         if (dirRes.messageType == ConsoleMessage::NONE) return;
         
@@ -1393,6 +1396,13 @@ namespace CBLT {
         switch (dirRes.messageType) {
             // Message from console for error
             case ConsoleMessage::DIRECTIVE_ERROR: {
+                BeginScissorMode(
+                    msgX,
+                    msgY,
+                    msgW,
+                    msgH
+                );
+
                 // Background
                 DrawRectangle(
                     msgX,
@@ -1427,11 +1437,83 @@ namespace CBLT {
                     gPalette.msgErr
                 );
 
+                // Update message window view
+                dirRes.msgWinView = {
+                    msgX,
+                    msgY,
+                    msgW,
+                    msgH
+                };
+
+                EndScissorMode(); // :(
+
                 break;
             }
 
-            // Message from console for guide or shell-bridge output
-            case ConsoleMessage::FILE_MARKS:
+            // Message from console for file marks, will be scrollable
+            case ConsoleMessage::FILE_MARKS: {
+                const UT::i32 fileMarksMargin = 57;
+            
+                const UT::i32 fileMarksW = GetRenderWidth()  - fileMarksMargin * 2;
+                const UT::i32 fileMarksH = GetRenderHeight() - fileMarksMargin * 2;
+            
+                const UT::i32 fileMarksX = fileMarksMargin;
+                const UT::i32 fileMarksY = fileMarksMargin;
+
+                BeginScissorMode(
+                    fileMarksX,
+                    fileMarksY,
+                    fileMarksW,
+                    fileMarksH
+                );
+            
+                // Background
+                DrawRectangle(
+                    fileMarksX,
+                    fileMarksY,
+                    fileMarksW,
+                    fileMarksH,
+                    gPalette.msgForeground
+                );
+            
+                // Foreground
+                DrawRectangle(
+                    fileMarksX + 1,
+                    fileMarksY + 1,
+                    fileMarksW - 2,
+                    fileMarksH - 2,
+                    gPalette.msgBackground
+                );
+            
+                const UT::ui32 textMargin = 10;
+
+                // apply scroll offsets
+                textX = fileMarksX + textMargin + dirRes.scrollOffsets.x;
+                textY = fileMarksY + textMargin + dirRes.scrollOffsets.y;
+            
+                DrawTextEx(
+                    gConsoleFont.f,
+                    dirRes.message.c_str(),
+                    { textX, textY },
+                    directiveFontSize,
+                    0.0f,
+                    gPalette.msgFileMarks
+                );
+
+                // Update message window view
+                dirRes.msgWinView = {
+                    fileMarksX,
+                    fileMarksY,
+                    fileMarksW,
+                    fileMarksH
+                };
+
+                EndScissorMode(); // :(
+            
+                break;
+            }
+
+            // Message from console for shell bridge and guide
             case ConsoleMessage::SHELL_BRIDGE:
             case ConsoleMessage::GUIDE: {
                 const UT::i32 guideMargin = 57;
@@ -1441,6 +1523,13 @@ namespace CBLT {
             
                 const UT::i32 guideX = guideMargin;
                 const UT::i32 guideY = guideMargin;
+
+                BeginScissorMode(
+                    guideX,
+                    guideY,
+                    guideW,
+                    guideH
+                );
             
                 // Background
                 DrawRectangle(
@@ -1462,8 +1551,8 @@ namespace CBLT {
             
                 const UT::ui32 textMargin = 10;
 
-                textX = guideX + textMargin;
-                textY = guideY + textMargin;
+                textX = guideX + textMargin + dirRes.scrollOffsets.x;;
+                textY = guideY + textMargin + dirRes.scrollOffsets.y;;
             
                 DrawTextEx(
                     gConsoleFont.f,
@@ -1473,6 +1562,16 @@ namespace CBLT {
                     0.0f,
                     gPalette.msgGuide
                 );
+
+                // Update message window view
+                dirRes.msgWinView = {
+                    guideX,
+                    guideY,
+                    guideW,
+                    guideH
+                };
+
+                EndScissorMode(); // :(
             
                 break;
             }
@@ -1494,6 +1593,13 @@ namespace CBLT {
             
                 const UT::i32 infoX = (GetRenderWidth()  - infoW) / 2;
                 const UT::i32 infoY = (GetRenderHeight() - infoH) / 2;
+
+                BeginScissorMode(
+                    infoX,
+                    infoY,
+                    infoW,
+                    infoH
+                );
             
                 // Background
                 DrawRectangle(
@@ -1525,7 +1631,17 @@ namespace CBLT {
                     0.0f,
                     gPalette.msgInfo
                 );
+
+                // Update message window view
+                dirRes.msgWinView = {
+                    infoX,
+                    infoY,
+                    infoW,
+                    infoH
+                };
             
+                EndScissorMode(); // :(
+
                 break;
             }
 
@@ -1646,25 +1762,50 @@ namespace CBLT {
         );
     }
 
+    void Console::MessageScroll(UT::i32 dy) {
+        const UT::f32 textMargin = 10.0f; // Same margin used in DrawMessage
+
+        // Measure the real rendered height. MeasureTextEx handles '\n' with the same
+        // line spacing DrawTextEx uses, so we don't have to guess the line height.
+        const Vector2 textSize = MeasureTextEx(
+            gConsoleFont.f,
+            dirRes.message.c_str(),
+            (UT::f32)gConsoleFont.size,
+            0.0f
+        );
+    
+        const UT::f32 contentHeight = textSize.y + textMargin * 2.0f;
+        const UT::f32 windowHeight  = (UT::f32)dirRes.msgWinView.height;
+    
+        // How far the content can travel upward (0 if it already fits)
+        const UT::f32 maxScroll = std::max(0.0f, contentHeight - windowHeight);
+    
+        dirRes.scrollOffsets.y = std::clamp(
+            dirRes.scrollOffsets.y + (UT::f32)dy,
+            -maxScroll,
+            0.0f
+        );
+    }
+
     void Console::Scroll(UT::i32 dy) {
-        const float lineHeight =
+        const UT::f32 lineHeight =
             gConsoleFont.size +
             DirectiveMargins::directiveMarginFromConsoleY;
     
-        const float firstEntryY =
+        const UT::f32 firstEntryY =
             gConsoleFont.size +
             DirectiveMargins::directiveMarginFromConsoleY + 5 +
             DirectiveMargins::directiveMarginFromConsoleY + 5 + 5;
     
-        const float lastEntryBottom =
+        const UT::f32 lastEntryBottom =
             firstEntryY +
             (cwdContents.size()) * lineHeight +
             gConsoleFont.size;
     
-        const float scissorBottom =
+        const UT::f32 scissorBottom =
             camera.Origin().y + camera.Height();
     
-        const float minOffset =
+        const UT::f32 minOffset =
             scissorBottom - camera.Origin().y - lastEntryBottom;
     
         cameraOffset.y = std::clamp(

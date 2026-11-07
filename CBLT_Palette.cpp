@@ -33,6 +33,7 @@ namespace CBLT {
         msgErr              = toCol(UF::C(255, 64, 64)); 
         msgGuide            = toCol(UF::C(64, 255, 64));
         msgInfo             = toCol(UF::C(64, 64, 255));
+        msgFileMarks        = toCol(UF::C(0, 255, 255));
         
         fileQueueEntry      = toCol(UF::C(64, 64, 64));
         currentFile         = toCol(UF::C(192, 192, 192));
@@ -94,6 +95,7 @@ namespace CBLT {
             {"msg_err", &msgErr},
             {"msg_guide", &msgGuide},
             {"msg_info", &msgInfo},
+            {"msg_file_marks", &msgFileMarks},
             {"file_q_entry", &fileQueueEntry},
             {"current_file_entry", &currentFile},
             {"file_q_color", &fileQueueColour},

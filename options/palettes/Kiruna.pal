@@ -49,6 +49,8 @@
 
     msg_info : [0, 150, 255]
 
+    msg_file_marks : [0, 255, 255]
+
 
     ! file queue entry
 
