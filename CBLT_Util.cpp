@@ -3,6 +3,7 @@
 namespace CBLT {
     namespace Utils {
         std::ofstream gLogFile;
+        std::ofstream gDbgFile;
 
         namespace Err {
             // Initialize the log file
@@ -15,8 +16,10 @@ namespace CBLT {
                 fs::create_directories(logDir);
                         
                 fs::path logFile = logDir / "dir.log";
+                fs::path dbgFIle = logDir / "dbg.log";
                         
                 gLogFile = std::ofstream(logFile, std::ios::app);
+                gDbgFile = std::ofstream(dbgFIle, std::ios::app);
             }
 
             void Log(std::string msg) {

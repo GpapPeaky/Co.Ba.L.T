@@ -164,25 +164,25 @@ namespace CBLT {
                 gFont.size = fontSize;
                 gFont.Load(fontPath.string());
 
-                std::cout << fontPath.string() << std::endl;
+                Utils::gDbgFile << fontPath.string() << std::endl;
             }
             else if (token == "CONSOLE_FONT") {
                 gConsoleFont.size = fontSize;
                 gConsoleFont.Load(fontPath.string());
 
-                std::cout << fontPath.string() << std::endl;
+                Utils::gDbgFile << fontPath.string() << std::endl;
             }
             else if (token == "TOPBAR_FONT") {
                 gTopBarFont.size = fontSize;
                 gTopBarFont.Load(fontPath.string());
 
-                std::cout << fontPath.string() << std::endl;
+                Utils::gDbgFile << fontPath.string() << std::endl;
             }
             else if (token == "FQ_FONT") {
                 gFileQueueFont.size = fontSize;
                 gFileQueueFont.Load(fontPath.string());
 
-                std::cout << fontPath.string() << std::endl;
+                Utils::gDbgFile << fontPath.string() << std::endl;
             } 
             else {
                 UE::Log("UNKNOWN FONT TOKEN: " + token + "\n");

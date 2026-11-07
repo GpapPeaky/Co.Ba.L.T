@@ -15,7 +15,7 @@ namespace CBLT {
 
         fs::path settingsPath = base / "options" / "settings.cbltconf";
 
-        std::cerr << ("READING SETTINGS FROM " + settingsPath.string() + " \n");
+        Utils::gDbgFile << ("READING SETTINGS FROM " + settingsPath.string() + " \n");
     
         if (!fs::exists(settingsPath)) {
             // Optional log
@@ -66,12 +66,12 @@ namespace CBLT {
                 if (token == "USER_TERMINAL_POSIX") {
                     this->OPTION_POSIX_Term = value;
 
-                    std::cerr << ("READ SETTING " + token + " AS " + value + "\n");
+                    Utils::gDbgFile << ("READ SETTING " + token + " AS " + value + "\n");
                 }
                 else if (token == "USER_TERMINAL_WIN32") {
                     this->OPTION_WIN32_Term = value;
 
-                    std::cerr << ("READ SETTING " + token + " AS " + value + "\n");
+                    Utils::gDbgFile << ("READ SETTING " + token + " AS " + value + "\n");
                 }
                 else if (token == "TAB_SIZE") {
                     int v = 0; // Avoid std::stoi(...), throws exceptions -> Ass function.
@@ -82,17 +82,17 @@ namespace CBLT {
                         this->OPTION_TabSize = 4;
                     }
 
-                    std::cerr << ("READ SETTING " + token + " AS " + value + "\n");
+                    Utils::gDbgFile << ("READ SETTING " + token + " AS " + value + "\n");
                 }
                 else if (token == "PALETTE") {
                     this->OPTION_Palette = value;
 
-                    std::cerr << ("READ SETTING " + token + " AS " + value + "\n");
+                    Utils::gDbgFile << ("READ SETTING " + token + " AS " + value + "\n");
                 }
                 else if (token == "CURSOR_SYMBOL") {
                     // this->OPTION_CursorSymbol = value;
 
-                    std::cerr << ("READ SETTING " + token + " AS " + value + "\n");
+                    Utils::gDbgFile << ("READ SETTING " + token + " AS " + value + "\n");
                     
                     if      (value == "UNDERSCORE")  { this->OPTION_CursorSymbol = CursorSymbol::NON_ASCII_UNDERSCORE; }
                     else if (value == "BOX")         { this->OPTION_CursorSymbol = CursorSymbol::NON_ASCII_BOX;        }
@@ -103,59 +103,59 @@ namespace CBLT {
                     }
                 }
                 else if (token == "ANIM_FILE_CURSOR_PROFILE") {
-                    std::cerr << ("READ SETTING " + token + " AS " + value + "\n");
+                    Utils::gDbgFile << ("READ SETTING " + token + " AS " + value + "\n");
                     
                     this->OPTION_ANIM_FileCursor = ReadAnimationFile(value);
 
-                    std::cerr << ("FILE CURSOR ANIMATION PROFILE: \n");
-                    std::cerr << ("\t    Damping:   " + std::to_string(this->OPTION_ANIM_FileCursor.damping) + "\n");
-                    std::cerr << ("\t    Speed:     " + std::to_string(this->OPTION_ANIM_FileCursor.speed) + "\n");
-                    std::cerr << ("\t    Overshoot: " + std::to_string(this->OPTION_ANIM_FileCursor.overshoot) + "\n");
-                    std::cerr << ("\t    Stiffness: " + std::to_string(this->OPTION_ANIM_FileCursor.stiffness) + "\n");
+                    Utils::gDbgFile << ("FILE CURSOR ANIMATION PROFILE: \n");
+                    Utils::gDbgFile << ("\t    Damping:   " + std::to_string(this->OPTION_ANIM_FileCursor.damping) + "\n");
+                    Utils::gDbgFile << ("\t    Speed:     " + std::to_string(this->OPTION_ANIM_FileCursor.speed) + "\n");
+                    Utils::gDbgFile << ("\t    Overshoot: " + std::to_string(this->OPTION_ANIM_FileCursor.overshoot) + "\n");
+                    Utils::gDbgFile << ("\t    Stiffness: " + std::to_string(this->OPTION_ANIM_FileCursor.stiffness) + "\n");
                 }
                 else if (token == "ANIM_CONSOLE_CURSOR_PROFILE") {
-                    std::cerr << ("READ SETTING " + token + " AS " + value + "\n");
+                    Utils::gDbgFile << ("READ SETTING " + token + " AS " + value + "\n");
                     
                     this->OPTION_ANIM_ConsoleCursor = ReadAnimationFile(value);
 
-                    std::cerr << ("CONSOLE CURSOR ANIMATION PROFILE: \n");
-                    std::cerr << ("\t    Damping:   " + std::to_string(this->OPTION_ANIM_ConsoleCursor.damping) + "\n");
-                    std::cerr << ("\t    Speed:     " + std::to_string(this->OPTION_ANIM_ConsoleCursor.speed) + "\n");
-                    std::cerr << ("\t    Overshoot: " + std::to_string(this->OPTION_ANIM_ConsoleCursor.overshoot) + "\n");
-                    std::cerr << ("\t    Stiffness: " + std::to_string(this->OPTION_ANIM_ConsoleCursor.stiffness) + "\n");
+                    Utils::gDbgFile << ("CONSOLE CURSOR ANIMATION PROFILE: \n");
+                    Utils::gDbgFile << ("\t    Damping:   " + std::to_string(this->OPTION_ANIM_ConsoleCursor.damping) + "\n");
+                    Utils::gDbgFile << ("\t    Speed:     " + std::to_string(this->OPTION_ANIM_ConsoleCursor.speed) + "\n");
+                    Utils::gDbgFile << ("\t    Overshoot: " + std::to_string(this->OPTION_ANIM_ConsoleCursor.overshoot) + "\n");
+                    Utils::gDbgFile << ("\t    Stiffness: " + std::to_string(this->OPTION_ANIM_ConsoleCursor.stiffness) + "\n");
                 }
                 else if (token == "ANIM_FQ_PROFILE") {
-                    std::cerr << ("READ SETTING " + token + " AS " + value + "\n");
+                    Utils::gDbgFile << ("READ SETTING " + token + " AS " + value + "\n");
                     
                     this->OPTION_ANIM_FQ = ReadAnimationFile(value);
 
-                    std::cerr << ("FILE QUEUE ANIMATION PROFILE: \n");
-                    std::cerr << ("\t    Damping:   " + std::to_string(this->OPTION_ANIM_FQ.damping) + "\n");
-                    std::cerr << ("\t    Speed:     " + std::to_string(this->OPTION_ANIM_FQ.speed) + "\n");
-                    std::cerr << ("\t    Overshoot: " + std::to_string(this->OPTION_ANIM_FQ.overshoot) + "\n");
-                    std::cerr << ("\t    Stiffness: " + std::to_string(this->OPTION_ANIM_FQ.stiffness) + "\n");
+                    Utils::gDbgFile << ("FILE QUEUE ANIMATION PROFILE: \n");
+                    Utils::gDbgFile << ("\t    Damping:   " + std::to_string(this->OPTION_ANIM_FQ.damping) + "\n");
+                    Utils::gDbgFile << ("\t    Speed:     " + std::to_string(this->OPTION_ANIM_FQ.speed) + "\n");
+                    Utils::gDbgFile << ("\t    Overshoot: " + std::to_string(this->OPTION_ANIM_FQ.overshoot) + "\n");
+                    Utils::gDbgFile << ("\t    Stiffness: " + std::to_string(this->OPTION_ANIM_FQ.stiffness) + "\n");
                 }
                 else if (token == "ANIM_CONSOLE_PROFILE") {
-                    std::cerr << ("READ SETTING " + token + " AS " + value + "\n");
+                    Utils::gDbgFile << ("READ SETTING " + token + " AS " + value + "\n");
                     
                     this->OPTION_ANIM_Console = ReadAnimationFile(value);
 
-                    std::cerr << ("CONSOLE ANIMATION PROFILE: \n");
-                    std::cerr << ("\t    Damping:   " + std::to_string(this->OPTION_ANIM_Console.damping) + "\n");
-                    std::cerr << ("\t    Speed:     " + std::to_string(this->OPTION_ANIM_Console.speed) + "\n");
-                    std::cerr << ("\t    Overshoot: " + std::to_string(this->OPTION_ANIM_Console.overshoot) + "\n");
-                    std::cerr << ("\t    Stiffness: " + std::to_string(this->OPTION_ANIM_Console.stiffness) + "\n");
+                    Utils::gDbgFile << ("CONSOLE ANIMATION PROFILE: \n");
+                    Utils::gDbgFile << ("\t    Damping:   " + std::to_string(this->OPTION_ANIM_Console.damping) + "\n");
+                    Utils::gDbgFile << ("\t    Speed:     " + std::to_string(this->OPTION_ANIM_Console.speed) + "\n");
+                    Utils::gDbgFile << ("\t    Overshoot: " + std::to_string(this->OPTION_ANIM_Console.overshoot) + "\n");
+                    Utils::gDbgFile << ("\t    Stiffness: " + std::to_string(this->OPTION_ANIM_Console.stiffness) + "\n");
                 }
                 else if (token == "ANIM_CONSOLE_CONTENT_PROFILE") {
-                    std::cerr << ("READ SETTING " + token + " AS " + value + "\n");
+                    Utils::gDbgFile << ("READ SETTING " + token + " AS " + value + "\n");
                     
                     this->OPTION_ANIM_ConsoleContent = ReadAnimationFile(value);
 
-                    std::cerr << ("CONSOLE CONTENT ANIMATION PROFILE: \n");
-                    std::cerr << ("\t    Damping:   " + std::to_string(this->OPTION_ANIM_ConsoleContent.damping) + "\n");
-                    std::cerr << ("\t    Speed:     " + std::to_string(this->OPTION_ANIM_ConsoleContent.speed) + "\n");
-                    std::cerr << ("\t    Overshoot: " + std::to_string(this->OPTION_ANIM_ConsoleContent.overshoot) + "\n");
-                    std::cerr << ("\t    Stiffness: " + std::to_string(this->OPTION_ANIM_ConsoleContent.stiffness) + "\n");
+                    Utils::gDbgFile << ("CONSOLE CONTENT ANIMATION PROFILE: \n");
+                    Utils::gDbgFile << ("\t    Damping:   " + std::to_string(this->OPTION_ANIM_ConsoleContent.damping) + "\n");
+                    Utils::gDbgFile << ("\t    Speed:     " + std::to_string(this->OPTION_ANIM_ConsoleContent.speed) + "\n");
+                    Utils::gDbgFile << ("\t    Overshoot: " + std::to_string(this->OPTION_ANIM_ConsoleContent.overshoot) + "\n");
+                    Utils::gDbgFile << ("\t    Stiffness: " + std::to_string(this->OPTION_ANIM_ConsoleContent.stiffness) + "\n");
                 }
                 else {
                     std::cerr <<  ("INVALID SETTINGS TOKEN AT LINE: " + line + "\n");

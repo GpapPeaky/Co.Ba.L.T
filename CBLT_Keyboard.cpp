@@ -41,7 +41,7 @@ namespace CBLT {
 
         void Keyboard::AssignTabSize(UT::ui32* size) {
             if (*size == 0 || *size > 255){
-                CBLT::Utils::Err::Log("INVALID TAB SIZE: " + std::to_string(*size) + " (MUST BE BETWEEN 1 AND 255) DEFAULTING TO 4\n");
+                std::cerr << "INVALID TAB SIZE: " + std::to_string(*size) + " (MUST BE BETWEEN 1 AND 255) DEFAULTING TO 4\n";
                 *size = 4;
             }
 

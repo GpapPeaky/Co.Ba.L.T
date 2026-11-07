@@ -42,7 +42,7 @@ namespace CBLT {
 
         for (UT::llui32 i = 0 ; i < (UT::llui32)SoundClass::EDITOR_SOUNDS_COUNT ; i++) {
             if (!IsSoundValid(soundVector[i])) {
-                CBLT::Utils::Err::Log("BAD SOUND DATA AT INDEX " + std::to_string(i) + "\n");
+                std::cerr << "BAD SOUND DATA AT INDEX " + std::to_string(i) + "\n";
             }
         }
     }

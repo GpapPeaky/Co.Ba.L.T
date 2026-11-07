@@ -17,6 +17,8 @@ namespace CBLT {
     namespace Utils {
         // Log file
         extern std::ofstream gLogFile;
+        // Debug
+        extern std::ofstream gDbgFile;
 
         // Cross plafrom function attrib
         #define __CROSS
