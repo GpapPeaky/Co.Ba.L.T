@@ -79,6 +79,8 @@ namespace CBLT {
         this->column = col;
         this->line = line;
 
+        // TODO: Add the font as a parameter, since we have 2 different typeable fonts (console/file)
+        //       of different sizes
         // Animation trigger here, might need some tinkering later specifically with cursor x calculation
         UT::f32 targetX = GetCursorX(targetLine, gFont.size);
         UT::f32 targetY = line * gFont.size;
