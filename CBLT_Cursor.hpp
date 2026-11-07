@@ -72,6 +72,7 @@ namespace CBLT {
 
             // Set cursor position at a specific column and line
             void SetAt(UT::ui32 col, UT::ui32 line, const std::string& targetLine);
+            void SetAt(UT::ui32 col, UT::ui32 line, const std::string& targetLine, CBLT::EditorFont font);
 
             // Get the cursor mode
             CursorMode GetMode(void) const;
@@ -86,9 +87,11 @@ namespace CBLT {
             void Down(const std::string& targetLine);
 
             // Move cursor one column left, column -= 1
+            void Left(const std::string& targetLine, EditorFont font);
             void Left(const std::string& targetLine);
 
             // Move cursor one column right, column += 1
+            void Right(const std::string& targetLine, EditorFont font);
             void Right(const std::string& targetLine);
 
             // Draw cursor
@@ -116,7 +119,7 @@ namespace CBLT {
             UT::ui32 SSLine() const;
 
             // Get cursor x in pixels 
-            UT::ui32 GetCursorX(const std::string& lineText, UT::ui32 fontSize);
+            UT::ui32 GetCursorX(const std::string& lineText, UT::ui32 fontSize, EditorFont font);
 
             // Classify character class
             CharClass Classify(UT::cui8 c) const;

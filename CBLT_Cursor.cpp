@@ -79,11 +79,25 @@ namespace CBLT {
         this->column = col;
         this->line = line;
 
-        // TODO: Add the font as a parameter, since we have 2 different typeable fonts (console/file)
-        //       of different sizes
         // Animation trigger here, might need some tinkering later specifically with cursor x calculation
-        UT::f32 targetX = GetCursorX(targetLine, gFont.size);
+        UT::f32 targetX = GetCursorX(targetLine, gFont.size, gFont);
         UT::f32 targetY = line * gFont.size;
+
+        animator.MoveTo(targetX, targetY);
+    }
+
+    void Cursor::SetAt(UT::ui32 col, UT::ui32 line, const std::string& targetLine, CBLT::EditorFont font) {
+        // Clamping, just in case
+        if (col > targetLine.size()) {
+            col = targetLine.size();
+        }
+        
+        this->column = col;
+        this->line = line;
+
+        // Animation trigger here, might need some tinkering later specifically with cursor x calculation
+        UT::f32 targetX = GetCursorX(targetLine, font.size, font);
+        UT::f32 targetY = line * font.size;
 
         animator.MoveTo(targetX, targetY);
     }
@@ -106,10 +120,20 @@ namespace CBLT {
         SetAt(this->column, this->line + 1, targetLine);
     }
 
+    void Cursor::Left(const std::string& targetLine, EditorFont font) {
+        if(this->column > 0) {
+            SetAt(this->column - 1, this->line, targetLine, font);
+        }
+    }
+
     void Cursor::Left(const std::string& targetLine) {
         if(this->column > 0) {
             SetAt(this->column - 1, this->line, targetLine);
         }
+    }
+
+    void Cursor::Right(const std::string& targetLine, EditorFont font) {
+        SetAt(this->column + 1, this->line, targetLine, font);
     }
 
     void Cursor::Right(const std::string& targetLine) {
@@ -268,24 +292,24 @@ namespace CBLT {
         finalSelectLine = line;
     }
 
-    UT::ui32 Cursor::GetCursorX(const std::string& lineText, UT::ui32 fontSize){
-        UT::f32 scale = (UT::f32)fontSize / gFont.f.baseSize;
+    UT::ui32 Cursor::GetCursorX(const std::string& lineText, UT::ui32 fontSize, EditorFont font){
+        UT::f32 scale = (UT::f32)fontSize / font.f.baseSize;
         UT::ui32 width = 0;
-        auto cps = CBLT::gFont.Utf8ToCodepoints(lineText);
+        auto cps = font.Utf8ToCodepoints(lineText);
 
         for(size_t i = 0; i < column && i < cps.size(); i++) {
             UT::i32 cp = cps[i];
             UT::i32 glyphIndex = -1;
 
-            for(UT::i32 g = 0; g < gFont.f.glyphCount; g++) {
-                if(gFont.f.glyphs[g].value == cp){
+            for(UT::i32 g = 0; g < font.f.glyphCount; g++) {
+                if(font.f.glyphs[g].value == cp){
                     glyphIndex = g;
                     break;
                 }
             }
 
             if (glyphIndex >= 0) {
-                width += gFont.f.glyphs[glyphIndex].advanceX;
+                width += font.f.glyphs[glyphIndex].advanceX;
             } else {
                 width += fontSize / 2;
             }
@@ -394,7 +418,7 @@ namespace CBLT {
 
         const UT::i32 textBaseY = CBLT::FileMargins::UI::TOP_BAR_HEIGHT * 2;
         
-        UT::i32 cursorWorldX = textBaseX + GetCursorX(currentLine, gFont.size);
+        UT::i32 cursorWorldX = textBaseX + GetCursorX(currentLine, gFont.size, gFont);
         UT::i32 cursorWorldY = textBaseY + line * lineHeight;
         
         UT::i32 cursorScreenX = cursorWorldX + off.x;

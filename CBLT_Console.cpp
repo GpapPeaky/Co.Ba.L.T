@@ -1241,7 +1241,7 @@ namespace CBLT {
         const UT::i32 minorHorizotalFix = 2;
 
         // Compute cursor position inside console
-        UT::f32 cursorX = cc.GetCursorX(lineText, directiveFontSize) + minorHorizotalFix;
+        UT::f32 cursorX = cc.GetCursorX(lineText, directiveFontSize, gConsoleFont) + minorHorizotalFix;
         UT::f32 cursorY = DirectiveMargins::directiveMarginFromConsoleY;
         
         // Offset for the console's left edge + margins

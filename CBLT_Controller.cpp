@@ -929,7 +929,7 @@ namespace CBLT {
                     gSound.Play(SoundClass::SOUND_INFILE_INSERT);
                 }
 
-                cc.Right(df.GetCurrentLine(DIRECTIVE_FILE_LINE)); // Move cursor forward after inserting
+                cc.Right(df.GetCurrentLine(DIRECTIVE_FILE_LINE), gConsoleFont); // Move cursor forward after inserting
 
                 handled = true;
             }
