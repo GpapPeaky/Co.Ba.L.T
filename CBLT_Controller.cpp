@@ -34,6 +34,8 @@ namespace CBLT {
         // We need to check specifics AND THEN check for general key presses
         if (!inConsole && HandleSpecialMovement(cursor)) return; // Already handled movement, via LCtrl, skip applying any more movement
         
+        EditorFont& fontToUse = inConsole ? gConsoleFont : gFont;
+
         const UT::ui32 line = cursor.Line();
         const UT::ui32 col  = cursor.Col();
         const UT::ui32 len  = f.GetLineLength(line);
@@ -41,20 +43,20 @@ namespace CBLT {
         if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT)) {
             if (col > 0) {
                 gSound.Play(SoundClass::SOUND_INFILE_NAV);
-                cursor.Left(f.GetCurrentLine(line));
+                cursor.Left(f.GetCurrentLine(line), fontToUse);
             } else if (line > 0) {
                 gSound.Play(SoundClass::SOUND_INFILE_NAV);
-                cursor.SetAt(f.GetLineLength(line - 1), line - 1, f.GetCurrentLine(line - 1));
+                cursor.SetAt(f.GetLineLength(line - 1), line - 1, f.GetCurrentLine(line - 1), fontToUse);
             }
 
             f.Auto().Close(); // Close in infile navigation
         } else if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT)) {
             if (col < f.GetLineLength(line)) {
                 gSound.Play(SoundClass::SOUND_INFILE_NAV);
-                cursor.Right(f.GetCurrentLine(line));
+                cursor.Right(f.GetCurrentLine(line), fontToUse);
             } else if (line + 1 < f.GetLineCount()) {
                 gSound.Play(SoundClass::SOUND_INFILE_NAV);
-                cursor.SetAt(0, line + 1, f.GetCurrentLine(line + 1));
+                cursor.SetAt(0, line + 1, f.GetCurrentLine(line + 1), fontToUse);
             }
 
             f.Auto().Close(); // Close in infile navigation
@@ -67,7 +69,7 @@ namespace CBLT {
                         f.GetLineLength(newLine)
                     );
                     gSound.Play(SoundClass::SOUND_INFILE_NAV);
-                    cursor.SetAt(newCol, newLine, f.GetCurrentLine(newLine));
+                    cursor.SetAt(newCol, newLine, f.GetCurrentLine(newLine), fontToUse);
                 } else if (line > 0) {
                     UT::ui32 newLine = line - 1;
                     UT::ui32 newCol  = std::max(
@@ -75,7 +77,7 @@ namespace CBLT {
                         f.GetLineLength(newLine)
                     );
                     gSound.Play(SoundClass::SOUND_INFILE_NAV);
-                    cursor.SetAt(newCol, newLine, f.GetCurrentLine(newLine));
+                    cursor.SetAt(newCol, newLine, f.GetCurrentLine(newLine), fontToUse);
                 }
             } else {
                 f.Auto().Up();
@@ -89,7 +91,7 @@ namespace CBLT {
                         f.GetLineLength(newLine)
                     );
                     gSound.Play(SoundClass::SOUND_INFILE_NAV);
-                    cursor.SetAt(newCol, newLine, f.GetCurrentLine(newLine));
+                    cursor.SetAt(newCol, newLine, f.GetCurrentLine(newLine), fontToUse);
                 } else if (line + 1 < f.GetLineCount()) {
                     UT::ui32 newLine = line + 1;
                     UT::ui32 newCol  = std::max(
@@ -97,7 +99,7 @@ namespace CBLT {
                         f.GetLineLength(newLine)
                     );
                     gSound.Play(SoundClass::SOUND_INFILE_NAV);
-                    cursor.SetAt(newCol, newLine, f.GetCurrentLine(newLine));
+                    cursor.SetAt(newCol, newLine, f.GetCurrentLine(newLine), fontToUse);
                 }
             } else {
                 f.Auto().Down();

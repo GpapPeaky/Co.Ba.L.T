@@ -1237,7 +1237,7 @@ namespace CBLT {
 
         // Draw console cursor
         Cursor& cc = cursor.Primary();
-        cc.animator.Update();
+        // cc.animator.Update();
         
         const UT::i32 minorHorizotalFix = 2;
         const std::string& lineText = directive.DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE);
