@@ -628,4 +628,8 @@ namespace CBLT {
     Offset& File::Offs(void) {
         return off;
     }
+
+    std::vector<LexerState>& File::LineStates(void) {
+        return lineStates;
+    }
 } // CBLT

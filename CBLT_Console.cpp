@@ -1115,6 +1115,29 @@ namespace CBLT {
                 return;
             }
 
+            // File flush, clears all content
+            else if (dir == "ff") {
+                File& f = Q.Active();
+
+                dr.message = "CBLT_LOG: FILE FLUSH " + f.Name();
+                dr.messageType = ConsoleMessage::INFO;
+
+                dirRes = dr;
+                CBLT::Utils::Err::Log("DIRECTIVE: FILEFLUSH " + f.Name());
+
+                this->directive.Clear();
+
+                f.Clear();  // Clean
+
+                // Construct empty file
+                f.GetLines().emplace_back("");
+                f.Tokens().resize(1);
+                f.LineStates().resize(1, LexerState::NONE);
+                f.SetDirt(true);
+
+                return;
+            }
+
             // UNKOWN
             else {
                 dr.message = "CBLT_ERR: UNKOWN DIRECTIVE " + directiveLine;

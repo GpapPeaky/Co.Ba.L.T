@@ -258,6 +258,7 @@ All command directives begin with `:`. Parameters are separated by a single spac
 | `:c <name>` | Create a new file and enqueue it |
 | `:r <name>` | Delete a file from disk |
 | `:i` | Display current file metadata (path, line count, dirty state) |
+| `:ff` | File flush, cleans the file and resets it to line 0 |
 
 ### Navigation
 
@@ -302,6 +303,7 @@ All command directives begin with `:`. Parameters are separated by a single spac
 | `:rst` | Reload `settings.cbltconf` and apply all settings |
 | `:msg <text>` | Display an info message |
 | `:e` | Exit the editor |
+| `:ec` | Display cwd entry count |
 
 ---
 

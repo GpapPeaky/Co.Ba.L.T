@@ -166,5 +166,8 @@ namespace CBLT {
 
             // Return a string of the file markings and nearby lines
             std::string GetMarksAndNearbyLinesMessageString(void) const ;
+
+            // Get line states
+            std::vector<LexerState>& LineStates(void);
     }; // File class
 } // CBLT
