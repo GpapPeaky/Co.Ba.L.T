@@ -997,7 +997,7 @@ namespace CBLT {
                     
                     if (!line.empty() && console.ConsoleCursor().Col() <= line.size()) {
                         line.erase(console.ConsoleCursor().Col() - 1, 1);
-                        console.ConsoleCursor().Left(line);
+                        console.ConsoleCursor().Left(line, gConsoleFont);
                     }
                 }
             }
@@ -1053,7 +1053,8 @@ namespace CBLT {
                     console.ConsoleCursor().SetAt(
                         console.ConsoleDirective().DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE).size(),
                         0,
-                        console.ConsoleDirective().DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE)
+                        console.ConsoleDirective().DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE),
+                        gConsoleFont
                     );
                 }
             }
@@ -1076,7 +1077,8 @@ namespace CBLT {
                         console.ConsoleCursor().SetAt(
                             console.ConsoleDirective().DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE).size(),
                             0,
-                            console.ConsoleDirective().DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE)
+                            console.ConsoleDirective().DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE),
+                            gConsoleFont
                         );
                     }
                 }
@@ -1092,7 +1094,7 @@ namespace CBLT {
                 Cursor& cc = console.ConsoleCursor();
                 std::string autocmp = console.Autocomplete();
                 console.ConsoleDirective().Becomes(autocmp);
-                cc.SetAt(autocmp.size(), cc.Line(), console.ConsoleDirective().DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE));
+                cc.SetAt(autocmp.size(), cc.Line(), console.ConsoleDirective().DirectiveFile().GetCurrentLine(DIRECTIVE_FILE_LINE), gConsoleFont);
             }
 
             // Overide the file to handle movement at, since without any specifications it will try to write at the current open user file
