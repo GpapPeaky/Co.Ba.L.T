@@ -1117,23 +1117,32 @@ namespace CBLT {
 
             // File flush, clears all content
             else if (dir == "ff") {
-                File& f = Q.Active();
+                if (Q.Size() > 0) {
+                    File& f = Q.Active();
+                    
+                    dr.message = "CBLT_LOG: FILE FLUSH " + f.Name();
+                    dr.messageType = ConsoleMessage::INFO;
+                    
+                    dirRes = dr;
+                    CBLT::Utils::Err::Log("DIRECTIVE: FILEFLUSH " + f.Name());
+                    
+                    f.Clear();  // Clean
+                    
+                    // Construct empty file
+                    f.GetLines().emplace_back("");
+                    f.Tokens().resize(1);
+                    f.LineStates().resize(1, LexerState::NONE);
+                    f.SetDirt(true);
+                } else {
+                    dr.message = "CBLT_ERR: NO CURRENT FILE";
+                    dr.messageType = ConsoleMessage::DIRECTIVE_ERROR;
+                    
+                    dirRes = dr;
+                    
+                    CBLT::Utils::Err::Log("DIRECTIVE FAIL: FILEFLUSH <NAF>");
+                }
 
-                dr.message = "CBLT_LOG: FILE FLUSH " + f.Name();
-                dr.messageType = ConsoleMessage::INFO;
-
-                dirRes = dr;
-                CBLT::Utils::Err::Log("DIRECTIVE: FILEFLUSH " + f.Name());
-
-                this->directive.Clear();
-
-                f.Clear();  // Clean
-
-                // Construct empty file
-                f.GetLines().emplace_back("");
-                f.Tokens().resize(1);
-                f.LineStates().resize(1, LexerState::NONE);
-                f.SetDirt(true);
+                directive.Clear();
 
                 return;
             }
@@ -1150,6 +1159,8 @@ namespace CBLT {
             }
         } else { // Directive file-switch context
             for (auto& entry : cwdContents) {
+                if (entry.isDir) continue; // Avoid openning directories as files
+
                 if (entry.n.compare(0, directiveLine.length(), directiveLine) == 0) {
                     Q.LoadFileToQueue(entry.n, cwd); // Add it to the queue, constructs it inside it
 
