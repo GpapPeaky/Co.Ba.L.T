@@ -2,6 +2,8 @@
 
 #include "CBLT_Util.hpp" // UI namespace
 
+#include "CBLT_raylib.hpp"
+
 namespace CBLT {
     // Offset structure for camera
     typedef struct Offset {

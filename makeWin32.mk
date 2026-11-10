@@ -1,3 +1,4 @@
+
 # For god's sake do not compile ANYTHING inside Git-bash, fucks up PATH, STDLIB and appearantly C Runtime and DLL comp.
 
 # 64-bit MinGW
@@ -16,15 +17,17 @@ RAYLIB_PATH = C:/raylib/raylib/src
 # Compiler flags
 CXXFLAGS = -std=c++23 -Wall -Wextra -O3 -I$(RAYLIB_PATH)
 
+SRC = src
 # Common source files
-CPP_SRCS_COMMON := $(filter-out CBLT_Dialog_Win32.cpp CBLT_Dialog_Linux.cpp CBLT_Dialog_MacOS.cpp, $(wildcard *.cpp))
+CPP_SRCS_COMMON := $(filter-out $(SRC)/CBLT_Dialog_Win32.cpp $(SRC)/CBLT_Dialog_Linux.cpp $(SRC)/CBLT_Dialog_MacOS.cpp, $(wildcard $(SRC)/*.cpp))
 
-CPP_SRCS_PLATFORM := CBLT_Dialog_Win32.cpp
+CPP_SRCS_PLATFORM := $(SRC)/CBLT_Dialog_Win32.cpp
 LDFLAGS := -L$(RAYLIB_PATH) -lraylib -lopengl32 -lgdi32 -lwinmm -lole32 -lshell32 -luuid -static-libgcc -static-libstdc++
 
 CPP_SRCS := $(CPP_SRCS_COMMON) $(CPP_SRCS_PLATFORM)
 OBJDIR := obj
-CPP_OBJS := $(CPP_SRCS:%.cpp=$(OBJDIR)/%.o)
+CPP_OBJS := $(notdir $(CPP_SRCS:%.cpp=%.o))
+CPP_OBJS := $(addprefix $(OBJDIR)/,$(CPP_OBJS))
 OBJS := $(CPP_OBJS)
 
 # Default target
@@ -36,7 +39,7 @@ $(TARGET): $(OBJS)
 	$(CXX) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
 # Compile object files
-$(OBJDIR)/%.o: %.cpp
+$(OBJDIR)/%.o: $(SRC)/%.cpp
 	@if not exist $(OBJDIR) mkdir $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
