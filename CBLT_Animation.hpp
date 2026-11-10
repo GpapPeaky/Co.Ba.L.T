@@ -4,8 +4,6 @@
 #include "CBLT_Util.hpp"
 #include "CBLT_Sys.hpp"
 
-#include <cmath>
-
 namespace CBLT {
     enum class AnimationEase : UT::i32 {
         NONE,                       // Instant, no interpolation

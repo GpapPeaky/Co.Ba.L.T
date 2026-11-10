@@ -1,7 +1,5 @@
 #pragma once
 
-#include "CBLT_Util.hpp"
-#include "CBLT_Palette.hpp"
 #include "CBLT_Util.hpp" // UI namespace
 
 namespace CBLT {
