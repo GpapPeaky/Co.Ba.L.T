@@ -8,3 +8,4 @@ meta/marks/*
 !meta/marks/.gitkeep
 *.log
 cblt
+.vscode/
