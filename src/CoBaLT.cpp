@@ -97,8 +97,6 @@ UT::i32 main(int argc, char** argv) {
                 cnsl.Draw(fq, rect);
             }
 
-            DrawFPS(0, 0);
-
             // Draw file queue
             if (fq.Size() > 0) fq.Draw();
 

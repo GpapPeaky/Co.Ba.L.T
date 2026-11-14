@@ -123,7 +123,9 @@ namespace CBLT {
                                 CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES;
         const UT::f32 textBaseY = off.y + CBLT::FileMargins::UI::TOP_BAR_HEIGHT * 2; // Need this here, for correct vertical offsets
 
-        cam.Draw();
+        #ifdef FILE_DRAW_DEBUG
+            cam.Draw();
+        #endif /* FILE_dRAW_DEBUG */
 
         // Seperator
         DrawLineV(
@@ -273,7 +275,6 @@ namespace CBLT {
         // CLIPPING INFILE MARKS
         EndScissorMode();
 
-        #define FILE_DRAW_DEBUG
         #ifdef FILE_DRAW_DEBUG
             DrawText(("Lines drawn: " + std::to_string(linesDrawn)).c_str(), 0, 20, 18, WHITE);
         #endif /* FILE_DRAW_DEBUG */
