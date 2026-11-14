@@ -114,6 +114,8 @@ namespace CBLT {
     }
 
     void File::Draw(UT::ui32 cursorX, UT::ui32 cursorY, UT::b consoleOpen, UT::ui32 consoleWidth) {
+        UT::ui32 linesDrawn = 0; // Debug
+
         UT::f32 lineHeight = gFont.size;
         
         const UT::f32 textBaseX = CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI + 
@@ -121,7 +123,7 @@ namespace CBLT {
                                 CBLT::FileMargins::UI::LEFT_FROM_FILE_LINES;
         const UT::f32 textBaseY = off.y + CBLT::FileMargins::UI::TOP_BAR_HEIGHT * 2; // Need this here, for correct vertical offsets
 
-        // cam.Draw();
+        cam.Draw();
 
         // Seperator
         DrawLineV(
@@ -140,6 +142,22 @@ namespace CBLT {
                 textBaseX + off.x,
                 textBaseY + i * lineHeight
             };
+
+
+            /* Produced the no rendering after column 194 issue. since it was checking the line itself and NOT the token positions
+            since the line whole starts at a specific X coordinate, it will not render the line in its entirety if it wanders too far.
+            we check the token X coord now instead of pos.x.
+            
+            It is still problematic if the entire line is one token. */
+
+            /* This can produce extremely large bottlenecks if not handled correctly */
+            /* Produced huge lag inside the token traversal */
+            if (!cam.Contains(
+                pos.x,
+                pos.y,
+                (UT::f32)cam.Width(),
+                lineHeight + FileMargins::UI::TOP_BAR_HEIGHT
+            )) continue; // Skip non visible lines
 
             // File text
             // DrawTextEx(
@@ -183,21 +201,15 @@ namespace CBLT {
             
                 UT::f32 tokX = pos.x + t.GetCursorX(std::string_view(lines[i]), gFont.size, t.col);
 
-                /* Produced the no rendering after column 194 issue. since it was checking the line itself and NOT the token positions
-                since the line whole starts at a specific X coordinate, it will not render the line in its entirety if it wanders too far.
-                we check the token X coord now instead of pos.x.
-                
-                It is still problematic if the entire line is one token. */
-                if (!cam.Contains(
-                    tokX,
-                    pos.y,
-                    (UT::f32)cam.Width(),
-                    lineHeight + FileMargins::UI::TOP_BAR_HEIGHT
-                )) continue; // Skip non visible lines
+                linesDrawn++;
+
+                /* Scratch buffer to avoid constant string allocations, string needs to be copied over thought */
+                thread_local std::string scratch;
+                scratch.assign(tokenText.data(), tokenText.size());
             
                 DrawTextEx(
                     gFont.f,
-                    std::string(tokenText).c_str(),
+                    scratch.c_str(),
                     { tokX, pos.y },
                     gFont.size,
                     0.0f,
@@ -260,6 +272,11 @@ namespace CBLT {
 
         // CLIPPING INFILE MARKS
         EndScissorMode();
+
+        #define FILE_DRAW_DEBUG
+        #ifdef FILE_DRAW_DEBUG
+            DrawText(("Lines drawn: " + std::to_string(linesDrawn)).c_str(), 0, 20, 18, WHITE);
+        #endif /* FILE_DRAW_DEBUG */
 
         autocomplete.DrawSuggestions(cursorX, cursorY);
     }
