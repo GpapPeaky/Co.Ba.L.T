@@ -43,6 +43,7 @@ UT::i32 main(int argc, char** argv) {
     UT::b currentFileDirt; 
     std::string currentFileName;
     std::string currentFileLangConfName;
+    UT::ui32 linesDrawn;
 
     // File cursors
     const UT::ui32 baseX = CBLT::FileMargins::Text::LEFT_FROM_FILE_LINES_UI +
@@ -71,7 +72,7 @@ UT::i32 main(int argc, char** argv) {
                 c.AcquireFragment(c.Col(), f.GetCurrentLine(c.Line()));
 
                 cm.DrawCursors(CBLT::gFont, baseX, 0, f.Offs());
-                f.Draw(c.renderX, c.renderY, cnsl.IsOpen(), cnsl.Width());
+                linesDrawn = f.Draw(c.renderX, c.renderY, cnsl.IsOpen(), cnsl.Width());
                 
                 currentFileLineCount        = f.GetLineCount();
                 currentFileDirt             = f.Dirt();
@@ -82,7 +83,7 @@ UT::i32 main(int argc, char** argv) {
                 f.Cam().SetHeight(GetRenderHeight());
                 f.Cam().SetWidth(GetRenderWidth());
                 
-                CBLT::DrawInfo(c, currentFileLineCount, currentFileDirt, currentFileName, ctrl.CWD(), currentFileLangConfName);
+                CBLT::DrawInfo(c, currentFileLineCount, currentFileDirt, currentFileName, ctrl.CWD(), currentFileLangConfName, linesDrawn, GetFPS());
             }
             
             // Update console camera margins

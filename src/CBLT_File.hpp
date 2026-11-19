@@ -64,8 +64,8 @@ namespace CBLT {
             // Get current file path
             const std::string& GetPath(void) const;
 
-            // Draw the document
-            void Draw(UT::ui32 cursorX, UT::ui32 cursorY, UT::b consoleOpen, UT::ui32 consoleWidth);
+            // Draw the document, return lines drawn
+            UT::ui32 Draw(UT::ui32 cursorX, UT::ui32 cursorY, UT::b consoleOpen, UT::ui32 consoleWidth);
 
             // Get line count
             UT::ui32 GetLineCount(void) const;

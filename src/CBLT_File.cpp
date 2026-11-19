@@ -113,7 +113,7 @@ namespace CBLT {
         return path;
     }
 
-    void File::Draw(UT::ui32 cursorX, UT::ui32 cursorY, UT::b consoleOpen, UT::ui32 consoleWidth) {
+    UT::ui32 File::Draw(UT::ui32 cursorX, UT::ui32 cursorY, UT::b consoleOpen, UT::ui32 consoleWidth) {
         UT::ui32 linesDrawn = 0; // Debug
 
         UT::f32 lineHeight = gFont.size;
@@ -275,11 +275,9 @@ namespace CBLT {
         // CLIPPING INFILE MARKS
         EndScissorMode();
 
-        #ifdef FILE_DRAW_DEBUG
-            DrawText(("Lines drawn: " + std::to_string(linesDrawn)).c_str(), 0, 20, 18, WHITE);
-        #endif /* FILE_DRAW_DEBUG */
-
         autocomplete.DrawSuggestions(cursorX, cursorY);
+
+        return linesDrawn;
     }
 
     UT::ui32 File::GetLineCount() const {

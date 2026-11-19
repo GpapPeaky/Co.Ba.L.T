@@ -8,5 +8,6 @@
 
 namespace CBLT {
     // Draw top bar and all data that live inside it
-    void DrawInfo(CBLT::Cursor& c, UT::ui32 lineCount, UT::b dirty, std::string fname, std::string cwd, std::string conf);
+    void DrawInfo(CBLT::Cursor& c, UT::ui32 lineCount, UT::b dirty, std::string fname, std::string cwd, std::string conf,\
+                  UT::ui32 linesDrawn, UT::ui32 fps);
 } // CBLT

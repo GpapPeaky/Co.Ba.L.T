@@ -1,6 +1,8 @@
+
 #include "CBLT_TopBar.hpp"
 
-void CBLT::DrawInfo(CBLT::Cursor& c, UT::ui32 lineCount, UT::b dirty, std::string fname, std::string cwd, std::string conf) {
+void CBLT::DrawInfo(CBLT::Cursor& c, UT::ui32 lineCount, UT::b dirty, std::string fname, std::string cwd, std::string conf,\
+                    UT::ui32 linesDrawn, UT::ui32 fps) {
     const UT::ui32 topBarSeperatorY = (UT::ui32)gTopBarFont.size; // 2 lines of info
 
     // const UT::ui32 topBarInfoVerticalShift = 12;
@@ -59,6 +61,7 @@ void CBLT::DrawInfo(CBLT::Cursor& c, UT::ui32 lineCount, UT::b dirty, std::strin
         modeString = "UNKNOWN";
     }
 
+    // TODO: Optimize maybe
     // Strings
 
     const std::string colStr =
@@ -76,6 +79,12 @@ void CBLT::DrawInfo(CBLT::Cursor& c, UT::ui32 lineCount, UT::b dirty, std::strin
     const std::string fnameAndConf =
         fname + " " + conf;
 
+    const std::string fpsStr =
+        "fps: " + std::to_string(fps);
+
+    const std::string linesDrawnStr =
+        "ld: " + std::to_string(linesDrawn);
+
     // Measurements
 
     const UT::ui32 colWidth   = TextWidth(colStr);
@@ -83,6 +92,9 @@ void CBLT::DrawInfo(CBLT::Cursor& c, UT::ui32 lineCount, UT::b dirty, std::strin
 
     const UT::ui32 lcWidth    = TextWidth(lcStr);
     const UT::ui32 dirtyWidth = TextWidth(dirtyStr);
+
+    const UT::ui32 fpsWidth        = TextWidth(fpsStr);
+    const UT::ui32 linesDrawnWidth = TextWidth(linesDrawnStr);
 
     const UT::ui32 fileWidth =
         TextWidth(fnameAndConf);
@@ -101,6 +113,9 @@ void CBLT::DrawInfo(CBLT::Cursor& c, UT::ui32 lineCount, UT::b dirty, std::strin
     const UT::ui32 secondColumnWidth =
         std::max(lcWidth, dirtyWidth);
 
+    const UT::ui32 thirdColumnWidth =
+        std::max(fpsWidth, linesDrawnWidth);
+
     // Dynamic positions
 
     const UT::ui32 secondColumnX =
@@ -108,9 +123,14 @@ void CBLT::DrawInfo(CBLT::Cursor& c, UT::ui32 lineCount, UT::b dirty, std::strin
         firstColumnWidth +
         columnGap;
 
-    const UT::ui32 fileSectionX =
+    const UT::ui32 thirdColumnX =
         secondColumnX +
         secondColumnWidth +
+        columnGap;
+
+    const UT::ui32 fileSectionX =
+        thirdColumnX +
+        thirdColumnWidth +
         sectionGap;
 
     const UT::ui32 modeX =
@@ -194,6 +214,32 @@ void CBLT::DrawInfo(CBLT::Cursor& c, UT::ui32 lineCount, UT::b dirty, std::strin
         gTopBarFont.size,
         0.0f,
         dirtyColour
+    );
+
+    // Performance information
+
+    DrawTextEx(
+        gTopBarFont.f,
+        fpsStr.c_str(),
+        {
+            static_cast<float>(thirdColumnX),
+            0.0f
+        },
+        gTopBarFont.size,
+        0.0f,
+        gPalette.lineInfo
+    );
+
+    DrawTextEx(
+        gTopBarFont.f,
+        linesDrawnStr.c_str(),
+        {
+            static_cast<float>(thirdColumnX),
+            static_cast<float>(gTopBarFont.size + topBarInfoVerticalShift)
+        },
+        gTopBarFont.size,
+        0.0f,
+        gPalette.lineInfo
     );
 
     // File information
