@@ -161,6 +161,8 @@ namespace CBLT {
                 lineHeight + FileMargins::UI::TOP_BAR_HEIGHT
             )) continue; // Skip non visible lines
 
+            linesDrawn++;
+
             // File text
             // DrawTextEx(
             //     gFont.f,
@@ -202,8 +204,6 @@ namespace CBLT {
                 std::string_view tokenText(lineStr.data() + t.col, len);
             
                 UT::f32 tokX = pos.x + t.GetCursorX(std::string_view(lines[i]), gFont.size, t.col);
-
-                linesDrawn++;
 
                 /* Scratch buffer to avoid constant string allocations, string needs to be copied over thought */
                 thread_local std::string scratch;
