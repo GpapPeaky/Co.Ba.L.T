@@ -12,6 +12,7 @@
 #include "CBLT_InfileAutocomplete.hpp"
 #include "CBLT_InfileMark.hpp"
 #include "CBLT_Lex.hpp"                 // Einai aseveia rr
+#include "CBLT_LineRequestManager.hpp"  // Requests
 
 #include <cctype>                       // for tokenizing
 #include <unordered_set>                // for std::unordered_set<> ...
@@ -35,6 +36,7 @@ namespace CBLT {
             std::vector<InfileMark> marks;                      // Infile markings
             UT::ui32 markIdFactory;                             // Mark id factory
             CursorManager cursors;                              // Cursor manager for the file, handles cursor position and movement
+            LineRequestManager lineRequests;                    // Line requests
             Language lang = Language(FileExtension::TXT);       // File's language loaded via the extension
             std::string langConf;                               // Language conf file name
             Camera cam;                                         // Camera for rendering the file, will be used for panning and zooming the file view
@@ -169,5 +171,15 @@ namespace CBLT {
 
             // Get line states
             std::vector<LexerState>& LineStates(void);
+
+            // LINE REQUESTS
+            
+                // Handle line requests
+                void HandlePendingLineRequests(void);
+
+                // Line request manager
+                LineRequestManager& LineReqs(void);
+
+            // LINE REQUESTS
     }; // File class
 } // CBLT

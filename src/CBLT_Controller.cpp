@@ -166,10 +166,10 @@ namespace CBLT {
                 cursor.SetAt(prevLineLen, originalLine - 1, Q.Active().GetCurrentLine(originalLine - 1));
             
                 if (isEmpty) {
-                    Q.Active().DeleteLine(originalLine);
+                    Q.Active().LineReqs().Request(LineRequestType::DELETE_LINE, originalLine);
                 } else {
                     Q.Active().PushBackLineFragment(originalLine, originalLine - 1);
-                    Q.Active().DeleteLine(originalLine);
+                    Q.Active().LineReqs().Request(LineRequestType::DELETE_LINE, originalLine);
                 }
             }
 
@@ -572,7 +572,10 @@ namespace CBLT {
             }
             
             // Delete the actual line after removing any marks
-            f.DeleteLine(lineToDel);
+            
+            // f.DeleteLine(lineToDel);
+            
+            f.LineReqs().Request(LineRequestType::DELETE_LINE, lineToDel);
 
             if (cursor.Line() > 0 && cursor.Line() < Q.Active().GetLineCount()) {
                 cursor.SetAt(cursor.Col(), cursor.Line(), Q.Active().GetCurrentLine(cursor.Line()));
@@ -1606,7 +1609,7 @@ namespace CBLT {
     
         // Delete lines in between
         for (UT::ui32 l = endLine ; l > startLine ; --l) {
-            file.DeleteLine(l);
+            file.LineReqs().Request(LineRequestType::DELETE_LINE, l);
         }
     
         // Merge

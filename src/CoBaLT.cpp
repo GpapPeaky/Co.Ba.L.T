@@ -70,7 +70,7 @@ UT::i32 main(int argc, char** argv) {
                 // Need to retokenize every frame, else non updated tokens with invalid lengths will crash the program
                 f.RetokenizeDirtyLines();
                 c.AcquireFragment(c.Col(), f.GetCurrentLine(c.Line()));
-
+                
                 cm.DrawCursors(CBLT::gFont, baseX, 0, f.Offs());
                 linesDrawn = f.Draw(c.renderX, c.renderY, cnsl.IsOpen(), cnsl.Width());
                 
@@ -78,10 +78,12 @@ UT::i32 main(int argc, char** argv) {
                 currentFileDirt             = f.Dirt();
                 currentFileName             = f.Name();
                 currentFileLangConfName     = f.LangConf();
-
+                
                 ctrl.GetConsole().GetCWDContents(ctrl.CWD());
                 f.Cam().SetHeight(GetRenderHeight());
                 f.Cam().SetWidth(GetRenderWidth());
+                
+                f.HandlePendingLineRequests();
                 
                 CBLT::DrawInfo(c, currentFileLineCount, currentFileDirt, currentFileName, ctrl.CWD(), currentFileLangConfName, linesDrawn, GetFPS());
             }

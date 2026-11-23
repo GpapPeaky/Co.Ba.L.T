@@ -648,4 +648,27 @@ namespace CBLT {
     std::vector<LexerState>& File::LineStates(void) {
         return lineStates;
     }
+
+    void File::HandlePendingLineRequests(void) {
+        std::deque<UT::ui32>& deletions = lineRequests.Deletions();
+        // std::deque<UT::ui32> indents = lineRequests.Indents();
+
+        // Handle line deletion requests
+        for (UT::ui32 line : deletions) {
+            DeleteLine(line);
+
+            deletions.pop_front(); // Remove oldest element
+
+            // Update line counts
+            for (UT::ui32 lineToMutate : deletions) {
+                lineToMutate = lineToMutate - 1; // decrement
+            }
+        }
+
+        // Handle indentation requests
+    }
+
+    LineRequestManager& File::LineReqs(void) {
+        return lineRequests;
+    }
 } // CBLT
