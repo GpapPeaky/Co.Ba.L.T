@@ -1,6 +1,7 @@
 #pragma once
 
 #include <deque>
+#include <algorithm>
 #include "CBLT_Util.hpp"
 
 namespace CBLT {

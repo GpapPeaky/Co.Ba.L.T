@@ -9,6 +9,10 @@ namespace CBLT {
         switch (type) {
             case LineRequestType::DELETE_LINE:
                 deleteLineRequests.push_back(line);
+                
+                // Sort with desceding line ids, to avoid reindexing after deletion
+                std::sort(deleteLineRequests.rbegin(), deleteLineRequests.rend());
+
                 break;
             case LineRequestType::INDENT_LINE:
                 indentLineRequests.push_back(line);

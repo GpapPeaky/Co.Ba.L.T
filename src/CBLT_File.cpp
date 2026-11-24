@@ -657,12 +657,7 @@ namespace CBLT {
         for (UT::ui32 line : deletions) {
             DeleteLine(line);
 
-            deletions.pop_front(); // Remove oldest element
-
-            // Update line counts
-            for (UT::ui32 lineToMutate : deletions) {
-                lineToMutate = lineToMutate - 1; // decrement
-            }
+            lineRequests.Pop(LineRequestType::DELETE_LINE);
         }
 
         // Handle indentation requests
