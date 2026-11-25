@@ -6,6 +6,5 @@ release/
 .tests/
 meta/marks/*
 !meta/marks/.gitkeep
-*.log
 cblt
 .vscode/
